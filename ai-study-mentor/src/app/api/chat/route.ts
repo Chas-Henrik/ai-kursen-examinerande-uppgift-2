@@ -50,7 +50,18 @@ export async function POST(req: NextRequest) {
     model: 'akx/viking-7b',
   });
 
-  const prompt = `Baserat på följande kontext, svara på frågan. Svara på svenska och håll dig till max 4 meningar. Om informationen inte finns i kontexten, svara "Den här informationen finns inte i det uppladdade materialet.".\n\nKontext:\n${context}\n\nFråga: ${query}`;
+  const prompt = `
+  Du är en hjälpsam AI-assistent som svarar på svenska. 
+  Svara endast baserat på den uppladdade dokumenttexten. Max 4 meningar. 
+  Om informationen inte finns i dokumentet, skriv exakt: "Den här informationen finns inte i det uppladdade materialet."
+
+  Dokumenttext:
+  ${context}
+
+  Fråga:
+  ${query}
+  `;
+
 
   const stream = await ollama.stream(prompt);
 

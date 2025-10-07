@@ -41,7 +41,15 @@ export async function POST(req: NextRequest) {
     model: 'akx/viking-7b',
   });
 
-  const prompt = `Baserat på följande kontext, generera 10 instuderingsfrågor. Svara på svenska.\n\nKontext:\n${context}`;
+  const prompt = `
+  Du är en hjälpsam AI-lärare som skapar instuderingsfrågor på svenska.
+  Baserat på den uppladdade dokumenttexten, generera 10 instuderingsfrågor. Svara på svenska.
+  Skriv en numrerad lista (1-10).
+  Använd korrekta svenska meningar.
+
+  Dokumenttext:
+  ${context}
+  `;
 
   const response = await ollama.invoke(prompt);
 
