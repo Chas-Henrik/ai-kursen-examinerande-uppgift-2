@@ -154,7 +154,7 @@ export default function ProtectedPage() {
                 <input
                   type="text"
                   name="link"
-                  placeholder="https://exempel.com/artikel"
+                  placeholder="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
                   className="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200"
                 />
                 <button
