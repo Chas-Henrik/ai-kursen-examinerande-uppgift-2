@@ -1,3 +1,5 @@
+// ai-study-mentor/src/components/Layout.tsx
+
 "use client";
 
 import React, { useEffect, useState } from 'react';
