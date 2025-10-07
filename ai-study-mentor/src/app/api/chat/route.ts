@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
-    model: 'viking-7b',
+    model: 'akx/viking-7b',
   });
 
   const prompt = `Baserat på följande kontext, svara på frågan. Svara på svenska och håll dig till max 4 meningar. Om informationen inte finns i kontexten, svara "Den här informationen finns inte i det uppladdade materialet.".\n\nKontext:\n${context}\n\nFråga: ${query}`;

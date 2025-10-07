@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
-    model: 'viking-7b',
+    model: 'akx/viking-7b',
   });
 
   const prompt = `Baserat på följande kontext, generera 10 instuderingsfrågor. Svara på svenska.\n\nKontext:\n${context}`;
