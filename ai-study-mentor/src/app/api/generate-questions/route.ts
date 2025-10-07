@@ -42,10 +42,13 @@ export async function POST(req: NextRequest) {
   });
 
   const prompt = `
-  Du är en hjälpsam AI-lärare som skapar instuderingsfrågor på svenska.
-  Baserat på den uppladdade dokumenttexten, generera 10 instuderingsfrågor. Svara på svenska.
-  Skriv en numrerad lista (1-10).
-  Använd korrekta svenska meningar.
+  Du är en hjälpsam och pedagogisk AI-lärare som skapar instuderingsfrågor på svenska.
+
+  Utifrån dokumenttexten nedan, skapa 10 tydliga och varierade instuderingsfrågor som hjälper studenten att förstå och minnas innehållet. 
+  - Skriv varje fråga i fullständig mening. 
+  - Undvik att upprepa samma typ av fråga. 
+  - Svara endast med den numrerade listan (1-10). 
+  - Använd korrekt och naturlig svenska.
 
   Dokumenttext:
   ${context}
