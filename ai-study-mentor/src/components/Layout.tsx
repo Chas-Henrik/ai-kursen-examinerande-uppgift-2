@@ -52,15 +52,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </header>
       <div className="flex flex-1">
-        <aside className="w-64 bg-gray-700 dark:bg-gray-900 text-white p-4">
-          <nav>
-            <ul>
-              <li>
-                <a href="#" className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-600">Historik</a>
-              </li>
-            </ul>
-          </nav>
-        </aside>
         <main className="flex-1 p-4 bg-white dark:bg-gray-800">
           {children}
         </main>
