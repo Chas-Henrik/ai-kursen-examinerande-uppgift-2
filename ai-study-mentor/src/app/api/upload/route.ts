@@ -60,13 +60,17 @@ export async function POST(req: NextRequest) {
     .filter(line => line.length > 0)
     .join(" ");  // join all lines with a space
 
-  const document = new Document({
-    userId,
-    filename,
-    text,
-  });
+  // Only save document if it doesn't already exist
+  let document = await Document.findOne({ userId, filename });
+  if (!document) {
+    document = new Document({
+      userId,
+      filename,
+      text,
+    });
 
-  await document.save();
+    await document.save();
+  }
 
   const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
   const chunks = await textSplitter.splitText(text);
