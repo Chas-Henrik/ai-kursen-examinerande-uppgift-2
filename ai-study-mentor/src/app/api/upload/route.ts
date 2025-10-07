@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pdfToText } from 'pdf-ts';
-import * as cheerio from 'cheerio';
 import connectDB from '@/lib/mongodb';
 import Document from '@/models/Document';
 import jwt from 'jsonwebtoken';
@@ -33,16 +32,15 @@ export async function POST(req: NextRequest) {
   let filename: string;
 
   if (file) {
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    text = await pdfToText(buffer);
+    const bytes = await file.arrayBuffer(); // Uint8Array compatible
+    text = await pdfToText(new Uint8Array(bytes));
     filename = file.name;
   } else if (link) {
     try {
+      // Test with: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
       const response = await fetch(link);
-      const html = await response.text();
-      const $ = cheerio.load(html);
-      text = $('body').text();
+      const arrayBuffer = await response.arrayBuffer(); // Uint8Array compatible
+      text = await pdfToText(new Uint8Array(arrayBuffer));
       filename = link;
     } catch (error) {
       return NextResponse.json({ error: 'Failed to fetch the URL' }, { status: 500 });
@@ -50,6 +48,17 @@ export async function POST(req: NextRequest) {
   } else {
     return NextResponse.json({ error: 'No file or link provided' }, { status: 400 });
   }
+
+  // Clean up broken lines and spaces
+  text = text
+    .replace(/\r\n/g, "\n")
+    .replace(/\n+/g, "\n")
+    .replace(/([a-zA-Z])\n([a-zA-Z])/g, "$1$2")
+    .trim()
+    .split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join(" ");  // join all lines with a space
 
   const document = new Document({
     userId,

@@ -19,7 +19,6 @@
     "@types/js-cookie": "^3.0.6",
     "@types/multer": "^2.0.0",
     "bcrypt": "^6.0.0",
-    "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
     "jose": "^6.1.0",
     "js-cookie": "^3.0.5",
