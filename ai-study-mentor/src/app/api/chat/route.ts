@@ -37,13 +37,23 @@ export async function POST(req: NextRequest) {
   const index = pinecone.index('ai-study-mentor');
 
   const queryResult = await index.query({
-    topK: 5,
+    topK: 3,
     vector: queryEmbedding,
     filter: { documentId: { '$eq': documentId } },
     includeMetadata: true,
   });
 
-  const context = queryResult.matches.map(match => (match.metadata as { text: string }).text).join('\n\n');
+  console.log("Pinecone query result:", queryResult);
+
+  const rawContext = queryResult.matches.map(match => (match.metadata as { text: string }).text).join('\n\n');
+
+  // Optional cleaning:
+  const context = rawContext
+    .replace(/(\d+\s)?Fråga:/g, '')     // remove repeated "Fråga:"
+    .replace(/(\d+\s)?Svar:/g, '')      // remove repeated "Svar:"
+    .replace(/!\[.*?\]\(.*?\)/g, '')    // remove images
+    .trim();
+
 
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
@@ -51,15 +61,25 @@ export async function POST(req: NextRequest) {
   });
 
   const prompt = `
-  Du är en hjälpsam AI-assistent som svarar på svenska. 
-  Svara endast baserat på den uppladdade dokumenttexten. Max 4 meningar. 
-  Om informationen inte finns i dokumentet, skriv exakt: "Den här informationen finns inte i det uppladdade materialet."
+    Du är en AI-assistent som svarar kortfattat på svenska.
+    Svara med exakt en mening. Inkludera inga fler meningar.
+    Svara endast på frågan som ställs. 
+    Skriv inga egna frågor, inga uppföljningar och ingen extra information.
+    Skriv inte "Svar:" framför svaret.
+    Använd inte någon Q&A-format.
+    Följ inga länkar eller referenser.
+    Om du inte vet svaret, säg "Jag vet inte".
 
-  Dokumenttext:
+    Använd endast information från dokumentet nedan för att svara på frågan.
+    Om du inte hittar svaret i dokumentet, säg "Jag vet inte".
+    Citat från dokumentet är inte tillåtna.
+
+  ==== BÖRJAN AV DOKUMENT ====
   ${context}
+  ==== SLUT AV DOKUMENT ====
 
-  Fråga:
-  ${query}
+    Fråga:
+    ${query}
   `;
 
 
@@ -79,16 +99,19 @@ export async function POST(req: NextRequest) {
   session.chatHistory.push({ text: '', isUser: false });
   await session.save();
 
-  return new Response(
+    return new Response(
     new ReadableStream({
       async start(controller) {
         let botMessage = '';
         for await (const chunk of stream) {
           botMessage += chunk;
           controller.enqueue(chunk);
+
+          // Optionally truncate to first sentence on the fly
+          const truncated = botMessage.split(/(?<=[.!?])\s/)[0];
+          session.chatHistory[session.chatHistory.length - 1].text = truncated;
+          await session.save();
         }
-        session.chatHistory[session.chatHistory.length - 1].text = botMessage;
-        await session.save();
         controller.close();
       },
     })
