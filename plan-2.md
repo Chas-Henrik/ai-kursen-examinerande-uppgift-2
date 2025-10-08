@@ -1,485 +1,422 @@
-# AI Study Mentor - STAGE 2: Avancerad Funktionalitet
+# AI Study Mentor - STAGE 2: AI Features (AI Implementation Guide)
 
-## Step 1: Filuppladdning (PDF/TXT/URL) och textextrahering
-
-**Beskrivning**: Implementera filuppladdning, textextrahering från olika källor och chunking för semantic search.
-
-#### 📋 Checklista:
-
-- [ ] **File Upload UI Komponenter**
-
-  - [ ] `src/components/upload/UploadArea.tsx`
-
-    - [ ] Drag & drop zon med svensk text "Dra och släpp din fil här"
-    - [ ] File input för PDF och TXT filer
-    - [ ] URL input-fält för webblänkar
-    - [ ] Progress bar under uppladdning
-    - [ ] File validation (max 10MB, endast PDF/TXT)
-
-  - [ ] `src/components/upload/FilePreview.tsx`
-    - [ ] Visa uppladdad fil information
-    - [ ] "Ta bort fil" knapp
-    - [ ] Processing status indicator
-
-- [ ] **API Route för File Upload**
-
-  - [ ] `src/app/api/upload/route.ts`
-    - [ ] POST: Hantera multipart/form-data med `multer`
-    - [ ] Validera filtyp och storlek
-    - [ ] Spara fil tillfälligt på servern
-    - [ ] Returnera file ID för processing
-
-- [ ] **Text Extraction Library**
-
-  - [ ] `src/lib/textExtraction.ts`
-    - [ ] `extractFromPDF(filePath)` med `pdf-parse`
-    - [ ] `extractFromTXT(filePath)` med `fs.readFile`
-    - [ ] `extractFromURL(url)` med `cheerio` + `axios`
-    - [ ] Text cleaning: ta bort extra whitespace, special chars
-    - [ ] Support för både svenska och engelska texter
-
-- [ ] **Text Chunking System**
-
-  - [ ] `src/lib/textChunking.ts`
-    - [ ] `chunkText(text, maxTokens=500)` funktion
-    - [ ] Smart chunking på menings-gränser
-    - [ ] Overlap mellan chunks (50 tokens)
-    - [ ] Metadata för varje chunk (index, length, source)
-
-- [ ] **Document Processing Workflow**
-  - [ ] Efter upload → extract text → chunk text → spara i MongoDB
-  - [ ] `src/lib/documentProcessor.ts`
-  - [ ] Background processing med status updates
-  - [ ] Error handling för corrupt files
-
-#### ✅ Checkpoint:
-
-Kan ladda upp PDF/TXT/URL, extrahera text korrekt, dela i chunks och spara i databas
+## 🎯 STAGE 2 OVERVIEW
+Implement AI-powered document processing, chat functionality, and study features using Viking 7B, LangChain, and Pinecone.
 
 ---
 
-## Step 2: LangChain + Ollama + Pinecone för embeddings och retrieval
+## Step 5: File Upload & Document Processing
 
-**Beskrivning**: Integrera LangChain, Pinecone vector databas och Ollama för embeddings och semantisk sökning.
+**GOAL:** Enable PDF/text file uploads, extract text, create embeddings, store in Pinecone vector database.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **Pinecone Vector Database Setup**
+#### **5.1 Multer Configuration**
+- [ ] **Create file:** `src/lib/multer.ts`
+- [ ] **Requirements:**
+  - Configure storage destination: `uploads/` directory
+  - Filename format: `{userId}_{timestamp}_{originalName}`
+  - File filter: Accept only `.pdf`, `.txt`, `.docx`
+  - Size limit: 10MB maximum
+  - Error messages in Swedish: "Filen är för stor", "Filtyp stöds inte"
 
-  - [ ] Skapa Pinecone konto och få API key
-  - [ ] Skapa ny index med dimensioner för nomic-embed-text (768d)
-  - [ ] Konfigurera metric type (cosine similarity)
-  - [ ] Testa connection från applikationen
+#### **5.2 Document Processing Utils**
+- [ ] **Create file:** `src/lib/documentProcessor.ts`
+- [ ] **Requirements:**
+  - `extractTextFromPDF(filePath: string)` using pdf-parse
+  - `extractTextFromTxt(filePath: string)` for plain text files
+  - `splitTextIntoChunks(text: string, chunkSize = 1000, overlap = 200)`
+  - `generateEmbeddings(chunks: string[])` using LangChain
+  - Error handling with Swedish messages
 
-- [ ] **Ollama Setup för Embeddings**
+#### **5.3 Pinecone Integration**
+- [ ] **Create file:** `src/lib/pinecone.ts`
+- [ ] **Requirements:**
+  - Initialize Pinecone client with API key from env
+  - `uploadEmbeddingsToPinecone(embeddings, metadata, namespace)`
+  - `searchSimilarDocuments(query, topK = 5, namespace)`
+  - `deleteDocumentVectors(vectorIds)`
+  - Include document metadata: userId, documentId, chunkIndex
 
-  - [ ] Installera Ollama lokalt
-  - [ ] Hämta `nomic-embed-text` modell: `ollama pull nomic-embed-text`
-  - [ ] Testa embeddings API: `http://localhost:11434/api/embeddings`
-  - [ ] Konfigurera i `.env.local`
+#### **5.4 File Upload API Route**
+- [ ] **Create file:** `src/app/api/documents/upload/route.ts`
+- [ ] **Requirements:**
+  - POST method with FormData handling
+  - JWT authentication required
+  - Validate file type and size
+  - Save file to uploads directory
+  - Extract text using documentProcessor
+  - Split into chunks and generate embeddings
+  - Store document in MongoDB with processed status
+  - Upload vectors to Pinecone with metadata
+  - Return success message in Swedish: "Dokument uppladdat och bearbetat"
 
-- [ ] **LangChain Integration**
+#### **5.5 File Upload Component**
+- [ ] **Create file:** `src/components/upload/FileUpload.tsx`
+- [ ] **Requirements:**
+  - Drag & drop zone with "Dra och släpp filer här eller klicka för att välja"
+  - File list showing upload progress
+  - Accept multiple files
+  - Progress bar during upload/processing
+  - Success/error messages in Swedish
+  - File icons for different types
+  - Cancel upload functionality
 
-  - [ ] `src/lib/embeddings.ts`
+#### **5.6 Document List Component**
+- [ ] **Create file:** `src/components/documents/DocumentList.tsx`
+- [ ] **Requirements:**
+  - Table layout with columns: "Filnamn", "Storlek", "Datum", "Status", "Åtgärder"
+  - Processing status indicators: "Bearbetas...", "Klar", "Fel"
+  - Delete document action with confirmation
+  - Filter by file type
+  - Pagination for large document lists
 
-    - [ ] Konfigurera Ollama embeddings med LangChain
-    - [ ] `generateEmbeddings(textChunks[])` funktion
-    - [ ] Batch processing för många chunks
-    - [ ] Error handling och retry logic
-
-  - [ ] `src/lib/vectorStore.ts`
-    - [ ] LangChain Pinecone wrapper setup
-    - [ ] `storeEmbeddings(chunks, embeddings, documentId)`
-    - [ ] Metadata: documentId, chunkIndex, userId
-    - [ ] `deleteDocumentVectors(documentId)` för cleanup
-
-- [ ] **Semantic Retrieval System**
-
-  - [ ] `src/lib/retrieval.ts`
-    - [ ] `semanticSearch(query, userId, topK=5)`
-    - [ ] Skapa query embedding från user fråga
-    - [ ] Sök i Pinecone med filters (userId)
-    - [ ] Returnera relevanta text chunks med scores
-    - [ ] Threshold för relevance (minsta score)
-
-- [ ] **Document Processing Pipeline**
-  - [ ] Efter text chunking → skapa embeddings → lagra i Pinecone
-  - [ ] Link mellan MongoDB Document och Pinecone vectors
-  - [ ] Background processing med progress tracking
-
-#### ✅ Checkpoint:
-
-Embeddings skapas och lagras i Pinecone, semantisk sökning returnerar relevanta chunks
-
----
-
-## Step 3: Chat API med Viking 7B (korta svenska svar)
-
-**Beskrivning**: Skapa chat endpoint som använder retrieved context och Viking 7B för svenska svar.
-
-#### 📋 Checklista:
-
-- [ ] **Ollama Viking 7B Setup**
-
-  - [ ] Hämta Viking 7B modell: `ollama pull viking:7b`
-  - [ ] Testa modellen lokalt: `ollama run viking:7b`
-  - [ ] Konfigurera model parameters (temperature, max_tokens)
-  - [ ] Verifiera svenska språkstöd
-
-- [ ] **System Prompt för Studiementor**
-
-  - [ ] `src/lib/prompts.ts`
-  - [ ] System prompt enligt specifikation:
-
-  ```
-  Du är en hjälpsam och vänlig studiementor som alltid svarar på svenska.
-  Besvara frågor endast baserat på den medföljande texten.
-  Om informationen inte finns i texten, svara:
-  "Den här informationen finns inte i det uppladdade materialet."
-  Håll dina svar korta (max 3–4 meningar) och uppmuntra användaren att ställa fler frågor.
-  ```
-
-- [ ] **Chat API Route**
-
-  - [ ] `src/app/api/chat/route.ts`
-    - [ ] POST: Ta emot `message`, `sessionId`, `documentId`
-    - [ ] Verifiera att user äger document
-    - [ ] Utför semantic search för relevanta chunks
-    - [ ] Bygg prompt med context + user question
-    - [ ] Anropa Viking 7B via Ollama
-    - [ ] Spara user message + AI response i ChatSession
-    - [ ] Returnera AI svar
-
-- [ ] **LangChain Prompt Chain**
-
-  - [ ] `src/lib/chatChain.ts`
-  - [ ] LangChain prompt template
-  - [ ] Context injection från retrieved chunks
-  - [ ] Output parser för clean responses
-  - [ ] Fallback för irrelevanta frågor
-
-- [ ] **Chat UI Implementation**
-
-  - [ ] `src/components/chat/ChatInterface.tsx`
-
-    - [ ] Real-time message list med scroll-to-bottom
-    - [ ] User/Assistant message bubbles med olika styling
-    - [ ] Input field med "Ställ en fråga..." placeholder
-    - [ ] "Skicka" knapp med loading state
-    - [ ] Typing indicator under AI processing
-
-  - [ ] `src/components/chat/MessageBubble.tsx`
-    - [ ] User messages: höger-alignerade, blå bakgrund
-    - [ ] Assistant messages: vänster-alignerade, grå bakgrund
-    - [ ] Timestamps och copy-to-clipboard funktionalitet
-    - [ ] Markdown rendering för formaterad text
-
-- [ ] **Error Handling & Edge Cases**
-  - [ ] Inget document uppsatt: "Ladda upp ett dokument först"
-  - [ ] Ingen relevant information: automatiskt fallback svar
-  - [ ] API errors: "Ett fel uppstod, försök igen"
-  - [ ] Rate limiting för excessive requests
-
-#### ✅ Checkpoint:
-
-Chat fungerar med korta svenska svar baserat på uploaded document context
+### ✅ **CHECKPOINT 5:**
+- [ ] Can upload PDF files successfully
+- [ ] Files are processed and text extracted
+- [ ] Embeddings stored in Pinecone
+- [ ] Document metadata saved in MongoDB
+- [ ] File list displays uploaded documents correctly
 
 ---
 
-## Step 4: Studiefrågor-generator (AI skapar svenska frågor)
+## Step 6: LangChain Integration + Ollama Setup
 
-**Beskrivning**: AI analyserar uploaded material och genererar relevanta svenska studiefrågor.
+**GOAL:** Configure LangChain with Ollama Viking 7B model for Swedish responses with context retrieval.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **Question Generation Prompt**
+#### **6.1 Ollama Configuration**
+- [ ] **Create file:** `src/lib/ollama.ts`
+- [ ] **Requirements:**
+  - Initialize Ollama client with base URL from env
+  - `testOllamaConnection()` function
+  - `generateResponse(prompt: string, context: string)` function
+  - Response length limit: 3-4 sentences maximum
+  - Swedish language prompt template
+  - Error handling for connection issues
 
-  - [ ] `src/lib/questionPrompts.ts`
-  - [ ] System prompt för fråge-generering:
+#### **6.2 LangChain Chain Setup**
+- [ ] **Create file:** `src/lib/langchain.ts`
+- [ ] **Requirements:**
+  - Text splitter configuration (RecursiveCharacterTextSplitter)
+  - Embedding model setup (HuggingFace or OpenAI alternative)
+  - Vector store connection to Pinecone
+  - Retrieval chain with similarity search
+  - Swedish prompt template for context-aware responses
 
-  ```
-  Baserat på den medföljande texten, skapa 10-15 korta och relevanta studiefrågor på svenska.
-  Inkludera olika typer:
-  - Faktafrågor (Vad är...?)
-  - Förståelsefrågor (Varför...?)
-  - Analysfrågor (Hur påverkar...?)
-  Formulera frågorna som en numrerad lista.
-  ```
+#### **6.3 Context Retrieval Service**
+- [ ] **Create file:** `src/lib/contextRetrieval.ts`
+- [ ] **Requirements:**
+  - `retrieveRelevantContext(query: string, userId: string, documentId?: string)`
+  - Semantic search in user's documents
+  - Context ranking by relevance score
+  - Combine multiple relevant chunks
+  - Maximum context length: 2000 characters
 
-- [ ] **Question Generation API**
+#### **6.4 AI Response Generator**
+- [ ] **Create file:** `src/lib/aiResponseGenerator.ts`
+- [ ] **Requirements:**
+  - Main function: `generateStudyResponse(question: string, context: string, language = 'sv')`
+  - Swedish prompt template: "Du är en AI studie-assistent. Baserat på följande kontext..."
+  - Response validation (length, language)
+  - Fallback for when no relevant context found
+  - Error handling with Swedish messages
 
-  - [ ] `src/app/api/questions/generate/route.ts`
-    - [ ] POST: Ta emot `documentId`
-    - [ ] Hämta key chunks från document (första 5-10 chunks)
-    - [ ] Anropa Viking 7B med question prompt
-    - [ ] Parse generated questions från response
-    - [ ] Spara questions i MongoDB (länkade till document)
-    - [ ] Returnera question list
+#### **6.5 Test AI Integration**
+- [ ] **Create file:** `src/app/api/ai/test/route.ts`
+- [ ] **Requirements:**
+  - GET endpoint to test Ollama connection
+  - Test context retrieval with sample query
+  - Test response generation
+  - Return status and sample response
+  - Include Swedish test query: "Vad handlar dokumentet om?"
 
-- [ ] **Question Model & Schema**
-
-  - [ ] `src/models/StudyQuestion.ts`
-  - [ ] Schema: `documentId`, `userId`, `questions[]`, `generatedAt`
-  - [ ] Question type: `text`, `type` ('fact'|'understanding'|'analysis')
-  - [ ] Methods för CRUD operations
-
-- [ ] **Questions UI Components**
-
-  - [ ] `src/components/questions/QuestionsList.tsx`
-
-    - [ ] "Generera studiefrågor" knapp
-    - [ ] Loading state under generation
-    - [ ] Numrerad lista över frågor
-    - [ ] "Generera nya frågor" för refresh
-
-  - [ ] `src/components/questions/QuestionCard.tsx`
-    - [ ] Individual question display
-    - [ ] Question type badge (Fakta/Förståelse/Analys)
-    - [ ] "Ställ fråga till AI" knapp (öppnar chat med pre-filled)
-    - [ ] Bookmark/save functionality
-
-- [ ] **Integration med Chat**
-
-  - [ ] Click på fråga → auto-fyll chat input
-  - [ ] "Besvara denna fråga" workflow
-  - [ ] Link mellan generated questions och chat responses
-
-- [ ] **Advanced Question Features**
-  - [ ] Olika svårighetsgrader baserat på text complexity
-  - [ ] Question categorization och filtering
-  - [ ] Export questions som PDF/text file
-
-#### ✅ Checkpoint:
-
-AI genererar relevanta svenska studiefrågor från uploaded document
+### ✅ **CHECKPOINT 6:**
+- [ ] Ollama Viking 7B model responds correctly
+- [ ] Context retrieval finds relevant document chunks
+- [ ] AI responses are in Swedish and appropriately short
+- [ ] Test endpoint returns successful AI response
 
 ---
 
-## Step 5: Historik och user session persistence
+## Step 7: Chat API & Real-time Messaging
 
-**Beskrivning**: Spara och visa användarens tidigare chattsessioner och uppladdade dokument.
+**GOAL:** Create chat endpoints for conversations with context-aware AI responses and real-time updates.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **Session Management System**
+#### **7.1 Chat API Routes**
+- [ ] **Create file:** `src/app/api/chat/route.ts`
+- [ ] **Requirements:**
+  - POST: Send message and get AI response
+  - GET: Retrieve chat history for user
+  - JWT authentication required
+  - Message validation and sanitization
+  - Rate limiting: max 10 messages per minute
 
-  - [ ] Ny ChatSession skapas vid varje document upload
-  - [ ] Auto-genererad session titel från document namn
-  - [ ] All chat messages sparas i session
-  - [ ] Session status tracking (active/archived)
+#### **7.2 Chat Message Processing**
+- [ ] **Create file:** `src/app/api/chat/[sessionId]/route.ts`
+- [ ] **Requirements:**
+  - POST: Add message to specific chat session
+  - GET: Get messages from specific session
+  - DELETE: Delete chat session
+  - Validate user owns the session
+  - Update session timestamp on new messages
 
-- [ ] **History API Routes**
+#### **7.3 Chat Context State Management**
+- [ ] **Create file:** `src/context/ChatContext.tsx`
+- [ ] **Requirements:**
+  - State: `currentSession`, `sessions`, `messages`, `loading`
+  - Functions: `sendMessage()`, `createNewSession()`, `loadSession()`, `deleteSession()`
+  - Auto-save message history
+  - Optimistic updates for better UX
 
-  - [ ] `src/app/api/sessions/route.ts`
+#### **7.4 Chat Interface Component**
+- [ ] **Create file:** `src/components/chat/ChatInterface.tsx`
+- [ ] **Requirements:**
+  - Message display area with auto-scroll
+  - User messages: Right-aligned, blue background
+  - AI messages: Left-aligned, gray background
+  - Typing indicator during AI response
+  - Message timestamps
+  - Copy message button
 
-    - [ ] GET: Lista alla user sessions (paginated)
-    - [ ] POST: Skapa ny session
-    - [ ] Sessions sorted by lastActivity
+#### **7.5 Message Input Component**
+- [ ] **Create file:** `src/components/chat/MessageInput.tsx`
+- [ ] **Requirements:**
+  - Textarea with "Ställ en fråga om dina dokument..." placeholder
+  - Auto-resize on content change
+  - Send button (disabled when empty or loading)
+  - Keyboard shortcuts: Enter to send, Shift+Enter for new line
+  - Character count indicator
 
-  - [ ] `src/app/api/sessions/[sessionId]/route.ts`
+#### **7.6 Session Management**
+- [ ] **Create file:** `src/components/chat/SessionList.tsx`
+- [ ] **Requirements:**
+  - List recent chat sessions in sidebar
+  - Session titles generated from first message
+  - "Ny konversation" button
+  - Delete session with confirmation dialog
+  - Active session highlighting
 
-    - [ ] GET: Hämta specific session med alla messages
-    - [ ] PUT: Uppdatera session (titel, status)
-    - [ ] DELETE: Ta bort session och associated data
-
-  - [ ] `src/app/api/sessions/[sessionId]/messages/route.ts`
-    - [ ] GET: Paginated messages för session
-    - [ ] POST: Lägg till nytt message i session
-
-- [ ] **History UI Components**
-
-  - [ ] `src/components/history/SessionSidebar.tsx`
-
-    - [ ] Lista över alla user sessions i sidebar
-    - [ ] Session titel, datum, message count
-    - [ ] Active session highlighting
-    - [ ] "Ny Konversation" knapp at top
-
-  - [ ] `src/components/history/SessionItem.tsx`
-    - [ ] Individual session med click-to-open
-    - [ ] Context menu: "Byt namn", "Ta bort", "Arkivera"
-    - [ ] Last message preview
-    - [ ] Unread indicator
-
-- [ ] **Session Navigation & State**
-
-  - [ ] `src/context/SessionContext.tsx`
-  - [ ] Current active session state
-  - [ ] Switch between sessions utan page reload
-  - [ ] Auto-save när user skriver messages
-
-- [ ] **Data Management & Cleanup**
-
-  - [ ] Pagination för stora historik (lazy loading)
-  - [ ] Search/filter i session history
-  - [ ] Bulk operations: delete old sessions
-  - [ ] Export session history som text/JSON
-
-- [ ] **Session Restoration**
-  - [ ] När user clicks på old session → load full chat
-  - [ ] Restore document context för continued chat
-  - [ ] Maintain scroll position och UI state
-
-#### ✅ Checkpoint:
-
-User kan se, öppna och fortsätta tidigare chat sessions från sidebar
+### ✅ **CHECKPOINT 7:**
+- [ ] Can send messages and receive AI responses
+- [ ] Chat history persists between sessions
+- [ ] Multiple chat sessions can be managed
+- [ ] Real-time message updates work correctly
 
 ---
 
-## Step 6: Final UI polish, testing och deployment tips
+## Step 8: Study Question Generation
 
-**Beskrivning**: Finputsning av UI/UX, testing, performance optimization och deployment-förberedelser.
+**GOAL:** Generate contextual study questions and flashcards based on uploaded documents.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-### **UI/UX Polish & Accessibility**
+#### **8.1 Question Generation API**
+- [ ] **Create file:** `src/app/api/study/questions/route.ts`
+- [ ] **Requirements:**
+  - POST: Generate questions from document ID
+  - Question types: multiple choice, true/false, short answer
+  - Difficulty levels: lätt (easy), medel (medium), svår (hard)
+  - Generate 10 questions per request
+  - Swedish question format
 
-- [ ] **Enhanced User Experience**
+#### **8.2 Question Generator Service**
+- [ ] **Create file:** `src/lib/questionGenerator.ts`
+- [ ] **Requirements:**
+  - `generateMultipleChoice(context: string, count = 5)`
+  - `generateTrueFalse(context: string, count = 3)`
+  - `generateShortAnswer(context: string, count = 2)`
+  - Swedish prompt templates for each question type
+  - Answer validation and formatting
 
-  - [ ] Smooth transitions och animations
-  - [ ] Loading skeletons för alla components
-  - [ ] Empty states med helpful messaging på svenska
-  - [ ] Confirmation dialogs för destructive actions
-  - [ ] Keyboard shortcuts (Ctrl+Enter för send, etc.)
+#### **8.3 Study Session Component**
+- [ ] **Create file:** `src/components/study/StudySession.tsx`
+- [ ] **Requirements:**
+  - Question display with progress indicator
+  - Multiple choice with radio buttons
+  - True/false with toggle buttons
+  - Short answer with text input
+  - "Nästa fråga" and "Föregående fråga" buttons
+  - Score tracking and display
 
-- [ ] **Mobile Responsiveness**
+#### **8.4 Question Bank Component**
+- [ ] **Create file:** `src/components/study/QuestionBank.tsx`
+- [ ] **Requirements:**
+  - Filter questions by document and difficulty
+  - Search functionality
+  - Edit/delete questions
+  - Export questions as PDF/text
+  - "Starta studiesession" button
 
-  - [ ] Sidebar collapse/expand på mobile
-  - [ ] Touch-friendly buttons och gestures
-  - [ ] Mobile chat input optimizations
-  - [ ] Responsive typography och spacing
+#### **8.5 Flashcard Component**
+- [ ] **Create file:** `src/components/study/Flashcards.tsx`
+- [ ] **Requirements:**
+  - Card flip animation (question → answer)
+  - Navigation: "Föregående kort", "Nästa kort"
+  - Difficulty rating: "Lätt", "Medel", "Svår"
+  - Spaced repetition algorithm
+  - Progress tracking
 
-- [ ] **Accessibility (a11y)**
-  - [ ] Proper ARIA labels på svenska
-  - [ ] Keyboard navigation för all functionality
-  - [ ] Screen reader compatibility
-  - [ ] Color contrast compliance
-  - [ ] Focus indicators och skip links
-
-### **Performance Optimization**
-
-- [ ] **Frontend Optimization**
-
-  - [ ] Lazy loading för chat history
-  - [ ] Image optimization för avatars/icons
-  - [ ] Bundle analysis med `@next/bundle-analyzer`
-  - [ ] Code splitting för different routes
-  - [ ] Memoization för expensive components
-
-- [ ] **Backend Optimization**
-  - [ ] Database indexing för frequently queried fields
-  - [ ] API response caching strategies
-  - [ ] Pagination för large datasets
-  - [ ] Background job processing för embeddings
-  - [ ] Rate limiting implementation
-
-### **Testing & Quality Assurance**
-
-- [ ] **Unit Testing**
-
-  - [ ] Test utilities funktioner (JWT, text extraction)
-  - [ ] Test MongoDB models och schemas
-  - [ ] Test API route handlers
-  - [ ] Jest + Testing Library setup
-
-- [ ] **Integration Testing**
-
-  - [ ] Test auth flow end-to-end
-  - [ ] Test file upload → processing → chat workflow
-  - [ ] Test session management
-  - [ ] API route integration tests
-
-- [ ] **User Acceptance Testing**
-  - [ ] Test på olika browsers (Chrome, Firefox, Safari)
-  - [ ] Test på mobile devices
-  - [ ] Test med real PDF documents
-  - [ ] Performance testing med large files
-
-### **Security & Error Handling**
-
-- [ ] **Security Hardening**
-
-  - [ ] Input validation och sanitization
-  - [ ] File upload security (virus scanning)
-  - [ ] Rate limiting för API endpoints
-  - [ ] CORS policy configuration
-  - [ ] Environment variable security audit
-
-- [ ] **Error Boundaries & Logging**
-  - [ ] React Error Boundaries för UI crashes
-  - [ ] Centralized error logging
-  - [ ] User-friendly error messages på svenska
-  - [ ] 404 och 500 error pages
-
-### **Deployment Preparation**
-
-- [ ] **Production Configuration**
-
-  - [ ] Environment-specific configs
-  - [ ] Production MongoDB cluster setup
-  - [ ] Production Pinecone index
-  - [ ] CDN setup för static assets
-
-- [ ] **Deployment Platforms**
-
-  - [ ] Vercel deployment configuration
-  - [ ] Docker containerization (optional)
-  - [ ] Environment variables setup
-  - [ ] Database migration scripts
-
-- [ ] **Monitoring & Analytics**
-  - [ ] Application performance monitoring
-  - [ ] Error tracking (Sentry integration)
-  - [ ] User analytics (anonymous usage stats)
-  - [ ] Health check endpoints
-
-### **Documentation & Maintenance**
-
-- [ ] **Documentation**
-
-  - [ ] API documentation med OpenAPI/Swagger
-  - [ ] User manual på svenska
-  - [ ] Developer setup guide
-  - [ ] Troubleshooting guide
-
-- [ ] **Maintenance Planning**
-  - [ ] Backup strategies för MongoDB
-  - [ ] Update procedures för dependencies
-  - [ ] Performance monitoring dashboards
-  - [ ] User feedback collection system
-
-#### ✅ Final Checkpoint:
-
-Komplett, polerad och produktionsklar AI Study Mentor applikation
+### ✅ **CHECKPOINT 8:**
+- [ ] Questions generate correctly from document content
+- [ ] Study session interface works smoothly
+- [ ] Flashcards display and flip properly
+- [ ] Progress tracking shows correct statistics
 
 ---
 
-## 🎯 Slutresultat: Funktionell AI Study Mentor
+## Step 9: Chat History & Session Management
 
-### ✅ Uppnådda Funktioner:
+**GOAL:** Complete chat history persistence, search functionality, and session organization.
 
-- **Filuppladdning**: PDF, TXT, URL support med textextrahering
-- **Semantisk Sökning**: LangChain + Pinecone + Ollama embeddings
-- **AI Chat**: Viking 7B svenska svar baserat på dokument-context
-- **Studiefrågor**: Automatisk generering av relevanta frågor
-- **Autentisering**: JWT-baserad user management
-- **Historik**: Persistent chat sessions och dokument
-- **UI/UX**: Responsiv design med light/dark mode på svenska
-- **Performance**: Optimerad för snabb respons och skalbarhet
+### 📋 IMPLEMENTATION CHECKLIST:
 
-### 🔧 Teknikstack:
+#### **9.1 Advanced Session API**
+- [ ] **Create file:** `src/app/api/sessions/route.ts`
+- [ ] **Requirements:**
+  - GET: List all user sessions with pagination
+  - POST: Create new session with optional title
+  - PUT: Update session title
+  - Search sessions by title or content
 
-- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
-- **Backend**: Next.js API Routes + Node.js
-- **Database**: MongoDB Atlas + Mongoose ODM
-- **Vector DB**: Pinecone för semantic search
-- **AI/ML**: Viking 7B via Ollama + LangChain
-- **Auth**: JWT + bcrypt säkerhet
-- **Deployment**: Vercel-ready konfiguration
+#### **9.2 Message Search API**
+- [ ] **Create file:** `src/app/api/sessions/search/route.ts`
+- [ ] **Requirements:**
+  - POST: Search messages across all user sessions
+  - Full-text search in message content
+  - Date range filtering
+  - Results with context and session info
+  - Swedish search interface
 
-### 📊 Estimerad Utvecklingstid:
+#### **9.3 Session History Component**
+- [ ] **Create file:** `src/components/history/SessionHistory.tsx`
+- [ ] **Requirements:**
+  - Grouped by date: "Idag", "Igår", "Förra veckan"
+  - Session preview with first message
+  - Search bar: "Sök i historik..."
+  - Export session as text/PDF
+  - Bulk delete functionality
 
-**Total: 2-3 veckor** (beroende på erfarenhet och arbetstakt)
+#### **9.4 Message Search Component**
+- [ ] **Create file:** `src/components/history/MessageSearch.tsx`
+- [ ] **Requirements:**
+  - Advanced search filters
+  - Highlight search terms in results
+  - Jump to message in original session
+  - Search suggestions
+  - "Inga resultat hittades" message
 
-- Stage 1 (Step 1-4): ~1 vecka
-- Stage 2 (Step 1-6): ~1-2 veckor
+#### **9.5 Chat Statistics**
+- [ ] **Create file:** `src/components/history/ChatStats.tsx`
+- [ ] **Requirements:**
+  - Total messages sent/received
+  - Documents uploaded count
+  - Study sessions completed
+  - Most active time periods
+  - Visual charts/graphs
+
+### ✅ **CHECKPOINT 9:**
+- [ ] Can search through chat history effectively
+- [ ] Session organization works intuitively
+- [ ] Statistics display accurate information
+- [ ] Export functionality produces correct files
+
+---
+
+## Step 10: Final Polish & Testing
+
+**GOAL:** Complete UI polish, comprehensive testing, error handling, and production readiness.
+
+### 📋 IMPLEMENTATION CHECKLIST:
+
+#### **10.1 Error Boundary Components**
+- [ ] **Create file:** `src/components/error/ErrorBoundary.tsx`
+- [ ] **Requirements:**
+  - Catch and display React errors gracefully
+  - "Något gick fel" message in Swedish
+  - Reset button to try again
+  - Error logging for debugging
+  - Fallback UI for broken components
+
+#### **10.2 Loading States & Skeletons**
+- [ ] **Create file:** `src/components/ui/LoadingSkeletons.tsx`
+- [ ] **Requirements:**
+  - Chat message skeleton
+  - Document list skeleton
+  - Sidebar session skeleton
+  - Shimmer animations
+  - Proper accessibility labels
+
+#### **10.3 Comprehensive Testing**
+- [ ] **Create file:** `src/app/api/test/integration/route.ts`
+- [ ] **Requirements:**
+  - Test full user workflow: register → login → upload → chat → logout
+  - Test error scenarios with Swedish messages
+  - Validate all API responses
+  - Performance testing for large documents
+  - Memory leak detection
+
+#### **10.4 Accessibility Improvements**
+- [ ] **Update all components with:**
+  - ARIA labels in Swedish
+  - Keyboard navigation support
+  - Screen reader compatibility
+  - Color contrast validation
+  - Focus indicators
+  - Alt text for all images/icons
+
+#### **10.5 Performance Optimization**
+- [ ] **Implement optimizations:**
+  - Lazy loading for document content
+  - Message virtualization for long chats
+  - Image optimization with Next.js
+  - Code splitting for components
+  - Database query optimization
+
+#### **10.6 Production Configuration**
+- [ ] **Update configuration files:**
+  - Environment variables validation
+  - Security headers configuration
+  - Rate limiting implementation
+  - Logging system setup
+  - Docker configuration (optional)
+
+#### **10.7 Swedish Language Validation**
+- [ ] **Complete Swedish text audit:**
+  - All UI elements use Swedish text
+  - Error messages are in Swedish
+  - Placeholder text is in Swedish
+  - Success messages are in Swedish
+  - AI responses validated for Swedish language
+
+#### **10.8 Final User Testing**
+- [ ] **Test complete user workflows:**
+  - New user registration and first document upload
+  - Chat with AI about uploaded documents
+  - Study question generation and completion
+  - Multiple document management
+  - Theme switching and responsive design
+
+### ✅ **CHECKPOINT 10:**
+- [ ] All error states handled gracefully
+- [ ] Application performs well under load
+- [ ] Swedish language used consistently throughout
+- [ ] Accessibility standards met
+- [ ] Ready for production deployment
+
+---
+
+## 🎯 **STAGE 2 COMPLETION CRITERIA**
+
+✅ **All checkpoints passed**
+✅ **AI chat functionality working with Swedish responses**
+✅ **Document processing and vector search operational**
+✅ **Study features generate relevant questions**
+✅ **Performance optimized for production**
+✅ **Complete Swedish language implementation**
+✅ **Comprehensive error handling**
+
+**Final Result:** Fully functional AI Study Mentor application ready for Swedish-speaking students to upload documents and interact with AI-powered study assistance.

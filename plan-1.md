@@ -1,561 +1,295 @@
-# AI Study Mentor - STAGE 1: Grundläggande Applikation
+# AI Study Mentor - STAGE 1: Foundation (AI Implementation Guide)
 
-## Step 1: Projektsetup och grundstruktur
+## 🎯 STAGE 1 OVERVIEW
+Build the foundational Next.js application with authentication and database connectivity. All UI text must be in Swedish.
 
-**Beskrivning**: Skapa projektstruktur, installera dependencies, konfigurera Tailwind och environment variables.
+---
 
-#### 📋 Checklista:
+## Step 1: Project Setup & Dependencies
 
-- [ ] **Skapa Next.js projekt**
+**GOAL:** Create Next.js project with TypeScript, install all required packages, configure environment variables.
 
-  - [x] Kör `npx create-next-app@latest ai-study-mentor --typescript --tailwind --eslint --app`
-  - [x] Navigera till projektmapp: `cd ai-study-mentor`
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **Installera ytterligare dependencies**
+#### **1.1 Create Next.js Project**
+- [ ] **Command:** `npx create-next-app@latest ai-study-mentor --typescript --tailwind --eslint --app`
+- [ ] **Command:** `cd ai-study-mentor`
+- [ ] **Verify:** Project created in `ai-study-mentor/` directory
+- [ ] **Verify:** TypeScript and Tailwind CSS pre-configured
 
-  - [ ] `npm install mongoose bcryptjs jsonwebtoken`
-  - [ ] `npm install @types/bcryptjs @types/jsonwebtoken`
-  - [ ] `npm install pdf-parse cheerio multer`
-  - [ ] `npm install @pinecone-database/pinecone`
-  - [ ] `npm install langchain @langchain/community @langchain/pinecone`
-  - [ ] `npm install next-themes` (för light/dark mode)
-  - [ ] `npm install axios dotenv`
+#### **1.2 Install Required Dependencies**
+- [ ] **Command:** `npm install mongoose bcryptjs jsonwebtoken`
+- [ ] **Command:** `npm install @types/bcryptjs @types/jsonwebtoken`
+- [ ] **Command:** `npm install pdf-parse cheerio multer`
+- [ ] **Command:** `npm install @pinecone-database/pinecone`
+- [ ] **Command:** `npm install langchain @langchain/community @langchain/pinecone`
+- [ ] **Command:** `npm install next-themes axios dotenv`
 
-- [ ] **Konfigurera miljövariabler (.env.local)**
-
-  - [ ] Skapa `.env.local` fil
-  - [ ] `MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor`
-  - [ ] `JWT_SECRET=your-super-secret-jwt-key-here`
-  - [ ] `PINECONE_API_KEY=your-pinecone-api-key`
-  - [ ] `PINECONE_ENVIRONMENT=your-pinecone-environment`
-  - [ ] `OLLAMA_BASE_URL=http://localhost:11434`
-  - [ ] `NEXTAUTH_SECRET=your-nextauth-secret`
-
-- [ ] **Skapa mappstruktur**
-
+#### **1.3 Environment Variables Setup**
+- [ ] **Create file:** `.env.local` in root directory
+- [ ] **Add variables:** (Use these exact variable names)
   ```
-  src/
-  ├── app/
-  │   ├── api/
-  │   │   ├── auth/
-  │   │   ├── upload/
-  │   │   └── chat/
-  │   ├── globals.css
-  │   ├── layout.tsx
-  │   └── page.tsx
-  ├── components/
-  │   ├── ui/
-  │   ├── layout/
-  │   ├── auth/
-  │   └── chat/
-  ├── lib/
-  │   ├── mongodb.ts
-  │   ├── jwt.ts
-  │   └── utils.ts
-  ├── models/
-  │   ├── User.ts
-  │   └── Document.ts
-  └── types/
-      └── index.ts
+  MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor
+  JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+  PINECONE_API_KEY=your-pinecone-api-key
+  PINECONE_ENVIRONMENT=your-pinecone-environment
+  PINECONE_INDEX_NAME=ai-study-mentor
+  OLLAMA_BASE_URL=http://localhost:11434
+  NODE_ENV=development
   ```
+- [ ] **Create file:** `.env.example` with same variables but placeholder values
 
-- [ ] **Konfigurera Tailwind CSS**
+#### **1.4 Project Structure Creation**
+- [ ] **Create directories:**
+  - `src/components/layout/`
+  - `src/components/auth/`
+  - `src/components/ui/`
+  - `src/lib/`
+  - `src/models/`
+  - `src/types/`
 
-  - [ ] Uppdatera `tailwind.config.js`:
+#### **1.5 Tailwind Configuration**
+- [ ] **Edit file:** `tailwind.config.js`
+- [ ] **Requirements:**
+  - Enable `darkMode: 'class'`
+  - Add custom colors: primary `#10A37F`, background light `#FFFFFF`, dark `#1A1A1A`
+  - Add custom surface colors: light `#F7F8F8`, dark `#2D2D2D`
+  - Include content path: `'./src/**/*.{js,ts,jsx,tsx}'`
 
-  ```javascript
-  module.exports = {
-    content: ["./src/**/*.{js,ts,jsx,tsx}"],
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          primary: "#10A37F",
-          background: {
-            light: "#FFFFFF",
-            dark: "#1A1A1A",
-          },
-          surface: {
-            light: "#F7F8F8",
-            dark: "#2D2D2D",
-          },
-        },
-      },
-    },
-  };
-  ```
+#### **1.6 Basic README**
+- [ ] **Edit file:** `README.md`
+- [ ] **Include sections:**
+  - Project description in Swedish
+  - Installation instructions (`npm install`, `npm run dev`)
+  - Technology stack list
+  - Environment variables setup guide
 
-- [ ] **Skapa grundläggande README.md**
-  - [ ] Projektbeskrivning på svenska
-  - [ ] Installationsinstruktioner
-  - [ ] Teknikstack (Next.js, TypeScript, MongoDB, Pinecone, Viking 7B)
-  - [ ] Utvecklingsmiljö setup
-
-#### ✅ Checkpoint:
-
-Kör `npm run dev` och verifiera att projektet startar utan fel på http://localhost:3000
+### ✅ **CHECKPOINT 1:**
+- [ ] Run `npm run dev` - application starts on localhost:3000
+- [ ] No compilation errors in terminal
+- [ ] Next.js default page displays correctly
+- [ ] All dependencies installed successfully
 
 ---
 
-## Step 2: UI Layout med svenska text + light/dark mode toggle
+## Step 2: UI Layout with Swedish Text + Dark/Light Mode
 
-**Beskrivning**: Skapa grundläggande layout (header, sidebar, chat area) med svenska text och dark mode toggle.
+**GOAL:** Create responsive layout with header, sidebar, main content area. All text in Swedish with theme toggle.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **Implementera ThemeProvider**
+#### **2.1 Theme Provider Setup**
+- [ ] **Create file:** `src/components/providers/ThemeProvider.tsx`
+- [ ] **Requirements:**
+  - Import `ThemeProvider` from next-themes
+  - Export provider component with `attribute="class"`
+  - Enable system theme detection
+  - Disable SSR flash with `suppressHydrationWarning`
 
-  - [ ] Installera `next-themes` package
-  - [ ] Skapa `src/components/providers/ThemeProvider.tsx`
-  - [ ] Lägg till ThemeProvider i `app/layout.tsx`
-  - [ ] Konfigurera för 'light' och 'dark' modes
+#### **2.2 Layout Root Configuration**
+- [ ] **Edit file:** `src/app/layout.tsx`
+- [ ] **Requirements:**
+  - Wrap children with ThemeProvider
+  - Add Inter font import and configuration
+  - Set HTML lang="sv" (Swedish)
+  - Include proper metadata with Swedish title "AI Studie Mentor"
 
-- [ ] **Skapa Header komponent**
+#### **2.3 Header Component**
+- [ ] **Create file:** `src/components/layout/Header.tsx`
+- [ ] **Requirements:**
+  - Sticky header: `sticky top-0 z-50 bg-white dark:bg-gray-900`
+  - Logo text: "AI Studie Mentor" (h1, text-xl, font-bold, text-primary)
+  - Theme toggle button with icons: 🌙 (dark) / ☀️ (light)
+  - Auth buttons: "Registrera användare", "Logga in", "Logga ut"
+  - Responsive flexbox layout
+  - Border bottom: `border-b border-gray-200 dark:border-gray-700`
 
-  - [ ] `src/components/layout/Header.tsx`
-  - [ ] Logo och titel "AI Studie Mentor"
-  - [ ] Dark/Light mode toggle knapp (🌙/☀️)
-  - [ ] Auth knappar: "Registrera användare", "Logga in", "Logga ut"
-  - [ ] Sticky positioning med Tailwind
+#### **2.4 Sidebar Component**
+- [ ] **Create file:** `src/components/layout/Sidebar.tsx`
+- [ ] **Requirements:**
+  - Fixed width on desktop: `w-64`, responsive: `hidden md:block`
+  - Background: `bg-surface-light dark:bg-surface-dark`
+  - Header section: "Historik" (text-lg, font-semibold)
+  - "Ny Konversation" button (full width, primary color)
+  - Session list area (scrollable)
+  - Height: `h-screen` minus header height
 
-- [ ] **Skapa Sidebar komponent**
+#### **2.5 Main Content Area**
+- [ ] **Create file:** `src/components/layout/MainContent.tsx`
+- [ ] **Requirements:**
+  - Flex-1 to fill remaining space
+  - Chat message area (scrollable, overflow-y-auto)
+  - Input section at bottom with "Ställ en fråga..." placeholder
+  - "Skicka" button with primary styling
+  - File upload area with "Ladda upp dokument" text
+  - Responsive padding and margins
 
-  - [ ] `src/components/layout/Sidebar.tsx`
-  - [ ] Rubrik "Historik"
-  - [ ] Knapp "Ny Konversation"
-  - [ ] Lista för tidigare chat-sessioner
-  - [ ] Responsiv: dölj/visa på mobil
+#### **2.6 Main Page Integration**
+- [ ] **Edit file:** `src/app/page.tsx`
+- [ ] **Requirements:**
+  - Import and use Header, Sidebar, MainContent components
+  - Grid layout: Header spans full width, Sidebar + MainContent side by side
+  - Mobile responsive: Stack components on small screens
+  - Test both light and dark themes
 
-- [ ] **Skapa MainContent area**
-
-  - [ ] `src/components/layout/MainContent.tsx`
-  - [ ] Chat meddelande-area (scrollbar)
-  - [ ] Input-fält med placeholder "Ställ en fråga..."
-  - [ ] "Skicka" knapp
-  - [ ] "Ladda upp dokument" område
-
-- [ ] **Färgtema enligt specifikation**
-
-  - [ ] Primary Green: `#10A37F`
-  - [ ] Light mode: Background `#FFFFFF`, Surface `#F7F8F8`
-  - [ ] Dark mode: Background `#1A1A1A`, Surface `#2D2D2D`
-  - [ ] Text färger för light/dark modes
-
-- [ ] **Svenska UI-texter**
-  - [ ] Alla knappar, labels och meddelanden på svenska
-  - [ ] "Ladda upp dokument", "Ställ en fråga", "Skicka", "Historik"
-  - [ ] "Registrera användare", "Logga in", "Logga ut"
-
-#### ✅ Checkpoint:
-
-UI layout fungerar, dark mode toggle fungerar, alla texter på svenska
-
----
-
-## Step 3: MongoDB Atlas + Mongoose schemas för users och sessions
-
-**Beskrivning**: Koppla applikationen till MongoDB Atlas och skapa datamodeller för användare och chattsessioner.
-
-#### 📋 Checklista:
-
-- [ ] **MongoDB Atlas Setup**
-
-  - [ ] Skapa MongoDB Atlas konto (gratis tier)
-  - [ ] Skapa nytt cluster (M0 Sandbox)
-  - [ ] Skapa databas-användare med lösenord
-  - [ ] Lägg till IP-adress i Network Access (0.0.0.0/0 för dev)
-  - [ ] Kopiera connection string till `.env.local`
-
-- [ ] **Database Connection Setup**
-
-  - [ ] Skapa `src/lib/mongodb.ts`
-  - [ ] Mongoose connection med connection pooling
-  - [ ] Error handling och retry logic
-  - [ ] Export av `connectDB()` funktion
-
-- [ ] **User Schema och Model**
-
-  - [ ] Skapa `src/models/User.ts`
-  - [ ] Schema fält: `name`, `email`, `password`, `createdAt`, `updatedAt`
-  - [ ] Email validation och unique index
-  - [ ] Pre-save middleware för password hashing med bcrypt
-  - [ ] TypeScript interface för User type
-
-- [ ] **ChatSession Schema och Model**
-
-  - [ ] Skapa `src/models/ChatSession.ts`
-  - [ ] Schema fält: `userId`, `title`, `messages[]`, `documentId`, `createdAt`
-  - [ ] Message sub-schema: `role` ('user'|'assistant'), `content`, `timestamp`
-  - [ ] Populate methods för user och document references
-
-- [ ] **Document Schema och Model**
-  - [ ] Skapa `src/models/Document.ts`
-  - [ ] Schema fält: `userId`, `filename`, `originalText`, `chunks[]`, `vectorIds[]`
-  - [ ] Metadata: `fileType`, `fileSize`, `uploadDate`, `processed`
-  - [ ] Indexing för snabba sökningar
-
-#### ✅ Checkpoint:
-
-MongoDB Atlas anslutning fungerar, kan skapa/läsa dokument via Mongoose schemas
+### ✅ **CHECKPOINT 2:**
+- [ ] UI displays with Swedish text throughout
+- [ ] Theme toggle switches between light/dark modes successfully
+- [ ] Layout is responsive (test mobile/desktop views)
+- [ ] All buttons and labels show Swedish text
+- [ ] No console errors related to theme switching
 
 ---
 
-## Step 4: Autentisering (JWT) + test login/logout flow
+## Step 3: MongoDB Atlas + Mongoose Schemas
 
-**Beskrivning**: Implementera komplett autentiseringssystem med registrering, inloggning och session-hantering.
+**GOAL:** Connect to MongoDB Atlas, create user and document schemas with proper validation.
 
-#### 📋 Checklista:
+### 📋 IMPLEMENTATION CHECKLIST:
 
-- [ ] **JWT Utilities Setup**
+#### **3.1 MongoDB Connection**
+- [ ] **Create file:** `src/lib/mongodb.ts`
+- [ ] **Requirements:**
+  - Export `connectDB()` async function
+  - Use mongoose.connect() with MONGODB_URI from env
+  - Implement connection caching to prevent multiple connections
+  - Add error handling with Swedish error messages
+  - Log connection status to console
 
-  - [ ] Skapa `src/lib/jwt.ts`
-  - [ ] `generateToken(userId)` funktion
-  - [ ] `verifyToken(token)` funktion
-  - [ ] `getTokenFromRequest()` helper
-  - [ ] Token expiration (7 dagar)
+#### **3.2 User Schema**
+- [ ] **Create file:** `src/models/User.ts`
+- [ ] **Requirements:**
+  - Fields: `name` (String, required), `email` (String, required, unique), `password` (String, required), `createdAt` (Date, default: now)
+  - Email validation with regex pattern
+  - Index on email field for performance
+  - Pre-save middleware for password hashing with bcrypt (salt rounds: 12)
+  - Export both schema and model
 
-- [ ] **API Routes för Authentication**
+#### **3.3 Document Schema**
+- [ ] **Create file:** `src/models/Document.ts`
+- [ ] **Requirements:**
+  - Fields: `userId` (ObjectId ref User), `filename` (String), `originalText` (String), `chunks` (Array of Strings), `vectorIds` (Array of Strings), `fileType` (String), `fileSize` (Number), `uploadDate` (Date), `processed` (Boolean)
+  - Index on userId for fast user queries
+  - Virtual for chunk count
+  - Export schema and model
 
-  - [ ] `src/app/api/auth/register/route.ts`
+#### **3.4 Chat Session Schema**
+- [ ] **Create file:** `src/models/ChatSession.ts`
+- [ ] **Requirements:**
+  - Fields: `userId` (ObjectId ref User), `documentId` (ObjectId ref Document), `title` (String), `messages` (Array), `createdAt` (Date), `updatedAt` (Date)
+  - Message sub-schema: `role` (user/assistant), `content` (String), `timestamp` (Date)
+  - Population methods for user and document references
+  - Export schema and model
 
-    - [ ] POST: Validera `name`, `email`, `password`
-    - [ ] Kontrollera om email redan finns
-    - [ ] Hasha lösenord med bcrypt
-    - [ ] Skapa user i MongoDB
-    - [ ] Returnera JWT token + user info
+#### **3.5 Database Connection Test**
+- [ ] **Create file:** `src/app/api/test-db/route.ts`
+- [ ] **Requirements:**
+  - GET endpoint that tests database connection
+  - Try to connect and return success/error status
+  - Include user creation test
+  - Return JSON with Swedish success/error messages
 
-  - [ ] `src/app/api/auth/login/route.ts`
-
-    - [ ] POST: Validera `email` och `password`
-    - [ ] Hitta user i databas
-    - [ ] Jämför lösenord med bcrypt.compare()
-    - [ ] Returnera JWT token + user info
-
-  - [ ] `src/app/api/auth/me/route.ts`
-    - [ ] GET: Verifiera JWT från header
-    - [ ] Returnera current user info
-    - [ ] Protected route middleware
-
-- [ ] **Auth Context & State Management**
-
-  - [ ] Skapa `src/context/AuthContext.tsx`
-  - [ ] `AuthProvider` med React Context
-  - [ ] State: `user`, `loading`, `isAuthenticated`
-  - [ ] Functions: `login()`, `logout()`, `register()`
-  - [ ] Persistent login med localStorage
-
-- [ ] **Auth UI Komponenter**
-
-  - [ ] `src/components/auth/LoginForm.tsx`
-
-    - [ ] Form med "E-post" och "Lösenord" (svenska)
-    - [ ] Submit till `/api/auth/login`
-    - [ ] Error handling med svenska meddelanden
-    - [ ] "Logga in" knapp
-
-  - [ ] `src/components/auth/RegisterForm.tsx`
-    - [ ] Form: "Namn", "E-post", "Lösenord", "Bekräfta lösenord"
-    - [ ] Client-side validation
-    - [ ] Submit till `/api/auth/register`
-    - [ ] "Registrera användare" knapp
-
-- [ ] **Protected Routes & Middleware**
-
-  - [ ] Auth middleware för API routes
-  - [ ] Client-side route protection
-  - [ ] Redirect till login för icke-autentiserade
-
-- [ ] **Integration med Header**
-  - [ ] Visa user namn när inloggad
-  - [ ] "Logga ut" knapp som clearar token
-  - [ ] Toggle mellan "Logga in"/"Registrera" och "Logga ut"
-
-#### ✅ Checkpoint:
-
-Kan registrera ny användare, logga in/ut, sessions sparas mellan page refreshes
+### ✅ **CHECKPOINT 3:**
+- [ ] Visit `/api/test-db` endpoint - returns success message
+- [ ] MongoDB Atlas shows successful connections in dashboard
+- [ ] Can create and retrieve test user from database
+- [ ] No mongoose connection warnings in console
 
 ---
 
-## STAGE 2: Avancerad Funktionalitet
+## Step 4: JWT Authentication System
 
-### Step 1: Filuppladdning och textextrahering
+**GOAL:** Complete authentication with register, login, logout, protected routes, and Swedish error messages.
 
-**Beskrivning**: Implementera uppladdning av PDF/text/URL och extrahering av innehåll.
+### 📋 IMPLEMENTATION CHECKLIST:
 
-#### 📋 Checklista:
+#### **4.1 JWT Utilities**
+- [ ] **Create file:** `src/lib/jwt.ts`
+- [ ] **Requirements:**
+  - `generateToken(userId: string)` function with 7-day expiration
+  - `verifyToken(token: string)` function that returns decoded payload
+  - `getTokenFromRequest(request: Request)` helper function
+  - Error handling with Swedish messages
+  - Use JWT_SECRET from environment variables
 
-- [ ] **Filuppladdning UI**
+#### **4.2 Register API Route**
+- [ ] **Create file:** `src/app/api/auth/register/route.ts`
+- [ ] **Requirements:**
+  - POST method only
+  - Validate: name, email, password fields
+  - Check if email already exists → "E-posten används redan"
+  - Hash password with bcrypt
+  - Create user in database
+  - Generate and return JWT token + user info (exclude password)
+  - Swedish error messages for all validation failures
 
-  - [ ] `src/components/FileUpload/UploadArea.tsx`
-    - [ ] Drag & drop område med svenska text
-    - [ ] Stöd för PDF, TXT filer och URL-länkar
-    - [ ] Progress bar för uppladdning
-    - [ ] Filtyp och storlek validering
+#### **4.3 Login API Route**
+- [ ] **Create file:** `src/app/api/auth/login/route.ts`
+- [ ] **Requirements:**
+  - POST method only
+  - Validate email and password fields
+  - Find user by email → "Ogiltiga inloggningsuppgifter" if not found
+  - Compare password with bcrypt → same error message if wrong
+  - Generate and return JWT token + user info
+  - Swedish error messages
 
-- [ ] **API Route för filuppladdning**
+#### **4.4 Auth Context**
+- [ ] **Create file:** `src/context/AuthContext.tsx`
+- [ ] **Requirements:**
+  - State: `user`, `loading`, `isAuthenticated`
+  - Functions: `login(email, password)`, `register(name, email, password)`, `logout()`
+  - Store token in localStorage
+  - Auto-login on page refresh if valid token exists
+  - Clear token on logout
+  - Provide context to entire app
 
-  - [ ] `src/app/api/upload/route.ts`
-    - [ ] Hantera multipart/form-data
-    - [ ] Validera filtyp och storlek
-    - [ ] Lagra fil temporärt för bearbetning
+#### **4.5 Login Form Component**
+- [ ] **Create file:** `src/components/auth/LoginForm.tsx`
+- [ ] **Requirements:**
+  - Fields: "E-post" and "Lösenord" (Swedish labels)
+  - Form validation with Swedish error messages
+  - Submit calls AuthContext.login()
+  - Loading state during submission
+  - "Logga in" button text
+  - Link to register form: "Har du inget konto? Registrera dig"
 
-- [ ] **Text Extraction Logic**
+#### **4.6 Register Form Component**
+- [ ] **Create file:** `src/components/auth/RegisterForm.tsx`
+- [ ] **Requirements:**
+  - Fields: "Namn", "E-post", "Lösenord", "Bekräfta lösenord"
+  - Client-side validation with Swedish messages
+  - Password confirmation check → "Lösenorden matchar inte"
+  - Submit calls AuthContext.register()
+  - "Registrera användare" button text
+  - Link to login: "Har du redan ett konto? Logga in"
 
-  - [ ] `src/lib/textExtraction.ts`
-    - [ ] PDF parsing med `pdf-parse`
-    - [ ] URL content fetching och parsing
-    - [ ] Text cleaning och normalisering
-    - [ ] Chunking av text i segment (500 tokens)
+#### **4.7 Auth Integration**
+- [ ] **Update file:** `src/app/layout.tsx`
+- [ ] **Add:** AuthProvider wrapper around entire app
+- [ ] **Update file:** `src/components/layout/Header.tsx`
+- [ ] **Requirements:**
+  - Show user name when logged in
+  - Show "Logga ut" button when authenticated
+  - Show "Logga in" / "Registrera" when not authenticated
+  - Handle logout click
 
-- [ ] **Document Processing Workflow**
-  - [ ] Extrahera text från uppladdad fil
-  - [ ] Dela upp i chunks
-  - [ ] Rensa och normalisera text
-  - [ ] Spara i Document schema
-
-#### ✅ Checkpoint:
-
-Filer laddas upp korrekt och text extraheras utan fel
-
----
-
-### Step 2: LangChain + Ollama + Pinecone integration
-
-**Beskrivning**: Implementera embeddings, vector storage och semantisk sökning.
-
-#### 📋 Checklista:
-
-- [ ] **Pinecone Setup**
-
-  - [ ] Skapa Pinecone index
-  - [ ] Konfigurera dimensions och metrics
-  - [ ] Testa connection från applikationen
-
-- [ ] **Embeddings med LangChain**
-
-  - [ ] `src/lib/embeddings.ts`
-    - [ ] Konfigurera embedding model
-    - [ ] Funktion för att skapa embeddings från text chunks
-    - [ ] Batch processing för stora dokument
-
-- [ ] **Vector Storage**
-
-  - [ ] `src/lib/vectorStore.ts`
-    - [ ] Lagra embeddings i Pinecone
-    - [ ] Metadata för chunks (document ID, chunk index)
-    - [ ] Bulk insert funktionalitet
-
-- [ ] **Semantic Search**
-
-  - [ ] `src/lib/retrieval.ts`
-    - [ ] Skapa query embeddings
-    - [ ] Semantisk sökning i Pinecone
-    - [ ] Returnera relevanta text chunks
-    - [ ] Ranking och relevans scoring
-
-- [ ] **Ollama Integration**
-  - [ ] `src/lib/ollama.ts`
-    - [ ] Konfigurera Viking 7B model
-    - [ ] API client för Ollama
-    - [ ] Error handling och retry logic
-
-#### ✅ Checkpoint:
-
-Embeddings skapas och lagras, semantisk sökning returnerar relevanta resultat
+### ✅ **CHECKPOINT 4:**
+- [ ] User can register new account successfully
+- [ ] User can login with correct credentials
+- [ ] User can logout and token is cleared
+- [ ] Page refresh maintains login state
+- [ ] Invalid credentials show Swedish error messages
+- [ ] Protected routes redirect unauthenticated users
 
 ---
 
-### Step 3: Chat API med Viking 7B
-
-**Beskrivning**: Skapa API endpoint för chatting som använder retrieved context.
-
-#### 📋 Checklista:
-
-- [ ] **Chat API Route**
-
-  - [ ] `src/app/api/chat/route.ts`
-    - [ ] Ta emot användarfråga
-    - [ ] Utför semantisk sökning för relevanta chunks
-    - [ ] Skapa prompt med context och fråga
-    - [ ] Anropa Viking 7B via Ollama
-    - [ ] Returnera svar på svenska
-
-- [ ] **Prompt Engineering**
-
-  - [ ] `src/lib/prompts.ts`
-    - [ ] System prompt för svenska svar (max 3-4 meningar)
-    - [ ] Context injection template
-    - [ ] Fallback meddelanden för irrelevanta frågor
-
-- [ ] **Chat UI Components**
-
-  - [ ] `src/components/Chat/ChatInterface.tsx`
-
-    - [ ] Meddelande-lista med user/assistant bubblor
-    - [ ] Input-fält med "Skicka" knapp
-    - [ ] Loading states under AI-processing
-
-  - [ ] `src/components/Chat/MessageBubble.tsx`
-    - [ ] Olika styling för user vs assistant
-    - [ ] Timestamp och markdown support
-    - [ ] Copy-to-clipboard funktionalitet
-
-- [ ] **Real-time Updates**
-  - [ ] Streaming responses (optional)
-  - [ ] Loading indicators
-  - [ ] Error handling med svenska meddelanden
-
-#### ✅ Checkpoint:
-
-Chat fungerar med korta svenska svar baserat på uppladdade dokument
-
----
-
-### Step 4: Studiefrågor Generator
-
-**Beskrivning**: AI skapar automatiska frågor baserat på det uppladdade materialet.
-
-#### 📋 Checklista:
-
-- [ ] **Question Generation API**
-
-  - [ ] `src/app/api/generate-questions/route.ts`
-    - [ ] Analysera document chunks
-    - [ ] Generera relevanta studiefrågor på svenska
-    - [ ] Olika typer: faktafrågor, förståelsefrågor, analysfrågor
-
-- [ ] **Question Types & Templates**
-
-  - [ ] `src/lib/questionGenerator.ts`
-    - [ ] Template för olika frågetyper
-    - [ ] Svårighetsgrader (lätt, medel, svår)
-    - [ ] Svenska frågeformulering
-
-- [ ] **Questions UI**
-
-  - [ ] `src/components/StudyQuestions/QuestionsList.tsx`
-
-    - [ ] Lista över genererade frågor
-    - [ ] "Generera nya frågor" knapp
-    - [ ] Filtrera efter svårighetsgrad
-
-  - [ ] `src/components/StudyQuestions/QuestionCard.tsx`
-    - [ ] Visa fråga och potential svar
-    - [ ] "Visa svar" toggle
-    - [ ] Markera som "läst" eller "svår"
-
-#### ✅ Checkpoint:
-
-AI genererar relevanta svenska studiefrågor från dokument
-
----
-
-### Step 5: Historik och session persistence
-
-**Beskrivning**: Spara och visa tidigare chattsessioner och uppladdade dokument.
-
-#### 📋 Checklista:
-
-- [ ] **Session Management**
-
-  - [ ] Skapa ny session vid varje dokument-uppladdning
-  - [ ] Spara alla meddelanden i session
-  - [ ] Automatisk titel-generering för sessioner
-
-- [ ] **History API Routes**
-
-  - [ ] `src/app/api/sessions/route.ts` (lista sessioner)
-  - [ ] `src/app/api/sessions/[id]/route.ts` (hämta specifik session)
-  - [ ] `src/app/api/sessions/[id]/messages/route.ts` (meddelanden)
-
-- [ ] **History UI Components**
-
-  - [ ] `src/components/History/SessionsList.tsx`
-
-    - [ ] Lista över tidigare sessioner i sidebar
-    - [ ] Session-titlar och datum
-    - [ ] "Radera session" funktionalitet
-
-  - [ ] `src/components/History/SessionView.tsx`
-    - [ ] Visa complete chat history
-    - [ ] Återuppta conversation i befintlig session
-    - [ ] Export/backup funktionalitet
-
-- [ ] **Data Management**
-  - [ ] Pagination för stora historik
-  - [ ] Search/filter i historik
-  - [ ] Cleanup av gamla sessioner
-
-#### ✅ Checkpoint:
-
-Användare kan se och återuppta tidigare chattsessioner
-
----
-
-### Step 6: UI-polish, testing och deployment
-
-**Beskrivning**: Finputsa UI, lägg till tester och förbered för deployment.
-
-#### 📋 Checklista:
-
-- [ ] **UI/UX Förbättringar**
-
-  - [ ] Förbättra responsive design
-  - [ ] Loading skeletons och smooth transitions
-  - [ ] Error boundaries och 404 sidor
-  - [ ] Accessibility (a11y) förbättringar
-
-- [ ] **Performance Optimering**
-
-  - [ ] Lazy loading för komponenter
-  - [ ] Image optimization
-  - [ ] Bundle size analysis och optimering
-  - [ ] Caching strategies
-
-- [ ] **Testing**
-
-  - [ ] Unit tests för viktiga funktioner
-  - [ ] Integration tests för API routes
-  - [ ] E2E tests för kritiska user flows
-  - [ ] Test coverage rapporter
-
-- [ ] **Säkerhet**
-
-  - [ ] Input validation och sanitization
-  - [ ] Rate limiting för API routes
-  - [ ] CORS konfiguration
-  - [ ] Environment variables säkerhet
-
-- [ ] **Deployment Förberedelser**
-
-  - [ ] Docker konfiguration (optional)
-  - [ ] Vercel/Netlify deployment setup
-  - [ ] Environment variables för production
-  - [ ] Database migration scripts
-
-- [ ] **Dokumentation**
-  - [ ] API dokumentation
-  - [ ] Deployment guide
-  - [ ] User manual på svenska
-  - [ ] Troubleshooting guide
-
-#### ✅ Checkpoint:
-
-Applikationen är produktionsklar med komplett funktionalitet
-
----
-
-## 🎯 Slutmål
-
-En fullt fungerande AI Study Mentor applikation med:
-
-- ✅ Filuppladdning (PDF, text, URL)
-- ✅ Swedish chat interface med Viking 7B
-- ✅ Semantisk sökning med LangChain + Pinecone
-- ✅ Användarautentisering och historik
-- ✅ Automatisk studiefrågor-generering
-- ✅ Responsiv design med dark/light mode
-- ✅ MongoDB Atlas integration
-- ✅ Production-ready deployment
-
-**Total estimerad tid**: 2-3 veckor beroende på erfarenhet och arbetstakt.
+## 🎯 **STAGE 1 COMPLETION CRITERIA**
+
+✅ **All checkpoints passed**
+✅ **Swedish text throughout entire UI**
+✅ **Authentication flow working end-to-end**
+✅ **Database connectivity established**
+✅ **Theme switching functional**
+✅ **No console errors**
+
+**Next Step:** Proceed to `plan-2.md` for Stage 2 (AI Features Implementation)

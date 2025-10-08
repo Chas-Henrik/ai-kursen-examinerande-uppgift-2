@@ -1,137 +1,171 @@
-# Plan för AI Study Mentor
+# AI Study Mentor - Auto-Implementation Instructions
 
-## Mål
+## 🎯 SYSTEM ROLE
+You are an expert full-stack developer AI tasked with implementing a complete, production-ready web application. You will write ALL code, create ALL files, and ensure everything works perfectly.
 
-Bygga en enkel studie-mentor där användaren kan ladda upp kursmaterial (PDF) och ställa frågor i en chatt som besvaras av en LLM.
+## 📝 PROJECT SPECIFICATION
 
----
+**Application Name:** AI Study Mentor  
+**Purpose:** Swedish AI chat interface for studying uploaded documents
 
-## Projektbeskrivning
+**Core User Flow:**
+1. User registers/logs in
+2. User uploads PDF, text file, or webpage URL
+3. System extracts text, creates embeddings, stores in vector database
+4. User asks questions in Swedish about the document
+5. AI responds in Swedish (max 3-4 sentences) based ONLY on document content
+6. AI can generate Swedish study questions from the document
 
-AI Study Mentor är en webbaserad applikation som hjälper studenter att förstå och studera från sitt eget material.
+## 🛠️ MANDATORY TECHNICAL STACK
 
-### Grundläggande Funktioner
+- **Frontend:** Next.js 14 + TypeScript + Tailwind CSS
+- **Backend:** Next.js API routes + Node.js
+- **Database:** MongoDB Atlas + Mongoose ODM
+- **Vector Database:** Pinecone
+- **AI Framework:** LangChain (text splitting, embeddings, retrieval, prompts)
+- **LLM:** Viking 7B via Ollama (local installation)
+- **Embeddings:** nomic-embed-text via Ollama
+- **Authentication:** JWT + bcrypt
+- **UI Framework:** Tailwind CSS + next-themes (dark/light mode)
+- **Language:** All UI text in Swedish, All AI responses in Swedish
 
-1. **Ladda upp material**:
-   - PDF, textfiler eller URL-länkar.
-   - Systemet extraherar eller hämtar text från materialet.
-2. **Frågor och svar**:
-   - Användaren ställer frågor om materialet.
-   - AI svarar baserat på innehållet.
-3. **Generera studiefrågor**:
-   - AI skapar frågor baserat på det uppladdade materialet.
+## 🚨 CRITICAL IMPLEMENTATION RULES
 
-### Semantisk Sökning och Embeddings
+### **STAGE EXECUTION ORDER (ABSOLUTE REQUIREMENT)**
+1. **STAGE 1 FIRST:** Complete `plan-1.md` entirely (Foundation)
+2. **STAGE 2 SECOND:** Complete `plan-2.md` entirely (AI Features)
+3. **NO EXCEPTIONS:** Do not start Stage 2 until Stage 1 is 100% functional
 
-- **Textdelning**: Dela upp dokument i mindre segment.
-- **Embeddings**: Skapa vektorrepresentationer av segmenten och lagra i en vektordatabas.
-- **Sökning**: Vid frågor hämtas relevanta segment via semantisk sökning och skickas till LLM.
+### **CODE QUALITY REQUIREMENTS**
+- ✅ Write complete, production-ready code (no placeholders)
+- ✅ Create ALL files with full implementations
+- ✅ Use exact file paths and folder structures as specified
+- ✅ Include proper TypeScript types and error handling
+- ✅ Add Swedish error messages and UI text throughout
+- ✅ Implement responsive design with Tailwind classes
+- ✅ Test every feature after implementation
 
----
+### **AI/LLM BEHAVIOR REQUIREMENTS**
+- ✅ Viking 7B MUST respond only in Swedish
+- ✅ Maximum 3-4 sentences per response
+- ✅ Responses ONLY based on uploaded document content
+- ✅ Exact fallback: "Den här informationen finns inte i det uppladdade materialet."
+- ✅ Study questions generated in Swedish from document content
 
-## Språk
+## 📋 IMPLEMENTATION PHASES
 
-- **UI**: Svenska.
-- **LLM**: Stöd för både svenska och engelska.
+### **🏗️ PHASE 1: FOUNDATION (plan-1.md)**
+**Deliverables:** Working Next.js app with auth and database
 
----
+**Step 1:** Project setup, dependencies, environment configuration
+**Step 2:** UI layout with Swedish text and dark/light mode
+**Step 3:** MongoDB Atlas connection and Mongoose schemas
+**Step 4:** JWT authentication (register/login/logout/protected routes)
 
-## Funktionalitet
+**Phase 1 Success Test:**
+```bash
+npm run dev  # Must start without errors
+# User can register, login, logout successfully
+# UI shows Swedish text with working theme toggle
+# MongoDB connects and stores user data
+```
 
-### 1. Ladda upp PDF, text eller url länk
+### **🤖 PHASE 2: AI FEATURES (plan-2.md)**
+**Deliverables:** Full AI chat system with document processing
 
-- UI-komponent för filuppladdning.
-- Backend tar emot och bearbetar filen.
+**Step 1:** File upload (PDF/TXT/URL) with text extraction
+**Step 2:** LangChain + Pinecone + Ollama embeddings pipeline
+**Step 3:** Chat API with Viking 7B Swedish responses
+**Step 4:** Swedish study question generator
+**Step 5:** User session history and persistence
+**Step 6:** Production polish and deployment preparation
 
-### 2. Extrahera Text
+**Phase 2 Success Test:**
+```bash
+# User can upload files and chat receives Swedish responses
+# Questions generate automatically in Swedish
+# Chat history persists across sessions
+# All features work end-to-end
+```
 
-- Använd bibliotek som `pdf-parse` eller om det finns bättre alternativ som `pdf-lib`.
-- Rensa metadata, sidnummer och irrelevanta tecken.
+## 🔧 ENVIRONMENT SETUP REQUIREMENTS
 
-### 3. Chattgränssnitt
+Create `.env.local` with these exact variables:
+```env
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_ENVIRONMENT=your-pinecone-environment  
+PINECONE_INDEX_NAME=ai-study-mentor
+OLLAMA_BASE_URL=http://localhost:11434
+NODE_ENV=development
+```
 
-- Enkel chatt där användaren kan skriva frågor.
-- Svar visas direkt under frågan.
-- Default-svar för orelaterade frågor.
+## 📁 REQUIRED PROJECT STRUCTURE
 
-### 4. Anrop till LLM
+```
+ai-study-mentor/
+├── .env.local
+├── .env.example
+├── next.config.js
+├── tailwind.config.js
+├── package.json
+├── README.md
+└── src/
+    ├── app/
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   ├── page.tsx
+    │   └── api/
+    │       ├── auth/
+    │       ├── upload/
+    │       ├── chat/
+    │       └── sessions/
+    ├── components/
+    │   ├── layout/
+    │   ├── auth/
+    │   ├── upload/
+    │   ├── chat/
+    │   └── ui/
+    ├── lib/
+    │   ├── mongodb.ts
+    │   ├── jwt.ts
+    │   ├── embeddings.ts
+    │   ├── vectorStore.ts
+    │   └── textExtraction.ts
+    ├── models/
+    │   ├── User.ts
+    │   ├── Document.ts
+    │   └── ChatSession.ts
+    └── types/
+        └── index.ts
+```
 
-- Skicka extraherad text som kontext tillsammans med användarens fråga.
-- Returnera AI:s svar och visa i chatten.
+## ❌ WHAT NOT TO DO (CRITICAL)
 
-### 5. Embeddings & Semantisk Sökning
+- ❌ **NO partial implementations** - every feature must be complete
+- ❌ **NO placeholder code** - write full, working implementations
+- ❌ **NO English UI text** - everything must be in Swedish
+- ❌ **NO skipping checkpoints** - test each step thoroughly
+- ❌ **NO mixed Swedish/English** - consistency is crucial
+- ❌ **NO proceeding without testing** - verify each step works
+- ❌ **NO ignoring error handling** - implement proper error states
 
-- Dela upp text i segment (t.ex. 500 tokens).
-- Skapa embeddings med OpenAI.
-- Lagra embeddings i Pinecone.
-- Vid frågor hämtas relevanta segment och skickas till LLM.
+## ✅ COMPLETION CRITERIA
 
-### 6. Autentisering
+The implementation is successful when:
 
-- Header-meny för registrering, inloggning och utloggning.
+1. **Authentication works:** Register → Login → Protected routes
+2. **File upload works:** PDF/TXT/URL → Text extraction → Storage
+3. **Embeddings work:** Text → Chunks → Vectors → Pinecone storage
+4. **Chat works:** User question → Semantic search → Viking 7B → Swedish response
+5. **Questions work:** Document → AI analysis → Swedish study questions
+6. **History works:** Sessions save → User can view/resume previous chats
+7. **UI works:** Swedish text throughout, dark/light mode, responsive
+8. **Production ready:** No errors, proper error handling, deployable
 
-### 7. Historik
+## 🚀 EXECUTION START
 
-- Vänster sidebar med sparad historik av frågor och svar för inloggade användare.
+**Begin now with:** Read `plan-1.md` completely, then implement Step 1 (Project Setup)
 
----
-
-## Teknikstack
-
-- **Språk**: TypeScript.
-- **Frontend**: Next.js med Tailwind CSS.
-- **Backend**: Node.js API.
-- **Bibliotek**:
-  - `pdf-parse` eller liknande för textutvinning.
-  - `axios`/`fetch` för API-anrop.
-- **Databas**: MongoDB (Atlas).
-- **Vector-databas**: Pinecone.
-- **ODM**: Mongoose.
-- **LLM**: Viking 7B via Ollama.
-- **AI-ramverk**: LangChain för retrieval och prompt chains.
-- **Säkerhet**: bcrypt.
-
----
-
-## MVP-flöde
-
-1. Användaren laddar upp PDF, länk eller textfil.
-2. Backend extraherar text.
-3. Användaren skriver en fråga i chatten.
-4. Backend skickar text + fråga till LLM.
-5. LLM returnerar svar.
-6. Svaret visas i chatten.
-
----
-
-## Vidareutveckling (extended-plan.md)
-
-### Mål
-
-Utveckla studie-mentorn med:
-
-- Quiz och flashcards.
-- Användarprofiler och historik.
-
-### Funktionalitet
-
-1. **Quiz Generator**:
-   - Generera flervalsfrågor från texten.
-   - Visa quiz i UI och lagra resultat.
-2. **Flashcards**:
-   - Generera kort med fråga/svar.
-   - Bläddra igenom i UI.
-3. **Användarprofiler**:
-   - Koppla material och historik till användare.
-
-### Teknikstack (tillägg)
-
-- MongoDB för att lagra quizresultat.
-
-### Utökat Flöde
-
-1. Ladda upp PDF.
-2. Text delas upp i segment → embeddings skapas → lagras i vector store.
-3. Vid frågor hämtas relevanta segment från vector store.
-4. Kontext skickas till LLM → svar returneras.
-5. Quiz och flashcards genereras och sparas kopplat till användarprofilen.
+Remember: You are building a complete, production-quality application. Every line of code matters. Every Swedish translation matters. Every test checkpoint matters. Take your time and build it right.
