@@ -1,6 +1,7 @@
 # AI Study Mentor - STAGE 2: AI Features (AI Implementation Guide)
 
 ## 🎯 STAGE 2 OVERVIEW
+
 Implement AI-powered document processing, chat functionality, and study features using Viking 7B, LangChain, and Pinecone.
 
 ---
@@ -12,6 +13,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **5.1 Multer Configuration**
+
 - [ ] **Create file:** `src/lib/multer.ts`
 - [ ] **Requirements:**
   - Configure storage destination: `uploads/` directory
@@ -21,6 +23,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Error messages in Swedish: "Filen är för stor", "Filtyp stöds inte"
 
 #### **5.2 Document Processing Utils**
+
 - [ ] **Create file:** `src/lib/documentProcessor.ts`
 - [ ] **Requirements:**
   - `extractTextFromPDF(filePath: string)` using pdf-parse
@@ -30,6 +33,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Error handling with Swedish messages
 
 #### **5.3 Pinecone Integration**
+
 - [ ] **Create file:** `src/lib/pinecone.ts`
 - [ ] **Requirements:**
   - Initialize Pinecone client with API key from env
@@ -39,6 +43,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Include document metadata: userId, documentId, chunkIndex
 
 #### **5.4 File Upload API Route**
+
 - [ ] **Create file:** `src/app/api/documents/upload/route.ts`
 - [ ] **Requirements:**
   - POST method with FormData handling
@@ -52,6 +57,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Return success message in Swedish: "Dokument uppladdat och bearbetat"
 
 #### **5.5 File Upload Component**
+
 - [ ] **Create file:** `src/components/upload/FileUpload.tsx`
 - [ ] **Requirements:**
   - Drag & drop zone with "Dra och släpp filer här eller klicka för att välja"
@@ -63,6 +69,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Cancel upload functionality
 
 #### **5.6 Document List Component**
+
 - [ ] **Create file:** `src/components/documents/DocumentList.tsx`
 - [ ] **Requirements:**
   - Table layout with columns: "Filnamn", "Storlek", "Datum", "Status", "Åtgärder"
@@ -72,11 +79,28 @@ Implement AI-powered document processing, chat functionality, and study features
   - Pagination for large document lists
 
 ### ✅ **CHECKPOINT 5:**
+
 - [ ] Can upload PDF files successfully
 - [ ] Files are processed and text extracted
 - [ ] Embeddings stored in Pinecone
 - [ ] Document metadata saved in MongoDB
 - [ ] File list displays uploaded documents correctly
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 5, commit changes:
+
+```bash
+git add .
+git commit -m "feat: File upload and document processing with Pinecone
+
+- Implemented file upload with multer configuration
+- Added document text extraction for PDF/TXT files
+- Integrated LangChain for text chunking and embeddings
+- Connected Pinecone vector database for semantic search
+- Built document management UI with Swedish interface
+- Added processing status indicators and file validation"
+```
 
 ---
 
@@ -87,6 +111,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **6.1 Ollama Configuration**
+
 - [ ] **Create file:** `src/lib/ollama.ts`
 - [ ] **Requirements:**
   - Initialize Ollama client with base URL from env
@@ -97,6 +122,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Error handling for connection issues
 
 #### **6.2 LangChain Chain Setup**
+
 - [ ] **Create file:** `src/lib/langchain.ts`
 - [ ] **Requirements:**
   - Text splitter configuration (RecursiveCharacterTextSplitter)
@@ -106,6 +132,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Swedish prompt template for context-aware responses
 
 #### **6.3 Context Retrieval Service**
+
 - [ ] **Create file:** `src/lib/contextRetrieval.ts`
 - [ ] **Requirements:**
   - `retrieveRelevantContext(query: string, userId: string, documentId?: string)`
@@ -115,6 +142,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Maximum context length: 2000 characters
 
 #### **6.4 AI Response Generator**
+
 - [ ] **Create file:** `src/lib/aiResponseGenerator.ts`
 - [ ] **Requirements:**
   - Main function: `generateStudyResponse(question: string, context: string, language = 'sv')`
@@ -124,6 +152,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Error handling with Swedish messages
 
 #### **6.5 Test AI Integration**
+
 - [ ] **Create file:** `src/app/api/ai/test/route.ts`
 - [ ] **Requirements:**
   - GET endpoint to test Ollama connection
@@ -133,10 +162,27 @@ Implement AI-powered document processing, chat functionality, and study features
   - Include Swedish test query: "Vad handlar dokumentet om?"
 
 ### ✅ **CHECKPOINT 6:**
+
 - [ ] Ollama Viking 7B model responds correctly
 - [ ] Context retrieval finds relevant document chunks
 - [ ] AI responses are in Swedish and appropriately short
 - [ ] Test endpoint returns successful AI response
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 6, commit changes:
+
+```bash
+git add .
+git commit -m "feat: LangChain integration with Ollama Viking 7B
+
+- Connected Ollama local LLM with Viking 7B model
+- Implemented LangChain text processing pipeline
+- Built context retrieval system with Pinecone search
+- Created AI response generator with Swedish prompts
+- Added response length limits and language validation
+- Tested end-to-end AI integration successfully"
+```
 
 ---
 
@@ -147,6 +193,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **7.1 Chat API Routes**
+
 - [ ] **Create file:** `src/app/api/chat/route.ts`
 - [ ] **Requirements:**
   - POST: Send message and get AI response
@@ -156,6 +203,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Rate limiting: max 10 messages per minute
 
 #### **7.2 Chat Message Processing**
+
 - [ ] **Create file:** `src/app/api/chat/[sessionId]/route.ts`
 - [ ] **Requirements:**
   - POST: Add message to specific chat session
@@ -165,6 +213,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Update session timestamp on new messages
 
 #### **7.3 Chat Context State Management**
+
 - [ ] **Create file:** `src/context/ChatContext.tsx`
 - [ ] **Requirements:**
   - State: `currentSession`, `sessions`, `messages`, `loading`
@@ -173,6 +222,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Optimistic updates for better UX
 
 #### **7.4 Chat Interface Component**
+
 - [ ] **Create file:** `src/components/chat/ChatInterface.tsx`
 - [ ] **Requirements:**
   - Message display area with auto-scroll
@@ -183,6 +233,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Copy message button
 
 #### **7.5 Message Input Component**
+
 - [ ] **Create file:** `src/components/chat/MessageInput.tsx`
 - [ ] **Requirements:**
   - Textarea with "Ställ en fråga om dina dokument..." placeholder
@@ -192,6 +243,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Character count indicator
 
 #### **7.6 Session Management**
+
 - [ ] **Create file:** `src/components/chat/SessionList.tsx`
 - [ ] **Requirements:**
   - List recent chat sessions in sidebar
@@ -201,10 +253,27 @@ Implement AI-powered document processing, chat functionality, and study features
   - Active session highlighting
 
 ### ✅ **CHECKPOINT 7:**
+
 - [ ] Can send messages and receive AI responses
 - [ ] Chat history persists between sessions
 - [ ] Multiple chat sessions can be managed
 - [ ] Real-time message updates work correctly
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 7, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Complete chat interface with real-time messaging
+
+- Built chat API endpoints with authentication
+- Implemented chat context state management
+- Created responsive chat interface components
+- Added message input with keyboard shortcuts
+- Built session management with Swedish UI
+- Enabled real-time message updates and history"
+```
 
 ---
 
@@ -215,6 +284,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **8.1 Question Generation API**
+
 - [ ] **Create file:** `src/app/api/study/questions/route.ts`
 - [ ] **Requirements:**
   - POST: Generate questions from document ID
@@ -224,6 +294,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Swedish question format
 
 #### **8.2 Question Generator Service**
+
 - [ ] **Create file:** `src/lib/questionGenerator.ts`
 - [ ] **Requirements:**
   - `generateMultipleChoice(context: string, count = 5)`
@@ -233,6 +304,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Answer validation and formatting
 
 #### **8.3 Study Session Component**
+
 - [ ] **Create file:** `src/components/study/StudySession.tsx`
 - [ ] **Requirements:**
   - Question display with progress indicator
@@ -243,6 +315,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Score tracking and display
 
 #### **8.4 Question Bank Component**
+
 - [ ] **Create file:** `src/components/study/QuestionBank.tsx`
 - [ ] **Requirements:**
   - Filter questions by document and difficulty
@@ -252,6 +325,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - "Starta studiesession" button
 
 #### **8.5 Flashcard Component**
+
 - [ ] **Create file:** `src/components/study/Flashcards.tsx`
 - [ ] **Requirements:**
   - Card flip animation (question → answer)
@@ -261,10 +335,27 @@ Implement AI-powered document processing, chat functionality, and study features
   - Progress tracking
 
 ### ✅ **CHECKPOINT 8:**
+
 - [ ] Questions generate correctly from document content
 - [ ] Study session interface works smoothly
 - [ ] Flashcards display and flip properly
 - [ ] Progress tracking shows correct statistics
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 8, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Study question generation and flashcard system
+
+- Built AI-powered question generation from documents
+- Created multiple question types (multiple choice, T/F, short answer)
+- Implemented interactive study session interface
+- Added flashcard system with flip animations
+- Built spaced repetition algorithm for learning
+- Integrated Swedish language for all study features"
+```
 
 ---
 
@@ -275,6 +366,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **9.1 Advanced Session API**
+
 - [ ] **Create file:** `src/app/api/sessions/route.ts`
 - [ ] **Requirements:**
   - GET: List all user sessions with pagination
@@ -283,6 +375,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Search sessions by title or content
 
 #### **9.2 Message Search API**
+
 - [ ] **Create file:** `src/app/api/sessions/search/route.ts`
 - [ ] **Requirements:**
   - POST: Search messages across all user sessions
@@ -292,6 +385,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Swedish search interface
 
 #### **9.3 Session History Component**
+
 - [ ] **Create file:** `src/components/history/SessionHistory.tsx`
 - [ ] **Requirements:**
   - Grouped by date: "Idag", "Igår", "Förra veckan"
@@ -301,6 +395,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Bulk delete functionality
 
 #### **9.4 Message Search Component**
+
 - [ ] **Create file:** `src/components/history/MessageSearch.tsx`
 - [ ] **Requirements:**
   - Advanced search filters
@@ -310,6 +405,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - "Inga resultat hittades" message
 
 #### **9.5 Chat Statistics**
+
 - [ ] **Create file:** `src/components/history/ChatStats.tsx`
 - [ ] **Requirements:**
   - Total messages sent/received
@@ -319,10 +415,27 @@ Implement AI-powered document processing, chat functionality, and study features
   - Visual charts/graphs
 
 ### ✅ **CHECKPOINT 9:**
+
 - [ ] Can search through chat history effectively
 - [ ] Session organization works intuitively
 - [ ] Statistics display accurate information
 - [ ] Export functionality produces correct files
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 9, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Advanced chat history and session management
+
+- Implemented comprehensive session search functionality
+- Built advanced message search with filters
+- Created session organization by date groups
+- Added chat statistics and analytics
+- Integrated export functionality for sessions
+- Enhanced Swedish UI for history management"
+```
 
 ---
 
@@ -333,6 +446,7 @@ Implement AI-powered document processing, chat functionality, and study features
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **10.1 Error Boundary Components**
+
 - [ ] **Create file:** `src/components/error/ErrorBoundary.tsx`
 - [ ] **Requirements:**
   - Catch and display React errors gracefully
@@ -342,6 +456,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Fallback UI for broken components
 
 #### **10.2 Loading States & Skeletons**
+
 - [ ] **Create file:** `src/components/ui/LoadingSkeletons.tsx`
 - [ ] **Requirements:**
   - Chat message skeleton
@@ -351,6 +466,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Proper accessibility labels
 
 #### **10.3 Comprehensive Testing**
+
 - [ ] **Create file:** `src/app/api/test/integration/route.ts`
 - [ ] **Requirements:**
   - Test full user workflow: register → login → upload → chat → logout
@@ -360,6 +476,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Memory leak detection
 
 #### **10.4 Accessibility Improvements**
+
 - [ ] **Update all components with:**
   - ARIA labels in Swedish
   - Keyboard navigation support
@@ -369,6 +486,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Alt text for all images/icons
 
 #### **10.5 Performance Optimization**
+
 - [ ] **Implement optimizations:**
   - Lazy loading for document content
   - Message virtualization for long chats
@@ -377,6 +495,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Database query optimization
 
 #### **10.6 Production Configuration**
+
 - [ ] **Update configuration files:**
   - Environment variables validation
   - Security headers configuration
@@ -385,6 +504,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - Docker configuration (optional)
 
 #### **10.7 Swedish Language Validation**
+
 - [ ] **Complete Swedish text audit:**
   - All UI elements use Swedish text
   - Error messages are in Swedish
@@ -393,6 +513,7 @@ Implement AI-powered document processing, chat functionality, and study features
   - AI responses validated for Swedish language
 
 #### **10.8 Final User Testing**
+
 - [ ] **Test complete user workflows:**
   - New user registration and first document upload
   - Chat with AI about uploaded documents
@@ -401,11 +522,28 @@ Implement AI-powered document processing, chat functionality, and study features
   - Theme switching and responsive design
 
 ### ✅ **CHECKPOINT 10:**
+
 - [ ] All error states handled gracefully
 - [ ] Application performs well under load
 - [ ] Swedish language used consistently throughout
 - [ ] Accessibility standards met
 - [ ] Ready for production deployment
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 10, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Final polish and production readiness
+
+- Implemented comprehensive error boundary system
+- Added loading skeletons and accessibility improvements
+- Completed performance optimizations and testing
+- Validated Swedish language consistency throughout
+- Configured production settings and security
+- Application ready for deployment"
+```
 
 ---
 

@@ -1,6 +1,7 @@
 # AI Study Mentor - STAGE 1: Foundation (AI Implementation Guide)
 
 ## 🎯 STAGE 1 OVERVIEW
+
 Build the foundational Next.js application with authentication and database connectivity. All UI text must be in Swedish.
 
 ---
@@ -12,12 +13,14 @@ Build the foundational Next.js application with authentication and database conn
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **1.1 Create Next.js Project**
+
 - [ ] **Command:** `npx create-next-app@latest ai-study-mentor --typescript --tailwind --eslint --app`
 - [ ] **Command:** `cd ai-study-mentor`
 - [ ] **Verify:** Project created in `ai-study-mentor/` directory
 - [ ] **Verify:** TypeScript and Tailwind CSS pre-configured
 
 #### **1.2 Install Required Dependencies**
+
 - [ ] **Command:** `npm install mongoose bcryptjs jsonwebtoken`
 - [ ] **Command:** `npm install @types/bcryptjs @types/jsonwebtoken`
 - [ ] **Command:** `npm install pdf-parse cheerio multer`
@@ -26,6 +29,7 @@ Build the foundational Next.js application with authentication and database conn
 - [ ] **Command:** `npm install next-themes axios dotenv`
 
 #### **1.3 Environment Variables Setup**
+
 - [ ] **Create file:** `.env.local` in root directory
 - [ ] **Add variables:** (Use these exact variable names)
   ```
@@ -40,6 +44,7 @@ Build the foundational Next.js application with authentication and database conn
 - [ ] **Create file:** `.env.example` with same variables but placeholder values
 
 #### **1.4 Project Structure Creation**
+
 - [ ] **Create directories:**
   - `src/components/layout/`
   - `src/components/auth/`
@@ -49,6 +54,7 @@ Build the foundational Next.js application with authentication and database conn
   - `src/types/`
 
 #### **1.5 Tailwind Configuration**
+
 - [ ] **Edit file:** `tailwind.config.js`
 - [ ] **Requirements:**
   - Enable `darkMode: 'class'`
@@ -57,6 +63,7 @@ Build the foundational Next.js application with authentication and database conn
   - Include content path: `'./src/**/*.{js,ts,jsx,tsx}'`
 
 #### **1.6 Basic README**
+
 - [ ] **Edit file:** `README.md`
 - [ ] **Include sections:**
   - Project description in Swedish
@@ -65,10 +72,26 @@ Build the foundational Next.js application with authentication and database conn
   - Environment variables setup guide
 
 ### ✅ **CHECKPOINT 1:**
+
 - [ ] Run `npm run dev` - application starts on localhost:3000
 - [ ] No compilation errors in terminal
 - [ ] Next.js default page displays correctly
 - [ ] All dependencies installed successfully
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 1, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Initial Next.js project setup with dependencies
+
+- Created Next.js 14 project with TypeScript and Tailwind
+- Installed all required packages for AI integration
+- Configured environment variables structure
+- Set up project directory structure
+- Configured Tailwind with custom theme colors"
+```
 
 ---
 
@@ -79,6 +102,7 @@ Build the foundational Next.js application with authentication and database conn
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **2.1 Theme Provider Setup**
+
 - [ ] **Create file:** `src/components/providers/ThemeProvider.tsx`
 - [ ] **Requirements:**
   - Import `ThemeProvider` from next-themes
@@ -87,6 +111,7 @@ Build the foundational Next.js application with authentication and database conn
   - Disable SSR flash with `suppressHydrationWarning`
 
 #### **2.2 Layout Root Configuration**
+
 - [ ] **Edit file:** `src/app/layout.tsx`
 - [ ] **Requirements:**
   - Wrap children with ThemeProvider
@@ -95,6 +120,7 @@ Build the foundational Next.js application with authentication and database conn
   - Include proper metadata with Swedish title "AI Studie Mentor"
 
 #### **2.3 Header Component**
+
 - [ ] **Create file:** `src/components/layout/Header.tsx`
 - [ ] **Requirements:**
   - Sticky header: `sticky top-0 z-50 bg-white dark:bg-gray-900`
@@ -105,6 +131,7 @@ Build the foundational Next.js application with authentication and database conn
   - Border bottom: `border-b border-gray-200 dark:border-gray-700`
 
 #### **2.4 Sidebar Component**
+
 - [ ] **Create file:** `src/components/layout/Sidebar.tsx`
 - [ ] **Requirements:**
   - Fixed width on desktop: `w-64`, responsive: `hidden md:block`
@@ -115,6 +142,7 @@ Build the foundational Next.js application with authentication and database conn
   - Height: `h-screen` minus header height
 
 #### **2.5 Main Content Area**
+
 - [ ] **Create file:** `src/components/layout/MainContent.tsx`
 - [ ] **Requirements:**
   - Flex-1 to fill remaining space
@@ -125,6 +153,7 @@ Build the foundational Next.js application with authentication and database conn
   - Responsive padding and margins
 
 #### **2.6 Main Page Integration**
+
 - [ ] **Edit file:** `src/app/page.tsx`
 - [ ] **Requirements:**
   - Import and use Header, Sidebar, MainContent components
@@ -133,11 +162,28 @@ Build the foundational Next.js application with authentication and database conn
   - Test both light and dark themes
 
 ### ✅ **CHECKPOINT 2:**
+
 - [ ] UI displays with Swedish text throughout
 - [ ] Theme toggle switches between light/dark modes successfully
 - [ ] Layout is responsive (test mobile/desktop views)
 - [ ] All buttons and labels show Swedish text
 - [ ] No console errors related to theme switching
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 2, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Complete UI layout with Swedish text and theme support
+
+- Created responsive header with theme toggle
+- Implemented sidebar with chat history section
+- Built main content area with chat interface
+- Added Swedish language throughout UI
+- Configured light/dark mode switching
+- Integrated theme provider and layout components"
+```
 
 ---
 
@@ -148,6 +194,7 @@ Build the foundational Next.js application with authentication and database conn
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **3.1 MongoDB Connection**
+
 - [ ] **Create file:** `src/lib/mongodb.ts`
 - [ ] **Requirements:**
   - Export `connectDB()` async function
@@ -157,6 +204,7 @@ Build the foundational Next.js application with authentication and database conn
   - Log connection status to console
 
 #### **3.2 User Schema**
+
 - [ ] **Create file:** `src/models/User.ts`
 - [ ] **Requirements:**
   - Fields: `name` (String, required), `email` (String, required, unique), `password` (String, required), `createdAt` (Date, default: now)
@@ -166,6 +214,7 @@ Build the foundational Next.js application with authentication and database conn
   - Export both schema and model
 
 #### **3.3 Document Schema**
+
 - [ ] **Create file:** `src/models/Document.ts`
 - [ ] **Requirements:**
   - Fields: `userId` (ObjectId ref User), `filename` (String), `originalText` (String), `chunks` (Array of Strings), `vectorIds` (Array of Strings), `fileType` (String), `fileSize` (Number), `uploadDate` (Date), `processed` (Boolean)
@@ -174,6 +223,7 @@ Build the foundational Next.js application with authentication and database conn
   - Export schema and model
 
 #### **3.4 Chat Session Schema**
+
 - [ ] **Create file:** `src/models/ChatSession.ts`
 - [ ] **Requirements:**
   - Fields: `userId` (ObjectId ref User), `documentId` (ObjectId ref Document), `title` (String), `messages` (Array), `createdAt` (Date), `updatedAt` (Date)
@@ -182,6 +232,7 @@ Build the foundational Next.js application with authentication and database conn
   - Export schema and model
 
 #### **3.5 Database Connection Test**
+
 - [ ] **Create file:** `src/app/api/test-db/route.ts`
 - [ ] **Requirements:**
   - GET endpoint that tests database connection
@@ -190,10 +241,27 @@ Build the foundational Next.js application with authentication and database conn
   - Return JSON with Swedish success/error messages
 
 ### ✅ **CHECKPOINT 3:**
+
 - [ ] Visit `/api/test-db` endpoint - returns success message
 - [ ] MongoDB Atlas shows successful connections in dashboard
 - [ ] Can create and retrieve test user from database
 - [ ] No mongoose connection warnings in console
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 3, commit changes:
+
+```bash
+git add .
+git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
+
+- Connected to MongoDB Atlas database
+- Created User model with bcrypt password hashing
+- Implemented Document schema for file storage
+- Added ChatSession model for conversation history
+- Built database connection utility with error handling
+- Created test endpoint for database connectivity"
+```
 
 ---
 
@@ -204,6 +272,7 @@ Build the foundational Next.js application with authentication and database conn
 ### 📋 IMPLEMENTATION CHECKLIST:
 
 #### **4.1 JWT Utilities**
+
 - [ ] **Create file:** `src/lib/jwt.ts`
 - [ ] **Requirements:**
   - `generateToken(userId: string)` function with 7-day expiration
@@ -213,6 +282,7 @@ Build the foundational Next.js application with authentication and database conn
   - Use JWT_SECRET from environment variables
 
 #### **4.2 Register API Route**
+
 - [ ] **Create file:** `src/app/api/auth/register/route.ts`
 - [ ] **Requirements:**
   - POST method only
@@ -224,6 +294,7 @@ Build the foundational Next.js application with authentication and database conn
   - Swedish error messages for all validation failures
 
 #### **4.3 Login API Route**
+
 - [ ] **Create file:** `src/app/api/auth/login/route.ts`
 - [ ] **Requirements:**
   - POST method only
@@ -234,6 +305,7 @@ Build the foundational Next.js application with authentication and database conn
   - Swedish error messages
 
 #### **4.4 Auth Context**
+
 - [ ] **Create file:** `src/context/AuthContext.tsx`
 - [ ] **Requirements:**
   - State: `user`, `loading`, `isAuthenticated`
@@ -244,6 +316,7 @@ Build the foundational Next.js application with authentication and database conn
   - Provide context to entire app
 
 #### **4.5 Login Form Component**
+
 - [ ] **Create file:** `src/components/auth/LoginForm.tsx`
 - [ ] **Requirements:**
   - Fields: "E-post" and "Lösenord" (Swedish labels)
@@ -254,6 +327,7 @@ Build the foundational Next.js application with authentication and database conn
   - Link to register form: "Har du inget konto? Registrera dig"
 
 #### **4.6 Register Form Component**
+
 - [ ] **Create file:** `src/components/auth/RegisterForm.tsx`
 - [ ] **Requirements:**
   - Fields: "Namn", "E-post", "Lösenord", "Bekräfta lösenord"
@@ -264,6 +338,7 @@ Build the foundational Next.js application with authentication and database conn
   - Link to login: "Har du redan ett konto? Logga in"
 
 #### **4.7 Auth Integration**
+
 - [ ] **Update file:** `src/app/layout.tsx`
 - [ ] **Add:** AuthProvider wrapper around entire app
 - [ ] **Update file:** `src/components/layout/Header.tsx`
@@ -274,12 +349,29 @@ Build the foundational Next.js application with authentication and database conn
   - Handle logout click
 
 ### ✅ **CHECKPOINT 4:**
+
 - [ ] User can register new account successfully
 - [ ] User can login with correct credentials
 - [ ] User can logout and token is cleared
 - [ ] Page refresh maintains login state
 - [ ] Invalid credentials show Swedish error messages
 - [ ] Protected routes redirect unauthenticated users
+
+### 📤 **COMMIT INSTRUCTION:**
+
+After completing Step 4, commit changes:
+
+```bash
+git add .
+git commit -m "feat: Complete JWT authentication system with Swedish UI
+
+- Implemented JWT token generation and validation
+- Created register and login API endpoints
+- Built authentication context and forms
+- Added Swedish error messages throughout auth flow
+- Integrated auth state management with localStorage
+- Protected routes with authentication middleware"
+```
 
 ---
 
