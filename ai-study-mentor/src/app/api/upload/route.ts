@@ -86,7 +86,11 @@ export async function POST(req: NextRequest) {
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
   const indexName = 'ai-study-mentor';
+  // Delete the entire index (irreversible)
+  // await pinecone.deleteIndex(indexName);
+
   const existingIndexes = await pinecone.listIndexes();
+  console.log("Existing Pinecone indexes:", existingIndexes);
   if (!existingIndexes.indexes?.some(index => index.name === indexName)) {
     await pinecone.createIndex({
       name: indexName,
@@ -110,6 +114,7 @@ export async function POST(req: NextRequest) {
     metadata: {
       documentId: document.id,
       text: chunks[i],
+      model: "sentence-transformers/all-MiniLM-L6-v2"
     },
   }));
 
