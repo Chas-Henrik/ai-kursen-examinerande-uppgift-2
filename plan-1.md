@@ -273,8 +273,8 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.1 JWT Utilities**
 
-- [ ] **Create file:** `src/lib/jwt.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/lib/jwt.ts`
+- [x] **Requirements:**
   - `generateToken(userId: string)` function with 7-day expiration
   - `verifyToken(token: string)` function that returns decoded payload
   - `getTokenFromRequest(request: Request)` helper function
@@ -283,8 +283,8 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.2 Register API Route**
 
-- [ ] **Create file:** `src/app/api/auth/register/route.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/app/api/auth/register/route.ts`
+- [x] **Requirements:**
   - POST method only
   - Validate: name, email, password fields
   - Check if email already exists → "E-posten används redan"
@@ -295,8 +295,8 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.3 Login API Route**
 
-- [ ] **Create file:** `src/app/api/auth/login/route.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/app/api/auth/login/route.ts`
+- [x] **Requirements:**
   - POST method only
   - Validate email and password fields
   - Find user by email → "Ogiltiga inloggningsuppgifter" if not found
@@ -306,19 +306,19 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.4 Auth Context**
 
-- [ ] **Create file:** `src/context/AuthContext.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/providers/AuthProvider.tsx`
+- [x] **Requirements:**
   - State: `user`, `loading`, `isAuthenticated`
   - Functions: `login(email, password)`, `register(name, email, password)`, `logout()`
-  - Store token in localStorage
+  - Store token in httpOnly cookies (säkrare än localStorage)
   - Auto-login on page refresh if valid token exists
   - Clear token on logout
   - Provide context to entire app
 
 #### **4.5 Login Form Component**
 
-- [ ] **Create file:** `src/components/auth/LoginForm.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/auth/LoginForm.tsx`
+- [x] **Requirements:**
   - Fields: "E-post" and "Lösenord" (Swedish labels)
   - Form validation with Swedish error messages
   - Submit calls AuthContext.login()
@@ -328,8 +328,8 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.6 Register Form Component**
 
-- [ ] **Create file:** `src/components/auth/RegisterForm.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/auth/RegisterForm.tsx`
+- [x] **Requirements:**
   - Fields: "Namn", "E-post", "Lösenord", "Bekräfta lösenord"
   - Client-side validation with Swedish messages
   - Password confirmation check → "Lösenorden matchar inte"
@@ -339,10 +339,10 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 #### **4.7 Auth Integration**
 
-- [ ] **Update file:** `src/app/layout.tsx`
-- [ ] **Add:** AuthProvider wrapper around entire app
-- [ ] **Update file:** `src/components/layout/Header.tsx`
-- [ ] **Requirements:**
+- [x] **Update file:** `src/app/layout.tsx`
+- [x] **Add:** AuthProvider wrapper around entire app
+- [x] **Update file:** `src/components/layout/Header.tsx`
+- [x] **Requirements:**
   - Show user name when logged in
   - Show "Logga ut" button when authenticated
   - Show "Logga in" / "Registrera" when not authenticated
@@ -350,12 +350,12 @@ git commit -m "feat: MongoDB Atlas integration with Mongoose schemas
 
 ### ✅ **CHECKPOINT 4:**
 
-- [ ] User can register new account successfully
-- [ ] User can login with correct credentials
-- [ ] User can logout and token is cleared
-- [ ] Page refresh maintains login state
-- [ ] Invalid credentials show Swedish error messages
-- [ ] Protected routes redirect unauthenticated users
+- [x] User can register new account successfully
+- [x] User can login with correct credentials
+- [x] User can logout and token is cleared
+- [x] Page refresh maintains login state
+- [x] Invalid credentials show Swedish error messages
+- [x] Protected routes redirect unauthenticated users
 
 ### 📤 **COMMIT INSTRUCTION:**
 

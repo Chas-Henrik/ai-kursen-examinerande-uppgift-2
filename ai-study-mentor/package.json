@@ -20,6 +20,7 @@
     "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.35",
+    "lucide-react": "^0.545.0",
     "mongoose": "^8.19.1",
     "multer": "^2.0.2",
     "next": "15.5.4",
