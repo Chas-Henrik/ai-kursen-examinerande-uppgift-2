@@ -53,12 +53,13 @@ export async function POST(req: NextRequest) {
   text = text
     .replace(/\r\n/g, "\n")
     .replace(/\n+/g, "\n")
-    .replace(/([a-zA-Z])\n([a-zA-Z])/g, "$1$2")
+    .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ0-9 ,./\-+!?:;'\"()\[\]\n]+/g, "")
+    .replace(/([a-zA-Zå-öÅ-Ö,])\n([a-zA-Zå-öÅ-Ö,])/g, "$1$2")
     .trim()
     .split("\n")
     .map(line => line.trim())
     .filter(line => line.length > 0)
-    .join(" ");  // join all lines with a space
+    .join("\n");  // join all lines with a newline
 
   // Only save document if it doesn't already exist
   let document = await Document.findOne({ userId, filename });
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     await document.save();
   }
 
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000, chunkOverlap: 200 });
+  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500, chunkOverlap: 100 });
   const chunks = await textSplitter.splitText(text);
 
   // Initialize embeddings model
