@@ -16,23 +16,27 @@ En AI-driven webbapplikation för studiehjälp som låter användare ladda upp d
 ## Installation
 
 1. Klona projektet:
+
 ```bash
 git clone <repository-url>
 cd ai-study-mentor
 ```
 
 2. Installera dependencies:
+
 ```bash
 npm install
 ```
 
 3. Konfigurera miljövariabler:
+
 ```bash
 cp .env.example .env.local
 # Fyll i dina API-nycklar och databasanslutningar
 ```
 
 4. Starta utvecklingsservern:
+
 ```bash
 npm run dev
 ```
