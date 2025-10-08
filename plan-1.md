@@ -14,24 +14,24 @@ Build the foundational Next.js application with authentication and database conn
 
 #### **1.1 Create Next.js Project**
 
-- [ ] **Command:** `npx create-next-app@latest . --typescript --tailwind --eslint --app`
-- [ ] **Command:** `cd ai-study-mentor`
-- [ ] **Verify:** Project created in `ai-study-mentor/` directory
-- [ ] **Verify:** TypeScript and Tailwind CSS pre-configured
+- [x] **Command:** `npx create-next-app@latest . --typescript --tailwind --eslint --app`
+- [x] **Command:** `cd ai-study-mentor`
+- [x] **Verify:** Project created in `ai-study-mentor/` directory
+- [x] **Verify:** TypeScript and Tailwind CSS pre-configured
 
 #### **1.2 Install Required Dependencies**
 
-- [ ] **Command:** `npm install mongoose bcryptjs jsonwebtoken`
-- [ ] **Command:** `npm install @types/bcryptjs @types/jsonwebtoken`
-- [ ] **Command:** `npm install pdf-parse cheerio multer`
-- [ ] **Command:** `npm install @pinecone-database/pinecone`
-- [ ] **Command:** `npm install langchain @langchain/community @langchain/pinecone`
-- [ ] **Command:** `npm install next-themes axios dotenv`
+- [x] **Command:** `npm install mongoose bcryptjs jsonwebtoken`
+- [x] **Command:** `npm install @types/bcryptjs @types/jsonwebtoken`
+- [x] **Command:** `npm install pdf-parse cheerio multer`
+- [x] **Command:** `npm install @pinecone-database/pinecone`
+- [x] **Command:** `npm install langchain @langchain/community @langchain/pinecone`
+- [x] **Command:** `npm install next-themes axios dotenv`
 
 #### **1.3 Environment Variables Setup**
 
-- [ ] **Create file:** `.env.local` in root directory
-- [ ] **Add variables:** (Use these exact variable names)
+- [x] **Create file:** `.env.local` in root directory
+- [x] **Add variables:** (Use these exact variable names)
   ```
   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor
   JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
@@ -41,11 +41,11 @@ Build the foundational Next.js application with authentication and database conn
   OLLAMA_BASE_URL=http://localhost:11434
   NODE_ENV=development
   ```
-- [ ] **Create file:** `.env.example` with same variables but placeholder values
+- [x] **Create file:** `.env.example` with same variables but placeholder values
 
 #### **1.4 Project Structure Creation**
 
-- [ ] **Create directories:**
+- [x] **Create directories:**
   - `src/components/layout/`
   - `src/components/auth/`
   - `src/components/ui/`
@@ -55,8 +55,8 @@ Build the foundational Next.js application with authentication and database conn
 
 #### **1.5 Tailwind Configuration**
 
-- [ ] **Edit file:** `tailwind.config.js`
-- [ ] **Requirements:**
+- [x] **Edit file:** `tailwind.config.js`
+- [x] **Requirements:**
   - Enable `darkMode: 'class'`
   - Add custom colors: primary `#10A37F`, background light `#FFFFFF`, dark `#1A1A1A`
   - Add custom surface colors: light `#F7F8F8`, dark `#2D2D2D`
@@ -64,8 +64,8 @@ Build the foundational Next.js application with authentication and database conn
 
 #### **1.6 Basic README**
 
-- [ ] **Edit file:** `README.md`
-- [ ] **Include sections:**
+- [x] **Edit file:** `README.md`
+- [x] **Include sections:**
   - Project description in Swedish
   - Installation instructions (`npm install`, `npm run dev`)
   - Technology stack list
@@ -73,10 +73,10 @@ Build the foundational Next.js application with authentication and database conn
 
 ### ✅ **CHECKPOINT 1:**
 
-- [ ] Run `npm run dev` - application starts on localhost:3000
-- [ ] No compilation errors in terminal
-- [ ] Next.js default page displays correctly
-- [ ] All dependencies installed successfully
+- [x] Run `npm run dev` - application starts on localhost:3000
+- [x] No compilation errors in terminal
+- [x] Next.js default page displays correctly
+- [x] All dependencies installed successfully
 
 ### 📤 **COMMIT INSTRUCTION:**
 
@@ -103,8 +103,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.1 Theme Provider Setup**
 
-- [ ] **Create file:** `src/components/providers/ThemeProvider.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/providers/ThemeProvider.tsx`
+- [x] **Requirements:**
   - Import `ThemeProvider` from next-themes
   - Export provider component with `attribute="class"`
   - Enable system theme detection
@@ -112,8 +112,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.2 Layout Root Configuration**
 
-- [ ] **Edit file:** `src/app/layout.tsx`
-- [ ] **Requirements:**
+- [x] **Edit file:** `src/app/layout.tsx`
+- [x] **Requirements:**
   - Wrap children with ThemeProvider
   - Add Inter font import and configuration
   - Set HTML lang="sv" (Swedish)
@@ -121,8 +121,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.3 Header Component**
 
-- [ ] **Create file:** `src/components/layout/Header.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/layout/Header.tsx`
+- [x] **Requirements:**
   - Sticky header: `sticky top-0 z-50 bg-white dark:bg-gray-900`
   - Logo text: "AI Studie Mentor" (h1, text-xl, font-bold, text-primary)
   - Theme toggle button with icons: 🌙 (dark) / ☀️ (light)
@@ -132,8 +132,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.4 Sidebar Component**
 
-- [ ] **Create file:** `src/components/layout/Sidebar.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/layout/Sidebar.tsx`
+- [x] **Requirements:**
   - Fixed width on desktop: `w-64`, responsive: `hidden md:block`
   - Background: `bg-surface-light dark:bg-surface-dark`
   - Header section: "Historik" (text-lg, font-semibold)
@@ -143,8 +143,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.5 Main Content Area**
 
-- [ ] **Create file:** `src/components/layout/MainContent.tsx`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/components/layout/MainContent.tsx`
+- [x] **Requirements:**
   - Flex-1 to fill remaining space
   - Chat message area (scrollable, overflow-y-auto)
   - Input section at bottom with "Ställ en fråga..." placeholder
@@ -154,8 +154,8 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 #### **2.6 Main Page Integration**
 
-- [ ] **Edit file:** `src/app/page.tsx`
-- [ ] **Requirements:**
+- [x] **Edit file:** `src/app/page.tsx`
+- [x] **Requirements:**
   - Import and use Header, Sidebar, MainContent components
   - Grid layout: Header spans full width, Sidebar + MainContent side by side
   - Mobile responsive: Stack components on small screens
@@ -163,11 +163,11 @@ git commit -m "feat: Initial Next.js project setup with dependencies
 
 ### ✅ **CHECKPOINT 2:**
 
-- [ ] UI displays with Swedish text throughout
-- [ ] Theme toggle switches between light/dark modes successfully
-- [ ] Layout is responsive (test mobile/desktop views)
-- [ ] All buttons and labels show Swedish text
-- [ ] No console errors related to theme switching
+- [x] UI displays with Swedish text throughout
+- [x] Theme toggle switches between light/dark modes successfully
+- [x] Layout is responsive (test mobile/desktop views)
+- [x] All buttons and labels show Swedish text
+- [x] No console errors related to theme switching
 
 ### 📤 **COMMIT INSTRUCTION:**
 
@@ -195,8 +195,8 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 #### **3.1 MongoDB Connection**
 
-- [ ] **Create file:** `src/lib/mongodb.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/lib/mongodb.ts`
+- [x] **Requirements:**
   - Export `connectDB()` async function
   - Use mongoose.connect() with MONGODB_URI from env
   - Implement connection caching to prevent multiple connections
@@ -205,8 +205,8 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 #### **3.2 User Schema**
 
-- [ ] **Create file:** `src/models/User.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/models/User.ts`
+- [x] **Requirements:**
   - Fields: `name` (String, required), `email` (String, required, unique), `password` (String, required), `createdAt` (Date, default: now)
   - Email validation with regex pattern
   - Index on email field for performance
@@ -215,8 +215,8 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 #### **3.3 Document Schema**
 
-- [ ] **Create file:** `src/models/Document.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/models/Document.ts`
+- [x] **Requirements:**
   - Fields: `userId` (ObjectId ref User), `filename` (String), `originalText` (String), `chunks` (Array of Strings), `vectorIds` (Array of Strings), `fileType` (String), `fileSize` (Number), `uploadDate` (Date), `processed` (Boolean)
   - Index on userId for fast user queries
   - Virtual for chunk count
@@ -224,8 +224,8 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 #### **3.4 Chat Session Schema**
 
-- [ ] **Create file:** `src/models/ChatSession.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/models/ChatSession.ts`
+- [x] **Requirements:**
   - Fields: `userId` (ObjectId ref User), `documentId` (ObjectId ref Document), `title` (String), `messages` (Array), `createdAt` (Date), `updatedAt` (Date)
   - Message sub-schema: `role` (user/assistant), `content` (String), `timestamp` (Date)
   - Population methods for user and document references
@@ -233,8 +233,8 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 #### **3.5 Database Connection Test**
 
-- [ ] **Create file:** `src/app/api/test-db/route.ts`
-- [ ] **Requirements:**
+- [x] **Create file:** `src/app/api/test-db/route.ts`
+- [x] **Requirements:**
   - GET endpoint that tests database connection
   - Try to connect and return success/error status
   - Include user creation test
@@ -242,10 +242,10 @@ git commit -m "feat: Complete UI layout with Swedish text and theme support
 
 ### ✅ **CHECKPOINT 3:**
 
-- [ ] Visit `/api/test-db` endpoint - returns success message
-- [ ] MongoDB Atlas shows successful connections in dashboard
-- [ ] Can create and retrieve test user from database
-- [ ] No mongoose connection warnings in console
+- [x] Visit `/api/test-db` endpoint - returns success message
+- [x] MongoDB Atlas shows successful connections in dashboard
+- [x] Can create and retrieve test user from database
+- [x] No mongoose connection warnings in console
 
 ### 📤 **COMMIT INSTRUCTION:**
 
