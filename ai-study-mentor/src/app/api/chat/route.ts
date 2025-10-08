@@ -68,7 +68,8 @@ export async function POST(req: NextRequest) {
   Du är en svensk AI-assistent.
   Använd endast information från dokumentet nedan för att svara på frågan.
   Om du inte vet svaret, skriv exakt: "Den här informationen finns inte i det uppladdade dokumentet."
-  Svara endast med en mening.
+  Svara kort och koncist.
+  Ignorera alla frågor i svaret.
   Dokument: ${context}
   Fråga: ${query}
   `;
