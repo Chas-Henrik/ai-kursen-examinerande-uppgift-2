@@ -39,3 +39,32 @@ console.log(`Använder: ${model}`);
 ```
 
 Med dessa steg kan du enkelt välja och använda den bäst passande agentmodellen för dina behov.
+
+<!-- @workspace Jag vill implementera en AI Study Mentor app.
+
+Följ dessa filer som guide:
+- plan.md (systeminstruktioner)
+- plan-1.md (Stage 1: Foundation)
+- plan-2.md (Stage 2: AI Features)
+
+Börja med Step 1 från plan-1.md. Skapa Next.js projekt med TypeScript, Tailwind och alla dependencies enligt checklistorna.
+
+Viktigt: All UI ska vara på svenska enligt planerna.
+
+Iterativ implementation
+Efter varje steg:
+--@workspace Fortsätt med nästa steg i plan-1.md. Kontrollera att alla checkboxar från föregående steg är uppfyllda innan du går vidare.
+
+Steg 3: Commit efter varje checkpoint
+--@workspace Gör commit enligt COMMIT INSTRUCTION efter Step 1 är färdigt
+
+💡 Tips för bästa resultat:
+--Tips för bästa resultat:
+Nämn alltid planfilerna - Copilot läser dem som kontext
+Be om en checkpoint i taget - Gör inte hela appen på en gång
+Kontrollera svenska texter - Påminn om språkkrav
+Verifiera varje steg - Kör npm run dev efter viktiga ändringar
+
+Efter Step 1 är klar:
+När Copilot är färdig med Step 1, fortsätt med:
+--@workspace Kontrollera att CHECKPOINT 1 kraven är uppfyllda, sedan fortsätt med Step 2 från plan-1.md-->

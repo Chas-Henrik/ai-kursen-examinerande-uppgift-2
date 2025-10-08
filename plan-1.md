@@ -14,7 +14,7 @@ Build the foundational Next.js application with authentication and database conn
 
 #### **1.1 Create Next.js Project**
 
-- [ ] **Command:** `npx create-next-app@latest ai-study-mentor --typescript --tailwind --eslint --app`
+- [ ] **Command:** `npx create-next-app@latest . --typescript --tailwind --eslint --app`
 - [ ] **Command:** `cd ai-study-mentor`
 - [ ] **Verify:** Project created in `ai-study-mentor/` directory
 - [ ] **Verify:** TypeScript and Tailwind CSS pre-configured

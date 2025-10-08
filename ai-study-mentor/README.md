@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Studie Mentor
 
-## Getting Started
+En AI-driven webbapplikation för studiehjälp som låter användare ladda upp dokument och få svar på frågor på svenska.
 
-First, run the development server:
+## Teknisk Stack
 
+- **Frontend:** Next.js 15 + TypeScript + Tailwind CSS
+- **Backend:** Next.js API routes + Node.js
+- **Databas:** MongoDB Atlas + Mongoose ODM
+- **Vektordatabas:** Pinecone
+- **AI Framework:** LangChain
+- **LLM:** Viking 7B via Ollama
+- **Autentisering:** JWT + bcrypt
+- **UI:** Tailwind CSS + next-themes (mörk/ljus tema)
+
+## Installation
+
+1. Klona projektet:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd ai-study-mentor
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Installera dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Konfigurera miljövariabler:
+```bash
+cp .env.example .env.local
+# Fyll i dina API-nycklar och databasanslutningar
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Starta utvecklingsservern:
+```bash
+npm run dev
+```
 
-## Learn More
+Öppna [http://localhost:3000](http://localhost:3000) i din webbläsare.
 
-To learn more about Next.js, take a look at the following resources:
+## Miljövariabler
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Skapa en `.env.local` fil med följande variabler:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
+PINECONE_API_KEY=your-pinecone-api-key
+PINECONE_ENVIRONMENT=your-pinecone-environment
+PINECONE_INDEX_NAME=ai-study-mentor
+OLLAMA_BASE_URL=http://localhost:11434
+NODE_ENV=development
+```
 
-## Deploy on Vercel
+## Funktioner
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- ✅ Användarregistrering och inloggning
+- ✅ Dokumentuppladdning (PDF, TXT, webbsidor)
+- ✅ AI-chatt på svenska baserat på uppladdade dokument
+- ✅ Generering av studiefrågor
+- ✅ Chatthistorik och sessionshantering
+- ✅ Mörkt/ljust tema
+- ✅ Responsiv design
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Utveckling
+
+Projektet är strukturerat enligt Next.js 15 App Router med:
+
+- `src/app/` - Sidor och API routes
+- `src/components/` - React-komponenter
+- `src/lib/` - Verktyg och konfiguration
+- `src/models/` - Databasmodeller
+- `src/types/` - TypeScript-typer
+
+## Bidra
+
+Detta projekt är utvecklat som del av en AI-kurs på svenska. Alla bidrag välkomnas!
