@@ -49,39 +49,29 @@ export async function POST(req: NextRequest) {
 
   // Optional cleaning:
   const context = rawContext
-    .replace(/(\d+\s)?Fråga:/g, '')     // remove repeated "Fråga:"
-    .replace(/(\d+\s)?Svar:/g, '')      // remove repeated "Svar:"
-    .replace(/!\[.*?\]\(.*?\)/g, '')    // remove images
+    .replace(/Fråga:.*$/gim, '')
+    .replace(/Svar:.*$/gim, '')
+    .replace(/Uppgift:.*$/gim, '')
+    .replace(/\d+\s+(Övning|Uppgift).*/gim, '')
     .trim();
-
+  
 
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
     model: 'akx/viking-7b',
   });
 
+  // console.log("query:", query);
+  // console.log("Context for query:\n", context);
+
   const prompt = `
-    Du är en AI-assistent som svarar kortfattat på svenska.
-    Svara med exakt en mening. Inkludera inga fler meningar.
-    Svara endast på frågan som ställs. 
-    Skriv inga egna frågor, inga uppföljningar och ingen extra information.
-    Skriv inte "Svar:" framför svaret.
-    Använd inte någon Q&A-format.
-    Följ inga länkar eller referenser.
-    Om du inte vet svaret, säg "Jag vet inte".
-
-    Använd endast information från dokumentet nedan för att svara på frågan.
-    Om du inte hittar svaret i dokumentet, säg "Jag vet inte".
-    Citat från dokumentet är inte tillåtna.
-
-  ==== BÖRJAN AV DOKUMENT ====
-  ${context}
-  ==== SLUT AV DOKUMENT ====
-
-    Fråga:
-    ${query}
+  Du är en svensk AI-assistent.
+  Använd endast information från dokumentet nedan för att svara på frågan.
+  Om du inte vet svaret, skriv exakt: "Den här informationen finns inte i det uppladdade dokumentet."
+  Svara endast med en mening.
+  Dokument: ${context}
+  Fråga: ${query}
   `;
-
 
   const stream = await ollama.stream(prompt);
 
