@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 export default function MainContent() {
   return (
@@ -12,9 +12,10 @@ export default function MainContent() {
               Välkommen till AI Studie Mentor
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Ladda upp dokument och ställ frågor för att få studiehjälp på svenska
+              Ladda upp dokument och ställ frågor för att få studiehjälp på
+              svenska
             </p>
-            
+
             {/* File Upload Area */}
             <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 mb-6">
               <div className="text-center">
@@ -52,5 +53,5 @@ export default function MainContent() {
         </div>
       </div>
     </main>
-  )
+  );
 }

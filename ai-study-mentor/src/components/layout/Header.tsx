@@ -1,37 +1,39 @@
-'use client'
+"use client";
 
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  const { theme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between px-6 py-4">
         {/* Logo */}
-        <h1 className="text-xl font-bold text-primary">
-          AI Studie Mentor
-        </h1>
+        <h1 className="text-xl font-bold text-primary">AI Studie Mentor</h1>
 
         {/* Navigation and Controls */}
         <div className="flex items-center gap-4">
           {/* Theme Toggle */}
           <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title={theme === 'dark' ? 'Växla till ljust läge' : 'Växla till mörkt läge'}
+            title={
+              theme === "dark"
+                ? "Växla till ljust läge"
+                : "Växla till mörkt läge"
+            }
           >
-            {theme === 'dark' ? (
+            {theme === "dark" ? (
               <span className="text-xl">☀️</span>
             ) : (
               <span className="text-xl">🌙</span>
@@ -53,5 +55,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 export default function Sidebar() {
   return (
@@ -9,7 +9,7 @@ export default function Sidebar() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Historik
           </h2>
-          
+
           {/* New Conversation Button */}
           <button className="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium">
             Ny Konversation
@@ -27,5 +27,5 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
-  )
+  );
 }
