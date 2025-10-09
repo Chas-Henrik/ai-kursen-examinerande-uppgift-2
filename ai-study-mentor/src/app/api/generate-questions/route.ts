@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   // Make sure to set up the model and any required API keys or configurations
   // const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
   const embeddings = new HuggingFaceTransformersEmbeddings({ model: "sentence-transformers/all-MiniLM-L6-v2" });
-  const queryEmbedding = await embeddings.embedQuery('hela dokumentet');
+  const queryEmbedding = await embeddings.embedQuery(document.text);
 
   const queryResult = await index.query({
     topK: 10,
