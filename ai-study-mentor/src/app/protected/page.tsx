@@ -204,11 +204,11 @@ export default function ProtectedPage() {
             <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
               <div className="p-4 bg-gray-50 rounded-md">
-                <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                <div className="list-decimal list-inside space-y-2 text-gray-700">
                   {questions.map((question, index) => (
-                    <li key={index}>{question}</li>
+                    <div key={index}>{question}</div>
                   ))}
-                </ol>
+                </div>
               </div>
             </div>
           )}
