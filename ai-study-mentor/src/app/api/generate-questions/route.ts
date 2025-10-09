@@ -41,20 +41,21 @@ export async function POST(req: NextRequest) {
     model: 'akx/viking-7b',
   });
 
+
   const prompt = `
-  Du är en hjälpsam och pedagogisk AI-lärare som skapar instuderingsfrågor på svenska.
-
-  Utifrån dokumenttexten nedan, skapa 10 tydliga och varierade instuderingsfrågor som hjälper studenten att förstå och minnas innehållet. 
-  - Skriv varje fråga i fullständig mening. 
-  - Undvik att upprepa samma typ av fråga. 
-  - Svara endast med den numrerade listan (1-10). 
-  - Använd korrekt och naturlig svenska.
-
-  Dokumenttext:
-  ${context}
+  Du är en svensk AI-assistent som skapar instuderingsfrågor på svenska.
+  Du skapar instuderingsfrågor på svenska.
+  Skapa en numrerad lista med 2 tydliga och varierade instuderingsfrågor. Avsluta med texten "###".
+  Använd endast information från dokumentet nedan.
+  Svara kort och koncist. Avsluta svaret med texten "###".
+  Dokument: ${context}
+  ###
   `;
 
-  const response = await ollama.invoke(prompt);
+  const response = await ollama.invoke(prompt, {
+    stop: ["###"],
+    recursionLimit:1,
+  });
 
   const questions = response.split('\n').filter(q => q.trim() !== '');
 

@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   const stream = await ollama.stream(prompt, {
     stop: ["###"],
     recursionLimit:1,
-    });
+  });
 
   const document = await Document.findById(documentId);
 
