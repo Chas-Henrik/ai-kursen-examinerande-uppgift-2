@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
     model: 'akx/viking-7b',
+    temperature: 0,
   });
 
   console.log("query:", query);
