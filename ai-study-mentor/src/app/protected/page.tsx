@@ -56,8 +56,9 @@ export default function ProtectedPage() {
     setDocumentId(data.documentId);
     setSessionId(data.sessionId);
     setMessages([]);
-    setSelectedSessionId('');
+    setSelectedSessionId(data.sessionId);
     setIsLoading(false);
+    fetchSessions();
   };
 
   const handleLinkSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -73,8 +74,9 @@ export default function ProtectedPage() {
     setDocumentId(data.documentId);
     setSessionId(data.sessionId);
     setMessages([]);
-    setSelectedSessionId('');
+    setSelectedSessionId(data.sessionId);
     setIsLoading(false);
+    fetchSessions();
   };
 
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
