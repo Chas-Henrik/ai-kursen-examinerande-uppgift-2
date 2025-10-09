@@ -121,6 +121,21 @@ export default function ProtectedPage() {
     setIsLoading(false);
   };
 
+  const handleDeleteSession = async (sessionId: string) => {
+    const response = await fetch(`/api/sessions/${sessionId}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      fetchSessions();
+      setExtractedText('');
+      setMessages([]);
+      setDocumentId('');
+      setSessionId('');
+      setSelectedSessionId('');
+    }
+  };
+
   const handleSessionClick = async (session: Session) => {
     await fetchSessions(); // Refresh sessions to get the latest data
     setDocumentId(session.documentId);
@@ -136,8 +151,9 @@ export default function ProtectedPage() {
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
-            <li key={session._id} onClick={() => handleSessionClick(session)} className={`cursor-pointer p-2 hover:bg-gray-200 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200' : ''}`}>
-              {session.documentName}
+            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-gray-200 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200' : ''}`}>
+              <span onClick={() => handleSessionClick(session)} className="flex-grow">{session.documentName}</span>
+              <button onClick={() => handleDeleteSession(session._id)} className="text-black hover:bg-gray-300 cursor-pointer p-1 rounded-md">X</button>
             </li>
           ))}
         </ul>
