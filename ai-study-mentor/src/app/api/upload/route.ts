@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pdfToText } from 'pdf-ts';
 import connectDB from '@/lib/mongodb';
 import Document from '@/models/Document';
+import Session from '@/models/Session';
 import jwt from 'jsonwebtoken';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 // import { OpenAIEmbeddings } from '@langchain/openai';
@@ -120,5 +121,13 @@ export async function POST(req: NextRequest) {
 
   await index.upsert(pineconeVectors);
 
-  return NextResponse.json({ text, documentId: document.id });
+  const session = new Session({
+    userId,
+    documentId: document.id,
+    documentName: filename,
+    chatHistory: [],
+  });
+  await session.save();
+
+  return NextResponse.json({ text, documentId: document.id, sessionId: session._id });
 }

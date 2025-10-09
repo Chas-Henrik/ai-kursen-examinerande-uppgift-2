@@ -5,7 +5,6 @@ import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddin
 import { Ollama } from '@langchain/ollama';
 import connectDB from '@/lib/mongodb';
 import Session from '@/models/Session';
-import Document from '@/models/Document';
 import jwt from 'jsonwebtoken';
 
 export async function POST(req: NextRequest) {
@@ -24,7 +23,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 
-  const { query, documentId } = await req.json();
+  const { query, documentId, sessionId } = await req.json();
+
+  const session = await Session.findById(sessionId);
+  if (!session) {
+    return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+  }
+
 
   // Initialize embeddings model
   // Using HuggingFace embeddings as an alternative to OpenAI
@@ -79,14 +84,6 @@ export async function POST(req: NextRequest) {
   const stream = await ollama.stream(prompt, {
     stop: ["###"],
     recursionLimit:1,
-  });
-
-  const document = await Document.findById(documentId);
-
-  const session = new Session({
-    userId,
-    documentName: document.filename,
-    chatHistory: [],
   });
 
   // This is not ideal, we should be streaming the response and saving it at the end.

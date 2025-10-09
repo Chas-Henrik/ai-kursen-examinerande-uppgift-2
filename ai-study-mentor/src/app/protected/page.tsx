@@ -9,6 +9,7 @@ interface Message {
 
 interface Session {
   _id: string;
+  documentId: string;
   documentName: string;
   chatHistory: Message[];
 }
@@ -16,6 +17,7 @@ interface Session {
 export default function ProtectedPage() {
   const [extractedText, setExtractedText] = useState('');
   const [documentId, setDocumentId] = useState('');
+  const [sessionId, setSessionId] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [query, setQuery] = useState('');
   const [questions, setQuestions] = useState<string[]>([]);
@@ -49,6 +51,8 @@ export default function ProtectedPage() {
     const data = await response.json();
     setExtractedText(data.text);
     setDocumentId(data.documentId);
+    setSessionId(data.sessionId);
+    setMessages([]);
     setIsLoading(false);
   };
 
@@ -63,6 +67,8 @@ export default function ProtectedPage() {
     const data = await response.json();
     setExtractedText(data.text);
     setDocumentId(data.documentId);
+    setSessionId(data.sessionId);
+    setMessages([]);
     setIsLoading(false);
   };
 
@@ -75,7 +81,7 @@ export default function ProtectedPage() {
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, documentId }),
+      body: JSON.stringify({ query, documentId, sessionId }),
     });
 
     const reader = response.body!.getReader();
@@ -111,7 +117,8 @@ export default function ProtectedPage() {
   };
 
   const handleSessionClick = (session: Session) => {
-    setDocumentId(session._id);
+    setDocumentId(session.documentId);
+    setSessionId(session._id);
     setMessages(session.chatHistory);
   };
 
