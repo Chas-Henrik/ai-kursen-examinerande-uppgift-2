@@ -19,7 +19,34 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 
-  const sessions = await Session.find({ userId }).sort({ createdAt: -1 });
+  const sessions = await Session.aggregate([
+    { $match: { userId } },
+    {
+      $addFields: {
+        documentObjectId: { $toObjectId: '$documentId' }
+      }
+    },
+    {
+      $lookup: {
+        from: 'documents',
+        localField: 'documentObjectId',
+        foreignField: '_id',
+        as: 'document'
+      }
+    },
+    { $unwind: '$document' },
+    {
+      $project: {
+        _id: 1,
+        documentId: 1,
+        documentName: 1,
+        chatHistory: 1,
+        createdAt: 1,
+        text: '$document.text'
+      }
+    },
+    { $sort: { createdAt: -1 } }
+  ]);
 
   return NextResponse.json({ sessions });
 }

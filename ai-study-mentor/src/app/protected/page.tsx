@@ -12,6 +12,7 @@ interface Session {
   documentId: string;
   documentName: string;
   chatHistory: Message[];
+  text: string;
 }
 
 export default function ProtectedPage() {
@@ -22,15 +23,17 @@ export default function ProtectedPage() {
   const [query, setQuery] = useState('');
   const [questions, setQuestions] = useState<string[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [selectedSessionId, setSelectedSessionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  const fetchSessions = async () => {
+    const response = await fetch('/api/sessions');
+    const data = await response.json();
+    setSessions(data.sessions);
+  };
+
   useEffect(() => {
-    const fetchSessions = async () => {
-      const response = await fetch('/api/sessions');
-      const data = await response.json();
-      setSessions(data.sessions);
-    };
     fetchSessions();
   }, []);
 
@@ -53,6 +56,7 @@ export default function ProtectedPage() {
     setDocumentId(data.documentId);
     setSessionId(data.sessionId);
     setMessages([]);
+    setSelectedSessionId('');
     setIsLoading(false);
   };
 
@@ -69,6 +73,7 @@ export default function ProtectedPage() {
     setDocumentId(data.documentId);
     setSessionId(data.sessionId);
     setMessages([]);
+    setSelectedSessionId('');
     setIsLoading(false);
   };
 
@@ -116,10 +121,13 @@ export default function ProtectedPage() {
     setIsLoading(false);
   };
 
-  const handleSessionClick = (session: Session) => {
+  const handleSessionClick = async (session: Session) => {
+    await fetchSessions(); // Refresh sessions to get the latest data
     setDocumentId(session.documentId);
     setSessionId(session._id);
     setMessages(session.chatHistory);
+    setExtractedText(session.text);
+    setSelectedSessionId(session._id);
   };
 
   return (
@@ -128,7 +136,7 @@ export default function ProtectedPage() {
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
-            <li key={session._id} onClick={() => handleSessionClick(session)} className="cursor-pointer p-2 hover:bg-gray-200 rounded-md transition-colors duration-200">
+            <li key={session._id} onClick={() => handleSessionClick(session)} className={`cursor-pointer p-2 hover:bg-gray-200 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200' : ''}`}>
               {session.documentName}
             </li>
           ))}
