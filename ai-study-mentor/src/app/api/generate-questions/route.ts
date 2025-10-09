@@ -38,16 +38,14 @@ export async function POST(req: NextRequest) {
 
   const ollama = new Ollama({
     baseUrl: 'http://localhost:11434',
-    model: 'akx/viking-7b',
+    model: 'gemma3:1b',
   });
 
 
   const prompt = `
   Du är en svensk AI-assistent som skapar instuderingsfrågor på svenska.
-  Du skapar instuderingsfrågor på svenska.
-  Skapa en numrerad lista med 2 tydliga och varierade instuderingsfrågor. Avsluta med texten "###".
+  Skapa en lista med 10 instuderingsfrågor. Avsluta med texten "###".
   Använd endast information från dokumentet nedan.
-  Svara kort och koncist. Avsluta svaret med texten "###".
   Dokument: ${context}
   ###
   `;
