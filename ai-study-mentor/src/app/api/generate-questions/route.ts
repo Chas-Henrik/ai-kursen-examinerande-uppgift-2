@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pinecone } from '@pinecone-database/pinecone';
 // import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { Ollama } from '@langchain/community/llms/ollama';
+import { Ollama } from '@langchain/ollama';
 import connectDB from '@/lib/mongodb';
 import Document from '@/models/Document';
 import Question from '@/models/Question';

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Pinecone } from '@pinecone-database/pinecone';
 // import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { Ollama } from '@langchain/community/llms/ollama';
+import { Ollama } from '@langchain/ollama';
 import connectDB from '@/lib/mongodb';
 import Session from '@/models/Session';
 import Document from '@/models/Document';
@@ -61,8 +61,8 @@ export async function POST(req: NextRequest) {
     model: 'akx/viking-7b',
   });
 
-  // console.log("query:", query);
-  // console.log("Context for query:\n", context);
+  console.log("query:", query);
+  console.log("Context for query:\n", context);
 
   const prompt = `
   Du är en svensk AI-assistent.
