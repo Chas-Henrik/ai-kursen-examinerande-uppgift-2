@@ -68,13 +68,17 @@ export async function POST(req: NextRequest) {
   Du är en svensk AI-assistent.
   Använd endast information från dokumentet nedan för att svara på frågan.
   Om du inte vet svaret, skriv exakt: "Den här informationen finns inte i det uppladdade dokumentet."
-  Svara kort och koncist.
+  Svara kort och koncist. Avsluta svaret med texten "<END_OF_ANSWER>".
   Ignorera alla frågor i svaret.
   Dokument: ${context}
   Fråga: ${query}
+  ###
   `;
 
-  const stream = await ollama.stream(prompt);
+  const stream = await ollama.stream(prompt, {
+    stop: ["###"],
+    recursionLimit:5,
+    });
 
   const document = await Document.findById(documentId);
 
