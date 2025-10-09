@@ -45,15 +45,15 @@ export async function POST(req: NextRequest) {
 
   console.log("Pinecone query result:", queryResult);
 
-  const rawContext = queryResult.matches.map(match => (match.metadata as { text: string }).text).join('\n\n');
+  const context = queryResult.matches.map(match => (match.metadata as { text: string }).text).join('\n\n');
 
   // Optional cleaning:
-  const context = rawContext
-    .replace(/Fråga:.*$/gim, '')
-    .replace(/Svar:.*$/gim, '')
-    .replace(/Uppgift:.*$/gim, '')
-    .replace(/\d+\s+(Övning|Uppgift).*/gim, '')
-    .trim();
+  // const context = rawContext
+  //   .replace(/Fråga:.*$/gim, '')
+  //   .replace(/Svar:.*$/gim, '')
+  //   .replace(/Uppgift:.*$/gim, '')
+  //   .replace(/\d+\s+(Övning|Uppgift).*/gim, '')
+  //   .trim();
   
 
   const ollama = new Ollama({
