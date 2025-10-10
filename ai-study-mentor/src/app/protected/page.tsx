@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { useTheme } from 'next-themes';
 
 interface Message {
   text: string;
@@ -26,6 +27,7 @@ export default function ProtectedPage() {
   const [selectedSessionId, setSelectedSessionId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   const fetchSessions = async () => {
     const response = await fetch('/api/sessions');
@@ -153,9 +155,9 @@ export default function ProtectedPage() {
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
-            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200 dark:bg-gray-700' : ''}`}>
-              <span onClick={() => handleSessionClick(session)} className="flex-grow">{session.documentName}</span>
-              <button onClick={() => handleDeleteSession(session._id)} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer p-1 rounded-md">X</button>
+            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-[var(--hover-bg)] rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-[var(--selected-bg)] dark:text-white' : ''}`}>
+              <span onClick={() => handleSessionClick(session)} className="flex-grow text-foreground">{session.documentName}</span>
+              <button onClick={() => handleDeleteSession(session._id)} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-black cursor-pointer p-1 rounded-md">X</button>
             </li>
           ))}
         </ul>

@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --hover-bg: #e5e7eb; /* Light gray for light mode hover */
+  --selected-bg: #d1d5db; /* Light gray for light mode selected */
 }
 
 @theme inline {
@@ -15,6 +17,8 @@
 html.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --hover-bg: #374151; /* Dark gray for dark mode hover */
+  --selected-bg: #4b5563; /* Dark gray for dark mode selected */
 }
 
 body {
