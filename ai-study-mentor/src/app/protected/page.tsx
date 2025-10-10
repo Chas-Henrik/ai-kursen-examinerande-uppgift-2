@@ -151,7 +151,7 @@ export default function ProtectedPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-lg border-r border-gray-200 dark:border-gray-700">
+      <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-md border-r border-gray-200 dark:border-gray-700">
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
