@@ -1,6 +1,7 @@
 # AI Study Mentor - Auto-Implementation Instructions
 
 ## 🎯 SYSTEM ROLE
+
 You are an expert full-stack developer AI tasked with implementing a complete, production-ready web application. You will write ALL code, create ALL files, and ensure everything works perfectly.
 
 ## 📝 PROJECT SPECIFICATION
@@ -9,6 +10,7 @@ You are an expert full-stack developer AI tasked with implementing a complete, p
 **Purpose:** Swedish AI chat interface for studying uploaded documents
 
 **Core User Flow:**
+
 1. User registers/logs in
 2. User uploads PDF, text file, or webpage URL
 3. System extracts text, creates embeddings, stores in vector database
@@ -32,11 +34,13 @@ You are an expert full-stack developer AI tasked with implementing a complete, p
 ## 🚨 CRITICAL IMPLEMENTATION RULES
 
 ### **STAGE EXECUTION ORDER (ABSOLUTE REQUIREMENT)**
+
 1. **STAGE 1 FIRST:** Complete `plan-1.md` entirely (Foundation)
 2. **STAGE 2 SECOND:** Complete `plan-2.md` entirely (AI Features)
 3. **NO EXCEPTIONS:** Do not start Stage 2 until Stage 1 is 100% functional
 
 ### **CODE QUALITY REQUIREMENTS**
+
 - ✅ Write complete, production-ready code (no placeholders)
 - ✅ Create ALL files with full implementations
 - ✅ Use exact file paths and folder structures as specified
@@ -46,6 +50,7 @@ You are an expert full-stack developer AI tasked with implementing a complete, p
 - ✅ Test every feature after implementation
 
 ### **AI/LLM BEHAVIOR REQUIREMENTS**
+
 - ✅ Viking 7B MUST respond only in Swedish
 - ✅ Maximum 3-4 sentences per response
 - ✅ Responses ONLY based on uploaded document content
@@ -55,6 +60,7 @@ You are an expert full-stack developer AI tasked with implementing a complete, p
 ## 📋 IMPLEMENTATION PHASES
 
 ### **🏗️ PHASE 1: FOUNDATION (plan-1.md)**
+
 **Deliverables:** Working Next.js app with auth and database
 
 **Step 1:** ✅ Project setup, dependencies, environment configuration
@@ -63,6 +69,7 @@ You are an expert full-stack developer AI tasked with implementing a complete, p
 **Step 4:** ✅ JWT authentication (register/login/logout/protected routes)
 
 **Phase 1 Success Test:**
+
 ```bash
 npm run dev  # Must start without errors
 # User can register, login, logout successfully
@@ -71,6 +78,7 @@ npm run dev  # Must start without errors
 ```
 
 ### **🤖 PHASE 2: AI FEATURES (plan-2.md)**
+
 **Deliverables:** Full AI chat system with document processing
 
 **Step 1:** File upload (PDF/TXT/URL) with text extraction
@@ -81,6 +89,7 @@ npm run dev  # Must start without errors
 **Step 6:** Production polish and deployment preparation
 
 **Phase 2 Success Test:**
+
 ```bash
 # User can upload files and chat receives Swedish responses
 # Questions generate automatically in Swedish
@@ -91,11 +100,12 @@ npm run dev  # Must start without errors
 ## 🔧 ENVIRONMENT SETUP REQUIREMENTS
 
 Create `.env.local` with these exact variables:
+
 ```env
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai-study-mentor
 JWT_SECRET=your-super-secret-jwt-key-minimum-32-characters
 PINECONE_API_KEY=your-pinecone-api-key
-PINECONE_ENVIRONMENT=your-pinecone-environment  
+PINECONE_ENVIRONMENT=your-pinecone-environment
 PINECONE_INDEX_NAME=ai-study-mentor
 OLLAMA_BASE_URL=http://localhost:11434
 NODE_ENV=development
