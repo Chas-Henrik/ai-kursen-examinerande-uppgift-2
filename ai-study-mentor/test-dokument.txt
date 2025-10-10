@@ -1,0 +1,15 @@
+Detta är en testfil för AI Study Mentor systemet.
+
+Artificiell Intelligens (AI) är en gren av datavetenskap som syftar till att skapa system som kan utföra uppgifter som normalt kräver mänsklig intelligens.
+
+Maskininlärning är en delmängd av AI där algoritmer lär sig mönster från data utan att vara explicit programmerade för varje specifik uppgift.
+
+Djupinlärning använder neurala nätverk med många lager för att modellera och förstå komplexa mönster i data.
+
+Natural Language Processing (NLP) gör det möjligt för datorer att förstå, tolka och generera mänskligt språk på ett meningsfullt sätt.
+
+Denna text kommer att delas upp i chunks och konverteras till embeddings med hjälp av Ollama's nomic-embed-text modell.
+
+Embeddings lagras sedan i Pinecone för semantisk sökning och retrieval.
+
+Studenter kan sedan söka efter information och få relevanta svar baserat på dokumentets innehåll.
