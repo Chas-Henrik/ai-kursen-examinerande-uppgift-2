@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import pdf from 'pdf-parse';
-import OpenAI from 'openai';
 
 /**
  * Extraherar text från PDF-fil
@@ -106,22 +105,14 @@ export function splitTextIntoChunks(
 }
 
 /**
- * Genererar embeddings från text med hjälp av OpenAI Embeddings API (text-embedding-3-small)
+ * Genererar embeddings från text med hjälp av Ollama (nomic-embed-text)
  */
 export async function generateEmbeddings(chunks: string[]): Promise<number[][]> {
   if (!chunks || chunks.length === 0) {
     throw new Error('Inga text-chunks att generera embeddings från.');
   }
 
-  const openaiApiKey = process.env.OPENAI_API_KEY;
-  if (!openaiApiKey) {
-    throw new Error('OPENAI_API_KEY saknas i miljövariabler. Lägg till din API-nyckel i .env.local');
-  }
-
-  // Skapa OpenAI klient
-  const openai = new OpenAI({
-    apiKey: openaiApiKey,
-  });
+  const ollamaBaseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
   
   try {
     const embeddings: number[][] = [];
@@ -131,18 +122,29 @@ export async function generateEmbeddings(chunks: string[]): Promise<number[][]> 
         continue;
       }
 
-      // Använd OpenAI Embeddings API
-      const response = await openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: chunk,
-        encoding_format: 'float',
+      const response = await fetch(`${ollamaBaseUrl}/api/embeddings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'nomic-embed-text',
+          prompt: chunk,
+        }),
       });
 
-      if (!response.data || response.data.length === 0) {
-        throw new Error('Ogiltigt svar från OpenAI Embeddings API.');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Ollama API fel (${response.status}): ${errorText}`);
       }
 
-      embeddings.push(response.data[0].embedding);
+      const data = await response.json();
+      
+      if (!data.embedding || !Array.isArray(data.embedding)) {
+        throw new Error('Ogiltigt svar från Ollama embeddings API.');
+      }
+
+      embeddings.push(data.embedding);
     }
 
     if (embeddings.length === 0) {
