@@ -29,6 +29,8 @@ export default function ProtectedPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSelectingSession, setIsSelectingSession] = useState(false);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
+  const [isSendingQuestion, setIsSendingQuestion] = useState(false);
+  const [isButtonsDisabled, setIsButtonsDisabled] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
@@ -51,107 +53,136 @@ export default function ProtectedPage() {
   const handleFileSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
-    setExtractedText(data.text);
-    setDocumentId(data.documentId);
-    setSessionId(data.sessionId);
-    setMessages([]);
-    setSelectedSessionId(data.sessionId);
-    setIsLoading(false);
-    fetchSessions();
+    setIsButtonsDisabled(true);
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      setExtractedText(data.text);
+      setDocumentId(data.documentId);
+      setSessionId(data.sessionId);
+      setMessages([]);
+      setSelectedSessionId(data.sessionId);
+      fetchSessions();
+    } finally {
+      setIsLoading(false);
+      setIsButtonsDisabled(false);
+    }
   };
 
   const handleLinkSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    const formData = new FormData(event.currentTarget);
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
-    setExtractedText(data.text);
-    setDocumentId(data.documentId);
-    setSessionId(data.sessionId);
-    setMessages([]);
-    setSelectedSessionId(data.sessionId);
-    setIsLoading(false);
-    fetchSessions();
+    setIsButtonsDisabled(true);
+    try {
+      const formData = new FormData(event.currentTarget);
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      setExtractedText(data.text);
+      setDocumentId(data.documentId);
+      setSessionId(data.sessionId);
+      setMessages([]);
+      setSelectedSessionId(data.sessionId);
+      fetchSessions();
+    } finally {
+      setIsLoading(false);
+      setIsButtonsDisabled(false);
+    }
   };
 
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessages(prev => [...prev, { text: query, isUser: true }]);
     setQuery('');
-    setIsLoading(true);
-
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, documentId, sessionId }),
-    });
-
-    const reader = response.body!.getReader();
-    const decoder = new TextDecoder();
-    let botMessage = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      botMessage += decoder.decode(value);
-      setMessages(prev => {
-        const lastMessage = prev[prev.length - 1];
-        if (!lastMessage.isUser) {
-          return [...prev.slice(0, -1), { text: botMessage, isUser: false }];
-        } else {
-          return [...prev, { text: botMessage, isUser: false }];
-        }
+    setIsSendingQuestion(true);
+    setIsButtonsDisabled(true);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, documentId, sessionId }),
       });
+
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let botMessage = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        botMessage += decoder.decode(value);
+        setMessages(prev => {
+          const lastMessage = prev[prev.length - 1];
+          if (!lastMessage.isUser) {
+            return [...prev.slice(0, -1), { text: botMessage, isUser: false }];
+          } else {
+            return [...prev, { text: botMessage, isUser: false }];
+          }
+        });
+      }
+    } finally {
+      setIsSendingQuestion(false);
+      setIsButtonsDisabled(false);
     }
-    setIsLoading(false);
   };
 
   const handleGenerateQuestions = async () => {
     setIsGeneratingQuestions(true);
-    const response = await fetch('/api/generate-questions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ documentId }),
-    });
-    const data = await response.json();
-    setQuestions(data.questions);
-    setIsGeneratingQuestions(false);
+    setIsButtonsDisabled(true);
+    try {
+      const response = await fetch('/api/generate-questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId }),
+      });
+      const data = await response.json();
+      setQuestions(data.questions);
+    } finally {
+      setIsGeneratingQuestions(false);
+      setIsButtonsDisabled(false);
+    }
   };
 
   const handleDeleteSession = async (sessionId: string) => {
-    const response = await fetch(`/api/sessions/${sessionId}`, {
-      method: 'DELETE',
-    });
+    setIsButtonsDisabled(true);
+    try {
+      const response = await fetch(`/api/sessions/${sessionId}`, {
+        method: 'DELETE',
+      });
 
-    if (response.ok) {
-      fetchSessions();
-      setExtractedText('');
-      setMessages([]);
-      setDocumentId('');
-      setSessionId('');
-      setSelectedSessionId('');
+      if (response.ok) {
+        fetchSessions();
+        setExtractedText('');
+        setMessages([]);
+        setDocumentId('');
+        setSessionId('');
+        setSelectedSessionId('');
+      }
+    } finally {
+      setIsButtonsDisabled(false);
     }
   };
 
   const handleSessionClick = async (session: Session) => {
     setIsSelectingSession(true);
-    await fetchSessions(); // Refresh sessions to get the latest data
-    setDocumentId(session.documentId);
-    setSessionId(session._id);
-    setMessages(session.chatHistory);
-    setExtractedText(session.text);
-    setSelectedSessionId(session._id);
-    setIsSelectingSession(false);
+    setIsButtonsDisabled(true);
+    try {
+      await fetchSessions(); // Refresh sessions to get the latest data
+      setDocumentId(session.documentId);
+      setSessionId(session._id);
+      setMessages(session.chatHistory);
+      setExtractedText(session.text);
+      setSelectedSessionId(session._id);
+    } finally {
+      setIsSelectingSession(false);
+      setIsButtonsDisabled(false);
+    }
   };
 
   return (
@@ -167,8 +198,8 @@ export default function ProtectedPage() {
         <ul className="space-y-2">
           {sessions.map(session => (
             <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-[var(--hover-bg)] rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-[var(--selected-bg)] dark:text-white' : ''}`}>
-              <span onClick={() => handleSessionClick(session)} className="flex-grow text-foreground">{session.documentName}</span>
-              <button onClick={() => handleDeleteSession(session._id)} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-black cursor-pointer p-1 rounded-md">X</button>
+              <span onClick={() => !isButtonsDisabled && handleSessionClick(session)} className="flex-grow text-foreground">{session.documentName}</span>
+              <button onClick={() => handleDeleteSession(session._id)} disabled={isButtonsDisabled} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-black cursor-pointer p-1 rounded-md">X</button>
             </li>
           ))}
         </ul>
@@ -187,7 +218,7 @@ export default function ProtectedPage() {
                 />
                                     <button
                                       type="submit"
-                                      disabled={isLoading}
+                                      disabled={isLoading || isButtonsDisabled}
                                       className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
                                     >
                                       <div className="flex items-center space-x-2">
@@ -206,17 +237,16 @@ export default function ProtectedPage() {
                   placeholder="https://www.w3.org/W3C/E/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
                   className="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
-                                    <button
-                                      type="submit"
-                                      disabled={isLoading}
-                                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
-                                    >
-                                      <div className="flex items-center space-x-2">
-                                        <span>Ladda upp</span> {isLoading && <Spinner />}
-                                      </div>
-                                    </button>
-                
-              </form>
+                                                        <button
+                                                          type="submit"
+                                                          disabled={isLoading || isButtonsDisabled}
+                                                          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+                                                        >
+                                                          <div className="flex items-center space-x-2">
+                                                            <span>Ladda upp</span> {isLoading && <Spinner />}
+                                                          </div>
+                                                        </button>
+                                                  </form>
             </div>
           </div>
           {extractedText && (
@@ -247,9 +277,13 @@ export default function ProtectedPage() {
                   placeholder="Ställ en fråga..."
                   className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
-                <button type="submit" disabled={isLoading} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400">Skicka</button>
+                <button type="submit" disabled={isSendingQuestion || isButtonsDisabled} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center">
+                  <div className="flex items-center space-x-2">
+                    <span>Skicka</span> {isSendingQuestion && <Spinner />}
+                  </div>
+                </button>
               </form>
-              <button onClick={handleGenerateQuestions} disabled={isGeneratingQuestions} className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center">
+              <button onClick={handleGenerateQuestions} disabled={isGeneratingQuestions || isButtonsDisabled} className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center">
                 <div className="flex items-center space-x-2">
                   <span>Generera studiefrågor</span> {isGeneratingQuestions && <Spinner />}
                 </div>
