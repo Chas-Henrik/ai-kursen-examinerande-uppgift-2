@@ -148,29 +148,28 @@ export default function ProtectedPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="w-1/4 bg-white p-4 overflow-y-auto shadow-md">
+    <div className="flex h-screen bg-background">
+      <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-md border-r border-gray-200 dark:border-gray-700">
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
-            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-gray-200 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200' : ''}`}>
+            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-gray-200 dark:bg-gray-700' : ''}`}>
               <span onClick={() => handleSessionClick(session)} className="flex-grow">{session.documentName}</span>
-              <button onClick={() => handleDeleteSession(session._id)} className="text-black hover:bg-gray-300 cursor-pointer p-1 rounded-md">X</button>
+              <button onClick={() => handleDeleteSession(session._id)} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 cursor-pointer p-1 rounded-md">X</button>
             </li>
           ))}
         </ul>
       </div>
       <div className="w-3/4 p-4 overflow-y-auto flex flex-col">
         <div className="flex-grow">
-          <h1 className="text-3xl font-bold mb-6 text-gray-800">AI Study Mentor</h1>
+          <h1 className="text-3xl font-bold mb-6 text-foreground">AI Study Mentor</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-semibold mb-4">Ladda upp dokument</h2>
+            <div className="bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <form onSubmit={handleFileSubmit}>
                 <input
                   type="file"
                   name="file"
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 transition-colors duration-200"
+                  className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 dark:file:bg-violet-900 file:text-violet-700 dark:file:text-violet-300 hover:file:bg-violet-100 dark:hover:file:bg-violet-800 transition-colors duration-200"
                 />
                 <button
                   type="submit"
@@ -181,14 +180,14 @@ export default function ProtectedPage() {
                 </button>
               </form>
             </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Klistra in länk</h2>
               <form onSubmit={handleLinkSubmit}>
                 <input
                   type="text"
                   name="link"
                   placeholder="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-                  className="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200"
+                  className="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
                 <button
                   type="submit"
@@ -201,20 +200,20 @@ export default function ProtectedPage() {
             </div>
           </div>
           {extractedText && (
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Extraherad text</h2>
-              <div className="p-4 bg-gray-50 rounded-md max-h-60 overflow-y-auto">
-                <p className="text-gray-700">{extractedText}</p>
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md max-h-60 overflow-y-auto">
+                <p className="text-gray-700 dark:text-gray-300">{extractedText}</p>
               </div>
             </div>
           )}
           {documentId && (
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm flex-grow flex flex-col">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm flex-grow flex flex-col border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Chatt</h2>
-              <div ref={chatContainerRef} className="p-4 bg-gray-50 rounded-md h-96 overflow-y-auto flex-grow scroll-smooth">
+              <div ref={chatContainerRef} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md h-96 overflow-y-auto flex-grow scroll-smooth">
                 {messages.map((message, index) => (
                   <div key={index} className={`flex mb-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`p-3 rounded-lg shadow-md ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-800'}`}>
+                    <div className={`p-3 rounded-lg shadow-md ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200'}`}>
                       <p>{message.text}</p>
                     </div>
                   </div>
@@ -226,7 +225,7 @@ export default function ProtectedPage() {
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Ställ en fråga..."
-                  className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200"
+                  className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 />
                 <button type="submit" disabled={isLoading} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400">Skicka</button>
               </form>
@@ -234,10 +233,10 @@ export default function ProtectedPage() {
             </div>
           )}
           {questions.length > 0 && (
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-sm">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
-              <div className="p-4 bg-gray-50 rounded-md">
-                <div className="list-decimal list-inside space-y-2 text-gray-700">
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+                <div className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
                   {questions.map((question, index) => (
                     <div key={index}>{question}</div>
                   ))}

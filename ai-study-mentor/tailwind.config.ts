@@ -12,6 +12,8 @@ const config: Config = {
     extend: {
       colors: {
         primary: '#10A37F',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
       },
     },
   },
