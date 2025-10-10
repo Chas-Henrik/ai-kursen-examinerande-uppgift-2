@@ -196,7 +196,7 @@ export default function ProtectedPage() {
           </div>
         )}
         <ul className="space-y-2">
-          {sessions.map(session => (
+          {sessions && sessions.map(session => (
             <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-[var(--hover-bg)] rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-[var(--selected-bg)] dark:text-white' : ''}`}>
               <span onClick={() => !isButtonsDisabled && handleSessionClick(session)} className="flex-grow text-foreground">{session.documentName}</span>
               <button onClick={() => handleDeleteSession(session._id)} disabled={isButtonsDisabled} className="text-foreground hover:bg-gray-300 dark:hover:bg-gray-600 hover:text-black cursor-pointer p-1 rounded-md">X</button>
