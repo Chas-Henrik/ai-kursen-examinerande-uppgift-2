@@ -4,7 +4,7 @@ import MainContent from "@/components/layout/MainContent";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-background-dark">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <Header />
       <div className="flex">
         <Sidebar />
