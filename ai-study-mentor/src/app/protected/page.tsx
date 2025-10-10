@@ -151,7 +151,7 @@ export default function ProtectedPage() {
 
   return (
     <div className="flex h-screen bg-background">
-      <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-md border-r border-gray-200 dark:border-gray-700">
+      <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-lg border-r border-gray-200 dark:border-gray-700">
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         <ul className="space-y-2">
           {sessions.map(session => (
@@ -162,11 +162,11 @@ export default function ProtectedPage() {
           ))}
         </ul>
       </div>
-      <div className="w-3/4 p-4 overflow-y-auto flex flex-col">
+      <div className="w-3/4 p-4 flex flex-col">
         <div className="flex-grow">
           <h1 className="text-3xl font-bold mb-6 text-foreground">AI Study Mentor</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-background p-6 rounded-lg shadow-md dark:shadow-gray-800 border border-gray-200 dark:border-gray-700">
               <form onSubmit={handleFileSubmit}>
                 <input
                   type="file"
@@ -182,7 +182,7 @@ export default function ProtectedPage() {
                 </button>
               </form>
             </div>
-            <div className="bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="bg-background p-6 rounded-lg shadow-md dark:shadow-gray-800 border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Klistra in länk</h2>
               <form onSubmit={handleLinkSubmit}>
                 <input
@@ -202,7 +202,7 @@ export default function ProtectedPage() {
             </div>
           </div>
           {extractedText && (
-            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-md dark:shadow-gray-800 border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Extraherad text</h2>
               <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md max-h-60 overflow-y-auto">
                 <p className="text-gray-700 dark:text-gray-300">{extractedText}</p>
@@ -210,7 +210,7 @@ export default function ProtectedPage() {
             </div>
           )}
           {documentId && (
-            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm flex-grow flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-md dark:shadow-gray-800 flex-grow flex flex-col border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Chatt</h2>
               <div ref={chatContainerRef} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md h-96 overflow-y-auto flex-grow scroll-smooth">
                 {messages.map((message, index) => (
@@ -235,7 +235,7 @@ export default function ProtectedPage() {
             </div>
           )}
           {questions.length > 0 && (
-            <div className="mt-8 bg-background p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="mt-8 bg-background p-6 rounded-lg shadow-md dark:shadow-gray-800 border border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
               <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
                 <div className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">

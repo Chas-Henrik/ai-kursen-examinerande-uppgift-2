@@ -21,6 +21,18 @@ html.dark {
   --selected-bg: #4b5563; /* Dark gray for dark mode selected */
 }
 
+@layer utilities {
+  .dark .shadow-lg {
+    --tw-shadow-color: rgb(255 255 255 / 0.5);  /* Shadow color for dark mode */
+  }
+  .dark .shadow-md {
+    --tw-shadow-color: rgb(255 255 255 / 0.5);  /* Shadow color for dark mode */  
+  }
+  .dark .shadow-sm {
+    --tw-shadow-color: rgb(255 255 255 / 0.5);  /* Shadow color for dark mode */  
+  }
+}
+
 body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;

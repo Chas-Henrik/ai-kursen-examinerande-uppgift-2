@@ -38,7 +38,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
-      <div className="px-8 py-6 mt-4 text-left bg-background shadow-lg rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="px-8 py-6 mt-4 text-left bg-background shadow-lg dark:shadow-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-foreground mb-4">Logga in</h1>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
