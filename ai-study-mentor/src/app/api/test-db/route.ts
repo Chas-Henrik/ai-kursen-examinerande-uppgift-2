@@ -9,23 +9,28 @@ export async function GET() {
     console.log("✅ Databasanslutning etablerad");
 
     // Kontrollera om admin-användare redan finns
-    const existingUser = await User.findOne({ email: "admin@ai-study-mentor.se" });
-    
+    const existingUser = await User.findOne({
+      email: "admin@ai-study-mentor.se",
+    });
+
     if (existingUser) {
       const userCount = await User.countDocuments();
-      return NextResponse.json({
-        success: true,
-        message: "Databas och admin-användare existerar redan!",
-        details: {
-          connectionStatus: "Ansluten till MongoDB Atlas",
-          databaseName: "ai-study-mentor",
-          adminUserExists: true,
-          adminUserId: existingUser._id,
-          createdAt: existingUser.createdAt,
-          totalUsers: userCount,
-          note: "Kolla MongoDB Atlas - databasen ska vara synlig nu!"
-        }
-      }, { status: 200 });
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Databas och admin-användare existerar redan!",
+          details: {
+            connectionStatus: "Ansluten till MongoDB Atlas",
+            databaseName: "ai-study-mentor",
+            adminUserExists: true,
+            adminUserId: existingUser._id,
+            createdAt: existingUser.createdAt,
+            totalUsers: userCount,
+            note: "Kolla MongoDB Atlas - databasen ska vara synlig nu!",
+          },
+        },
+        { status: 200 }
+      );
     }
 
     // Skapa permanent admin-användare för att säkerställa att databasen skapas
@@ -49,20 +54,23 @@ export async function GET() {
     // Räkna totala användare
     const userCount = await User.countDocuments();
 
-    return NextResponse.json({
-      success: true,
-      message: "Databas skapad och admin-användare tillagd!",
-      details: {
-        connectionStatus: "Ansluten till MongoDB Atlas",
-        databaseName: "ai-study-mentor", 
-        adminUserCreated: true,
-        adminUserId: savedUser._id,
-        adminEmail: savedUser.email,
-        passwordValidation: passwordMatch,
-        totalUsers: userCount,
-        note: "Kolla nu i MongoDB Atlas - databasen 'ai-study-mentor' och collection 'users' ska finnas!"
-      }
-    }, { status: 200 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Databas skapad och admin-användare tillagd!",
+        details: {
+          connectionStatus: "Ansluten till MongoDB Atlas",
+          databaseName: "ai-study-mentor",
+          adminUserCreated: true,
+          adminUserId: savedUser._id,
+          adminEmail: savedUser.email,
+          passwordValidation: passwordMatch,
+          totalUsers: userCount,
+          note: "Kolla nu i MongoDB Atlas - databasen 'ai-study-mentor' och collection 'users' ska finnas!",
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Databastest misslyckades:", error);
 

@@ -10,7 +10,7 @@ export default function Header() {
   const { user, logout, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   useEffect(() => {
     setMounted(true);
@@ -53,29 +53,29 @@ export default function Header() {
                 <span className="text-sm text-gray-700 dark:text-gray-200">
                   Hej, {user.name}!
                 </span>
-                <button 
+                <button
                   onClick={() => logout()}
                   disabled={loading}
                   className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {loading ? 'Loggar ut...' : 'Logga ut'}
+                  {loading ? "Loggar ut..." : "Logga ut"}
                 </button>
               </>
             ) : (
               // Auth knappar för icke-inloggade användare
               <>
-                <button 
+                <button
                   onClick={() => {
-                    setAuthMode('login');
+                    setAuthMode("login");
                     setShowAuthModal(true);
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   Logga in
                 </button>
-                <button 
+                <button
                   onClick={() => {
-                    setAuthMode('register');
+                    setAuthMode("register");
                     setShowAuthModal(true);
                   }}
                   className="px-4 py-2 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"

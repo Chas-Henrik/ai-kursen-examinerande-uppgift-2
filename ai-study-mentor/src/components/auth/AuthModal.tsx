@@ -1,18 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import LoginForm from './LoginForm';
-import RegisterForm from './RegisterForm';
+import React, { useState } from "react";
+import { X } from "lucide-react";
+import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'register';
+  initialMode?: "login" | "register";
 }
 
-export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) {
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+export default function AuthModal({
+  isOpen,
+  onClose,
+  initialMode = "login",
+}: AuthModalProps) {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
 
   if (!isOpen) return null;
 
@@ -29,14 +33,14 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
         {/* Formulär innehåll */}
         <div className="p-6">
-          {mode === 'login' ? (
+          {mode === "login" ? (
             <LoginForm
-              onSwitchToRegister={() => setMode('register')}
+              onSwitchToRegister={() => setMode("register")}
               onClose={onClose}
             />
           ) : (
             <RegisterForm
-              onSwitchToLogin={() => setMode('login')}
+              onSwitchToLogin={() => setMode("login")}
               onClose={onClose}
             />
           )}

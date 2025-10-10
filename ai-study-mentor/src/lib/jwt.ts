@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { NextRequest } from 'next/server';
+import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
 
 export interface JWTPayload {
   userId: string;
@@ -14,29 +14,25 @@ export interface JWTPayload {
  */
 export function generateToken(userId: string): string {
   const secret = process.env.JWT_SECRET;
-  
+
   if (!secret) {
-    throw new Error('JWT_SECRET miljövariabel saknas');
+    throw new Error("JWT_SECRET miljövariabel saknas");
   }
 
   if (!userId) {
-    throw new Error('Användar-ID krävs för att generera token');
+    throw new Error("Användar-ID krävs för att generera token");
   }
 
   try {
-    const token = jwt.sign(
-      { userId },
-      secret,
-      { 
-        expiresIn: '7d', // Token gäller i 7 dagar
-        issuer: 'ai-study-mentor',
-        audience: 'ai-study-mentor-users'
-      }
-    );
+    const token = jwt.sign({ userId }, secret, {
+      expiresIn: "7d", // Token gäller i 7 dagar
+      issuer: "ai-study-mentor",
+      audience: "ai-study-mentor-users",
+    });
 
     return token;
   } catch {
-    throw new Error('Kunde inte generera autentiseringstoken');
+    throw new Error("Kunde inte generera autentiseringstoken");
   }
 }
 
@@ -47,29 +43,29 @@ export function generateToken(userId: string): string {
  */
 export function verifyToken(token: string): JWTPayload {
   const secret = process.env.JWT_SECRET;
-  
+
   if (!secret) {
-    throw new Error('JWT_SECRET miljövariabel saknas');
+    throw new Error("JWT_SECRET miljövariabel saknas");
   }
 
   if (!token) {
-    throw new Error('Token krävs för verifiering');
+    throw new Error("Token krävs för verifiering");
   }
 
   try {
     const decoded = jwt.verify(token, secret, {
-      issuer: 'ai-study-mentor',
-      audience: 'ai-study-mentor-users'
+      issuer: "ai-study-mentor",
+      audience: "ai-study-mentor-users",
     }) as JWTPayload;
 
     return decoded;
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      throw new Error('Autentiseringstoken har gått ut. Logga in igen.');
+      throw new Error("Autentiseringstoken har gått ut. Logga in igen.");
     } else if (error instanceof jwt.JsonWebTokenError) {
-      throw new Error('Ogiltig autentiseringstoken');
+      throw new Error("Ogiltig autentiseringstoken");
     } else {
-      throw new Error('Kunde inte verifiera autentiseringstoken');
+      throw new Error("Kunde inte verifiera autentiseringstoken");
     }
   }
 }
@@ -81,13 +77,13 @@ export function verifyToken(token: string): JWTPayload {
  */
 export function getTokenFromRequest(request: NextRequest): string | null {
   // Kolla Authorization header först
-  const authHeader = request.headers.get('Authorization');
-  if (authHeader && authHeader.startsWith('Bearer ')) {
+  const authHeader = request.headers.get("Authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
     return authHeader.substring(7); // Ta bort "Bearer " prefix
   }
 
   // Kolla cookies som backup
-  const token = request.cookies.get('auth-token')?.value;
+  const token = request.cookies.get("auth-token")?.value;
   if (token) {
     return token;
   }
@@ -102,9 +98,9 @@ export function getTokenFromRequest(request: NextRequest): string | null {
  */
 export function getAuthenticatedUser(request: NextRequest): JWTPayload {
   const token = getTokenFromRequest(request);
-  
+
   if (!token) {
-    throw new Error('Ingen autentiseringstoken hittades. Du måste logga in.');
+    throw new Error("Ingen autentiseringstoken hittades. Du måste logga in.");
   }
 
   return verifyToken(token);
@@ -123,6 +119,6 @@ export async function requireAuth(request: NextRequest): Promise<string> {
     if (error instanceof Error) {
       throw new Error(`Autentisering krävs: ${error.message}`);
     }
-    throw new Error('Autentisering krävs för att komma åt denna resurs');
+    throw new Error("Autentisering krävs för att komma åt denna resurs");
   }
 }
