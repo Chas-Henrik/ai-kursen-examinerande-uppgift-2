@@ -21,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   if (!mounted) return null;
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="bg-background text-foreground p-4 flex justify-between items-center shadow-lg dark:shadow-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+      <header className="bg-background text-foreground p-4 flex justify-between items-center shadow-lg border-b border-gray-200 sticky top-0 z-50">
         <h1 className="text-3xl font-bold">AI Studiementor</h1>
         <div className="flex items-center space-x-4">
           <Link href="/login" passHref>
