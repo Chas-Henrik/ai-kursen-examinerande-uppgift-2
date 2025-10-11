@@ -1,47 +1,51 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ name, email, password }),
       });
 
       if (res.ok) {
-        router.push('/login');
+        router.push("/login");
       } else {
         const data = await res.json();
-        setError(data.message || 'Registration failed');
+        setError(data.message || "Registration failed");
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch {
+      setError("An unexpected error occurred");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="px-8 py-6 mt-4 text-left bg-background shadow-lg  rounded-lg border border-gray-200 ">
-        <h1 className="text-2xl font-bold text-foreground mb-4">Registrera ny användare</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-4">
+          Registrera ny användare
+        </h1>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
             <div>
-              <label className="block text-foreground" htmlFor="name">Namn</label>
+              <label className="block text-foreground" htmlFor="name">
+                Namn
+              </label>
               <input
                 type="text"
                 placeholder="Ditt namn"
@@ -52,7 +56,9 @@ export default function RegisterPage() {
               />
             </div>
             <div className="mt-4">
-              <label className="block text-foreground" htmlFor="email">Email</label>
+              <label className="block text-foreground" htmlFor="email">
+                Email
+              </label>
               <input
                 type="email"
                 placeholder="Din email"
@@ -64,7 +70,9 @@ export default function RegisterPage() {
               />
             </div>
             <div className="mt-4">
-              <label className="block text-foreground" htmlFor="password">Lösenord</label>
+              <label className="block text-foreground" htmlFor="password">
+                Lösenord
+              </label>
               <input
                 type="password"
                 placeholder="Ditt lösenord"

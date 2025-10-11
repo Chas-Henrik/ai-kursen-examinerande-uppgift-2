@@ -1,38 +1,38 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        Cookies.set('token', data.token, { expires: 1 }); // Set cookie for 1 day
-        router.push('/protected');
+        Cookies.set("token", data.token, { expires: 1 }); // Set cookie for 1 day
+        router.push("/protected");
       } else {
         const data = await res.json();
-        setError(data.message || 'Login failed');
+        setError(data.message || "Login failed");
       }
-    } catch (err) {
-      setError('An unexpected error occurred');
+    } catch {
+      setError("An unexpected error occurred");
     }
   };
 
@@ -43,7 +43,9 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
             <div>
-              <label className="block text-foreground" htmlFor="email">Email</label>
+              <label className="block text-foreground" htmlFor="email">
+                Email
+              </label>
               <input
                 type="email"
                 className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 bg-background text-foreground border-gray-300 "
@@ -54,7 +56,9 @@ export default function LoginPage() {
               />
             </div>
             <div className="mt-4">
-              <label className="block text-foreground" htmlFor="password">Lösenord</label>
+              <label className="block text-foreground" htmlFor="password">
+                Lösenord
+              </label>
               <input
                 type="password"
                 placeholder="Ditt lösenord"

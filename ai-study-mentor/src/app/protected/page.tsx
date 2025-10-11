@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { useTheme } from 'next-themes';
-import Spinner from '../../components/Spinner';
+import { useState, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
+import Spinner from "../../components/Spinner";
 
 interface Message {
   text: string;
@@ -18,24 +18,24 @@ interface Session {
 }
 
 export default function ProtectedPage() {
-  const [extractedText, setExtractedText] = useState('');
-  const [documentId, setDocumentId] = useState('');
-  const [sessionId, setSessionId] = useState('');
+  const [extractedText, setExtractedText] = useState("");
+  const [documentId, setDocumentId] = useState("");
+  const [sessionId, setSessionId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [selectedSessionId, setSelectedSessionId] = useState('');
+  const [selectedSessionId, setSelectedSessionId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSelectingSession, setIsSelectingSession] = useState(false);
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isSendingQuestion, setIsSendingQuestion] = useState(false);
   const [isButtonsDisabled, setIsButtonsDisabled] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  useTheme();
 
   const fetchSessions = async () => {
-    const response = await fetch('/api/sessions');
+    const response = await fetch("/api/sessions");
     const data = await response.json();
     setSessions(data.sessions);
   };
@@ -46,7 +46,8 @@ export default function ProtectedPage() {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -56,8 +57,8 @@ export default function ProtectedPage() {
     setIsButtonsDisabled(true);
     try {
       const formData = new FormData(event.currentTarget);
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
       const data = await response.json();
@@ -79,8 +80,8 @@ export default function ProtectedPage() {
     setIsButtonsDisabled(true);
     try {
       const formData = new FormData(event.currentTarget);
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
       });
       const data = await response.json();
@@ -98,26 +99,26 @@ export default function ProtectedPage() {
 
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setMessages(prev => [...prev, { text: query, isUser: true }]);
-    setQuery('');
+    setMessages((prev) => [...prev, { text: query, isUser: true }]);
+    setQuery("");
     setIsSendingQuestion(true);
     setIsButtonsDisabled(true);
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query, documentId, sessionId }),
       });
 
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
-      let botMessage = '';
+      let botMessage = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         botMessage += decoder.decode(value);
-        setMessages(prev => {
+        setMessages((prev) => {
           const lastMessage = prev[prev.length - 1];
           if (!lastMessage.isUser) {
             return [...prev.slice(0, -1), { text: botMessage, isUser: false }];
@@ -136,9 +137,9 @@ export default function ProtectedPage() {
     setIsGeneratingQuestions(true);
     setIsButtonsDisabled(true);
     try {
-      const response = await fetch('/api/generate-questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/generate-questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ documentId }),
       });
       const data = await response.json();
@@ -153,16 +154,16 @@ export default function ProtectedPage() {
     setIsButtonsDisabled(true);
     try {
       const response = await fetch(`/api/sessions/${sessionId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         fetchSessions();
-        setExtractedText('');
+        setExtractedText("");
         setMessages([]);
-        setDocumentId('');
-        setSessionId('');
-        setSelectedSessionId('');
+        setDocumentId("");
+        setSessionId("");
+        setSelectedSessionId("");
       }
     } finally {
       setIsButtonsDisabled(false);
@@ -196,17 +197,36 @@ export default function ProtectedPage() {
           </div>
         )}
         <ul className="space-y-2">
-          {sessions && sessions.map(session => (
-            <li key={session._id} className={`flex justify-between items-center cursor-pointer p-2 hover:bg-[var(--hover-bg)] rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? 'bg-[var(--selected-bg)]' : ''}`}>
-              <span onClick={() => !isButtonsDisabled && handleSessionClick(session)} className="flex-grow text-foreground">{session.documentName}</span>
-              <button onClick={() => handleDeleteSession(session._id)} disabled={isButtonsDisabled} className="text-foreground hover:bg-gray-300  hover:text-black cursor-pointer p-1 rounded-md">X</button>
-            </li>
-          ))}
+          {sessions &&
+            sessions.map((session) => (
+              <li
+                key={session._id}
+                className={`flex justify-between items-center cursor-pointer p-2 hover:bg-[var(--hover-bg)] rounded-md transition-colors duration-200 ${session._id === selectedSessionId ? "bg-[var(--selected-bg)]" : ""}`}
+              >
+                <span
+                  onClick={() =>
+                    !isButtonsDisabled && handleSessionClick(session)
+                  }
+                  className="flex-grow text-foreground"
+                >
+                  {session.documentName}
+                </span>
+                <button
+                  onClick={() => handleDeleteSession(session._id)}
+                  disabled={isButtonsDisabled}
+                  className="text-foreground hover:bg-gray-300  hover:text-black cursor-pointer p-1 rounded-md"
+                >
+                  X
+                </button>
+              </li>
+            ))}
         </ul>
       </div>
       <div className="w-3/4 p-4 flex flex-col">
         <div className="flex-grow">
-          <h1 className="text-3xl font-bold mb-6 text-foreground">AI Study Mentor</h1>
+          <h1 className="text-3xl font-bold mb-6 text-foreground">
+            AI Study Mentor
+          </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-background p-6 rounded-lg shadow-md border border-gray-200 ">
               <h2 className="text-xl font-semibold mb-4">Ladda upp dokument</h2>
@@ -216,16 +236,15 @@ export default function ProtectedPage() {
                   name="file"
                   className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 transition-colors duration-200"
                 />
-                                    <button
-                                      type="submit"
-                                      disabled={isLoading || isButtonsDisabled}
-                                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
-                                    >
-                                      <div className="flex items-center space-x-2">
-                                        <span>Ladda upp</span> {isLoading && <Spinner />}
-                                      </div>
-                                    </button>
-                
+                <button
+                  type="submit"
+                  disabled={isLoading || isButtonsDisabled}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>Ladda upp</span> {isLoading && <Spinner />}
+                  </div>
+                </button>
               </form>
             </div>
             <div className="bg-background p-6 rounded-lg shadow-md border border-gray-200 ">
@@ -237,16 +256,16 @@ export default function ProtectedPage() {
                   placeholder="https://www.w3.org/W3C/E/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
                   className="block w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background"
                 />
-                                                        <button
-                                                          type="submit"
-                                                          disabled={isLoading || isButtonsDisabled}
-                                                          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
-                                                        >
-                                                          <div className="flex items-center space-x-2">
-                                                            <span>Ladda upp</span> {isLoading && <Spinner />}
-                                                          </div>
-                                                        </button>
-                                                  </form>
+                <button
+                  type="submit"
+                  disabled={isLoading || isButtonsDisabled}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>Ladda upp</span> {isLoading && <Spinner />}
+                  </div>
+                </button>
+              </form>
             </div>
           </div>
           {extractedText && (
@@ -260,10 +279,18 @@ export default function ProtectedPage() {
           {documentId && (
             <div className="mt-8 bg-background p-6 rounded-lg shadow-md flex-grow flex flex-col border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Chatt</h2>
-              <div ref={chatContainerRef} className="p-4 bg-gray-50 rounded-md h-96 overflow-y-auto flex-grow scroll-smooth">
+              <div
+                ref={chatContainerRef}
+                className="p-4 bg-gray-50 rounded-md h-96 overflow-y-auto flex-grow scroll-smooth"
+              >
                 {messages.map((message, index) => (
-                  <div key={index} className={`flex mb-4 ${message.isUser ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`p-3 rounded-lg shadow-md ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-300  text-gray-800 '}`}>
+                  <div
+                    key={index}
+                    className={`flex mb-4 ${message.isUser ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`p-3 rounded-lg shadow-md ${message.isUser ? "bg-blue-500 text-white" : "bg-gray-300  text-gray-800 "}`}
+                    >
                       <p>{message.text}</p>
                     </div>
                   </div>
@@ -273,19 +300,28 @@ export default function ProtectedPage() {
                 <input
                   type="text"
                   value={query}
-                  onChange={e => setQuery(e.target.value)}
+                  onChange={(e) => setQuery(e.target.value)}
                   placeholder="Ställ en fråga..."
                   className="flex-grow p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 transition-shadow duration-200 bg-background"
                 />
-                <button type="submit" disabled={isSendingQuestion || isButtonsDisabled} className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center">
+                <button
+                  type="submit"
+                  disabled={isSendingQuestion || isButtonsDisabled}
+                  className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+                >
                   <div className="flex items-center space-x-2">
                     <span>Skicka</span> {isSendingQuestion && <Spinner />}
                   </div>
                 </button>
               </form>
-              <button onClick={handleGenerateQuestions} disabled={isGeneratingQuestions || isButtonsDisabled} className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center">
+              <button
+                onClick={handleGenerateQuestions}
+                disabled={isGeneratingQuestions || isButtonsDisabled}
+                className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+              >
                 <div className="flex items-center space-x-2">
-                  <span>Generera studiefrågor</span> {isGeneratingQuestions && <Spinner />}
+                  <span>Generera studiefrågor</span>{" "}
+                  {isGeneratingQuestions && <Spinner />}
                 </div>
               </button>
             </div>

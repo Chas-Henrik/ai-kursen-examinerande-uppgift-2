@@ -1,40 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Session from '@/models/Session';
-import jwt from 'jsonwebtoken';
+import { NextRequest, NextResponse } from "next/server";
+import connectDB from "@/lib/mongodb";
+import Session from "@/models/Session";
+import jwt from "jsonwebtoken";
 
 export async function GET(req: NextRequest) {
   await connectDB();
 
-  const token = req.cookies.get('token')?.value;
+  const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let userId: string;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
     userId = decoded.userId;
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
   const sessions = await Session.aggregate([
     { $match: { userId } },
     {
       $addFields: {
-        documentObjectId: { $toObjectId: '$documentId' }
-      }
+        documentObjectId: { $toObjectId: "$documentId" },
+      },
     },
     {
       $lookup: {
-        from: 'documents',
-        localField: 'documentObjectId',
-        foreignField: '_id',
-        as: 'document'
-      }
+        from: "documents",
+        localField: "documentObjectId",
+        foreignField: "_id",
+        as: "document",
+      },
     },
-    { $unwind: '$document' },
+    { $unwind: "$document" },
     {
       $project: {
         _id: 1,
@@ -42,10 +44,10 @@ export async function GET(req: NextRequest) {
         documentName: 1,
         chatHistory: 1,
         createdAt: 1,
-        text: '$document.text'
-      }
+        text: "$document.text",
+      },
     },
-    { $sort: { createdAt: -1 } }
+    { $sort: { createdAt: -1 } },
   ]);
 
   return NextResponse.json({ sessions });

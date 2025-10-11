@@ -1,33 +1,35 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { pdfToText } from 'pdf-ts';
-import connectDB from '@/lib/mongodb';
-import Document from '@/models/Document';
-import Session from '@/models/Session';
-import jwt from 'jsonwebtoken';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
+import { NextRequest, NextResponse } from "next/server";
+import { pdfToText } from "pdf-ts";
+import connectDB from "@/lib/mongodb";
+import Document from "@/models/Document";
+import Session from "@/models/Session";
+import jwt from "jsonwebtoken";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 // import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { Pinecone } from '@pinecone-database/pinecone';
+import { Pinecone } from "@pinecone-database/pinecone";
 
 export async function POST(req: NextRequest) {
   await connectDB();
 
-  const token = req.cookies.get('token')?.value;
+  const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let userId: string;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
     userId = decoded.userId;
-  } catch (error) {
-    return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+  } catch {
+    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
   const formData = await req.formData();
-  const file = formData.get('file') as File;
-  const link = formData.get('link') as string;
+  const file = formData.get("file") as File;
+  const link = formData.get("link") as string;
 
   let text: string;
   let filename: string;
@@ -43,11 +45,17 @@ export async function POST(req: NextRequest) {
       const arrayBuffer = await response.arrayBuffer(); // Uint8Array compatible
       text = await pdfToText(new Uint8Array(arrayBuffer));
       filename = link;
-    } catch (error) {
-      return NextResponse.json({ error: 'Failed to fetch the URL' }, { status: 500 });
+    } catch {
+      return NextResponse.json(
+        { error: "Failed to fetch the URL" },
+        { status: 500 },
+      );
     }
   } else {
-    return NextResponse.json({ error: 'No file or link provided' }, { status: 400 });
+    return NextResponse.json(
+      { error: "No file or link provided" },
+      { status: 400 },
+    );
   }
 
   // Clean up broken lines and spaces
@@ -58,9 +66,9 @@ export async function POST(req: NextRequest) {
     .replace(/([a-zA-Zå-öÅ-Ö,])\n([a-zA-Zå-öÅ-Ö,])/g, "$1$2")
     .trim()
     .split("\n")
-    .map(line => line.trim())
-    .filter(line => line.length > 0)
-    .join("\n");  // join all lines with a newline
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .join("\n"); // join all lines with a newline
 
   // Only save document if it doesn't already exist
   let document = await Document.findOne({ userId, filename });
@@ -74,36 +82,41 @@ export async function POST(req: NextRequest) {
     await document.save();
   }
 
-  const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 500, chunkOverlap: 100 });
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 500,
+    chunkOverlap: 100,
+  });
   const chunks = await textSplitter.splitText(text);
 
   // Initialize embeddings model
   // Using HuggingFace embeddings as an alternative to OpenAI
   // Make sure to set up the model and any required API keys or configurations
   // const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
-  const embeddings = new HuggingFaceTransformersEmbeddings({ model: "sentence-transformers/all-MiniLM-L6-v2" });
+  const embeddings = new HuggingFaceTransformersEmbeddings({
+    model: "sentence-transformers/all-MiniLM-L6-v2",
+  });
   const vectors = await embeddings.embedDocuments(chunks);
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
-  const indexName = 'ai-study-mentor';
+  const indexName = "ai-study-mentor";
   // Delete the entire index (irreversible)
   // await pinecone.deleteIndex(indexName);
 
   const existingIndexes = await pinecone.listIndexes();
   console.log("Existing Pinecone indexes:", existingIndexes);
-  if (!existingIndexes.indexes?.some(index => index.name === indexName)) {
+  if (!existingIndexes.indexes?.some((index) => index.name === indexName)) {
     await pinecone.createIndex({
       name: indexName,
       // dimension: 1536, // OpenAI embeddings dimension
       dimension: 384, // HuggingFace embeddings dimension
-      metric: 'cosine',
-      spec: { 
+      metric: "cosine",
+      spec: {
         serverless: {
-          cloud: 'aws',
-          region: 'us-east-1'
-        }
-      } 
+          cloud: "aws",
+          region: "us-east-1",
+        },
+      },
     });
   }
 
@@ -115,7 +128,7 @@ export async function POST(req: NextRequest) {
     metadata: {
       documentId: document.id,
       text: chunks[i],
-      model: "sentence-transformers/all-MiniLM-L6-v2"
+      model: "sentence-transformers/all-MiniLM-L6-v2",
     },
   }));
 
@@ -129,5 +142,9 @@ export async function POST(req: NextRequest) {
   });
   await session.save();
 
-  return NextResponse.json({ text, documentId: document.id, sessionId: session._id });
+  return NextResponse.json({
+    text,
+    documentId: document.id,
+    sessionId: session._id,
+  });
 }
