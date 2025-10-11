@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 export async function GET(req: NextRequest) {
   await connectDB();
@@ -22,16 +23,11 @@ export async function GET(req: NextRequest) {
   }
 
   const sessions = await Session.aggregate([
-    { $match: { userId } },
-    {
-      $addFields: {
-        documentObjectId: { $toObjectId: "$documentId" },
-      },
-    },
+    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
     {
       $lookup: {
         from: "documents",
-        localField: "documentObjectId",
+        localField: "documentId",
         foreignField: "_id",
         as: "document",
       },

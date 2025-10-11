@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   const prompt = `
   Du är en svensk AI-assistent som svarar på svenska.
-  Skapa en lista med 10 instuderingsfrågor. Avsluta med texten "###".
+  Skapa en lista med 10 instuderingsfrågor i plain text. Avsluta med texten "###".
   Använd endast information från dokumentet nedan.
   Dokument: ${context}
   ###

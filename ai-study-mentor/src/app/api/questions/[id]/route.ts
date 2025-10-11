@@ -3,12 +3,12 @@ import connectDB from "@/lib/mongodb";
 import Question from "@/models/Question";
 
 export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } },
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
 
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const questions = await Question.findById(id);

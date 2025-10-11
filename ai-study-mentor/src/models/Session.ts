@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ISession extends Document {
-  userId: string;
-  documentId: string;
+  userId: Schema.Types.ObjectId;
+  documentId: Schema.Types.ObjectId;
   documentName: string;
   questionId: { type: Schema.Types.ObjectId; ref: "Question" };
   chatHistory: { text: string; isUser: boolean }[];
@@ -10,8 +10,8 @@ export interface ISession extends Document {
 }
 
 const SessionSchema: Schema = new Schema({
-  userId: { type: String, required: true },
-  documentId: { type: String, required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  documentId: { type: Schema.Types.ObjectId, ref: "Document", required: true },
   documentName: { type: String, required: true },
   questionId: { type: Schema.Types.ObjectId, ref: "Question" },
   chatHistory: [{ text: String, isUser: Boolean }],

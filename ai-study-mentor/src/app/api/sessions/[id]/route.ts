@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   await connectDB();
 
@@ -20,7 +20,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await params;
 
   try {
     const session = await Session.findOneAndDelete({ _id: id });

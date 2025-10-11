@@ -4,6 +4,7 @@ import connectDB from "@/lib/mongodb";
 import Document from "@/models/Document";
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 // import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
@@ -71,10 +72,11 @@ export async function POST(req: NextRequest) {
     .join("\n"); // join all lines with a newline
 
   // Only save document if it doesn't already exist
-  let document = await Document.findOne({ userId, filename });
+  const userIdObj = new mongoose.Types.ObjectId(userId);
+  let document = await Document.findOne({ userId: userIdObj, filename });
   if (!document) {
     document = new Document({
-      userId,
+      userId: userIdObj,
       filename,
       text,
     });
@@ -135,7 +137,7 @@ export async function POST(req: NextRequest) {
   await index.upsert(pineconeVectors);
 
   const session = new Session({
-    userId,
+    userId: new mongoose.Types.ObjectId(userId),
     documentId: document.id,
     documentName: filename,
     chatHistory: [],
