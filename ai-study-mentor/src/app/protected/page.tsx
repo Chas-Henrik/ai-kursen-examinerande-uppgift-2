@@ -15,6 +15,7 @@ interface Session {
   documentName: string;
   chatHistory: Message[];
   text: string;
+  questionId?: string;
 }
 
 export default function ProtectedPage() {
@@ -66,6 +67,7 @@ export default function ProtectedPage() {
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
       setMessages([]);
+      setQuestions([]);
       setSelectedSessionId(data.sessionId);
       fetchSessions();
     } finally {
@@ -89,6 +91,7 @@ export default function ProtectedPage() {
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
       setMessages([]);
+      setQuestions([]);
       setSelectedSessionId(data.sessionId);
       fetchSessions();
     } finally {
@@ -134,13 +137,14 @@ export default function ProtectedPage() {
   };
 
   const handleGenerateQuestions = async () => {
+    console.log("Generating questions for sessionId:", sessionId);
     setIsGeneratingQuestions(true);
     setIsButtonsDisabled(true);
     try {
       const response = await fetch("/api/generate-questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ documentId }),
+        body: JSON.stringify({ documentId, sessionId }),
       });
       const data = await response.json();
       setQuestions(data.questions);
@@ -180,6 +184,18 @@ export default function ProtectedPage() {
       setMessages(session.chatHistory);
       setExtractedText(session.text);
       setSelectedSessionId(session._id);
+
+      if (session.questionId) {
+        const response = await fetch(`/api/questions/${session.questionId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setQuestions(data.questions.questions);
+        } else {
+          setQuestions([]);
+        }
+      } else {
+        setQuestions([]);
+      }
     } finally {
       setIsSelectingSession(false);
       setIsButtonsDisabled(false);

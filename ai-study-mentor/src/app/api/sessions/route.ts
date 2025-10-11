@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
         documentName: 1,
         chatHistory: 1,
         createdAt: 1,
+        questionId: 1,
         text: "$document.text",
       },
     },
