@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Session from "@/models/Session";
+import Document from "@/models/Document";
+import Question from "@/models/Question";
 import jwt from "jsonwebtoken";
 
 export async function DELETE(
@@ -23,11 +25,17 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    const session = await Session.findOneAndDelete({ _id: id });
+    const session = await Session.findById(id);
 
     if (!session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
+
+    await Document.findByIdAndDelete(session.documentId);
+    if (session.questionId) {
+      await Question.findByIdAndDelete(session.questionId);
+    }
+    await Session.findByIdAndDelete(id);
 
     return NextResponse.json({ message: "Session deleted successfully" });
   } catch {
