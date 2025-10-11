@@ -330,28 +330,32 @@ export default function ProtectedPage() {
                   </div>
                 </button>
               </form>
+            </div>
+          )}
+          {documentId && (
+            <div className="my-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
               <button
                 onClick={handleGenerateQuestions}
                 disabled={isGeneratingQuestions || isButtonsDisabled}
-                className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center"
+                className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 disabled:bg-gray-400 flex items-center justify-center mx-auto"
               >
                 <div className="flex items-center space-x-2">
                   <span>Generera studiefrågor</span>{" "}
                   {isGeneratingQuestions && <Spinner />}
                 </div>
               </button>
-            </div>
-          )}
-          {questions.length > 0 && (
-            <div className="mt-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
-              <div className="p-4 bg-gray-50 rounded-md">
-                <div className="list-decimal list-inside space-y-2 text-gray-700">
-                  {questions.map((question, index) => (
-                    <div key={index}>{question}</div>
-                  ))}
-                </div>
-              </div>
+              {questions.length > 0 && (
+                <>
+                  <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
+                  <div className="p-4 bg-gray-50 rounded-md">
+                    <div className="list-decimal list-inside space-y-2 text-gray-700">
+                      {questions.map((question, index) => (
+                        <div key={index}>{question}</div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
