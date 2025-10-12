@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import Spinner from "../../components/Spinner";
+import SafeHtml from "../../components/SafeHtml";
 import { QuestionItem } from "@/models/Question";
 import { ApiResponseType } from "@/types";
 
@@ -231,7 +232,7 @@ export default function ProtectedPage() {
                   }
                   className="flex-grow text-foreground"
                 >
-                  {session.documentName}
+                  <SafeHtml html={session.documentName} />
                 </span>
                 <button
                   onClick={() => handleDeleteSession(session._id)}
@@ -294,7 +295,7 @@ export default function ProtectedPage() {
             <div className="mt-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Extraherad text</h2>
               <div className="p-4 bg-gray-50 rounded-md max-h-60 overflow-y-auto">
-                <p className="text-gray-700">{extractedText}</p>
+                <SafeHtml html={extractedText} />
               </div>
             </div>
           )}
@@ -313,7 +314,7 @@ export default function ProtectedPage() {
                     <div
                       className={`p-3 rounded-lg shadow-md ${message.isUser ? "bg-blue-500 text-white" : "bg-gray-300  text-gray-800 "}`}
                     >
-                      <p>{message.text}</p>
+                      <SafeHtml html={message.text} />
                     </div>
                   </div>
                 ))}
@@ -357,10 +358,10 @@ export default function ProtectedPage() {
                     <div className="list-decimal list-inside space-y-2 text-gray-700">
                       {questions?.map((questionItem, index) => (
                         <div key={index}>
-                          {index + 1}. {questionItem.question}
+                          <SafeHtml html={`${index + 1}. ${questionItem.question}`} />
                           <details className="ml-4 mt-1 text-blue-600">
                             <summary className="cursor-pointer">Svar</summary>
-                            <p className="mt-1">{questionItem.answer}</p>
+                            <SafeHtml html={questionItem.answer} />
                           </details>
                         </div>
                       ))}
