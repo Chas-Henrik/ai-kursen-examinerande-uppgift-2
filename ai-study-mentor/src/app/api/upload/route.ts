@@ -106,7 +106,6 @@ export async function POST(req: NextRequest) {
   // await pinecone.deleteIndex(indexName);
 
   const existingIndexes = await pinecone.listIndexes();
-  console.log("Existing Pinecone indexes:", existingIndexes);
   if (!existingIndexes.indexes?.some((index) => index.name === indexName)) {
     await pinecone.createIndex({
       name: indexName,

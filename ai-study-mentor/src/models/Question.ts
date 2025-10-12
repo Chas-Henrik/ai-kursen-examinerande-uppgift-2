@@ -1,14 +1,17 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface QuestionItem {
+  question: string;
+  answer?: string;
+}
+
 export interface IQuestion extends Document {
-  header: string;
-  questions: string[];
+  questions: QuestionItem[];
   createdAt: Date;
 }
 
 const QuestionSchema: Schema = new Schema({
-  header: { type: String, required: true },
-  questions: [{ type: String, required: true }],
+  questions: [{ type: Object, required: true }],
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import Spinner from "../../components/Spinner";
+import { QuestionItem } from "@/models/Question";
+import { ApiResponseType } from "@/types";
 
 interface Message {
   text: string;
@@ -24,7 +26,7 @@ export default function ProtectedPage() {
   const [sessionId, setSessionId] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [query, setQuery] = useState("");
-  const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -137,7 +139,6 @@ export default function ProtectedPage() {
   };
 
   const handleGenerateQuestions = async () => {
-    console.log("Generating questions for sessionId:", sessionId);
     setIsGeneratingQuestions(true);
     setIsButtonsDisabled(true);
     try {
@@ -146,8 +147,13 @@ export default function ProtectedPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ documentId, sessionId }),
       });
-      const data = await response.json();
-      setQuestions(data.questions);
+      const data: ApiResponseType = await response.json();
+      if (!data.ok) {
+        console.error(`Message: ${data.message}, Error: ${data.error || "Unknown error"}`);
+        alert(`${data.message}\nError: ${data.error || "Unknown error"}`);
+        return;
+      }
+      setQuestions(data.data as QuestionItem[]);
     } finally {
       setIsGeneratingQuestions(false);
       setIsButtonsDisabled(false);
@@ -344,13 +350,19 @@ export default function ProtectedPage() {
                   {isGeneratingQuestions && <Spinner />}
                 </div>
               </button>
-              {questions.length > 0 && (
+              {questions?.length > 0 && (
                 <>
                   <h2 className="text-xl font-semibold mb-4">Studiefrågor</h2>
                   <div className="p-4 bg-gray-50 rounded-md">
                     <div className="list-decimal list-inside space-y-2 text-gray-700">
-                      {questions.map((question, index) => (
-                        <div key={index}>{question}</div>
+                      {questions?.map((questionItem, index) => (
+                        <div key={index}>
+                          {index + 1}. {questionItem.question}
+                          <details className="ml-4 mt-1 text-blue-600">
+                            <summary className="cursor-pointer">Svar</summary>
+                            <p className="mt-1">{questionItem.answer}</p>
+                          </details>
+                        </div>
                       ))}
                     </div>
                   </div>
