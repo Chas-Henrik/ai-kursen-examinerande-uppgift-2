@@ -309,7 +309,7 @@ export default function ProtectedPage() {
             <div className="mt-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Extraherad text</h2>
               <div className="p-4 bg-gray-50 rounded-md max-h-60 overflow-y-auto">
-                <SafeHtml html={extractedText} />
+                <SafeHtml html={extractedText} className="text-gray-700" />
               </div>
             </div>
           )}

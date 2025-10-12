@@ -2,12 +2,15 @@ import DOMPurify from 'dompurify';
 
 interface SafeHtmlProps {
   html: string | undefined;
+  className?: string;
 }
 
-const SafeHtml: React.FC<SafeHtmlProps> = ({ html }) => {
+const SafeHtml: React.FC<SafeHtmlProps> = ({ html, className }) => {
   if (!html) return null;
   const sanitizedHtml = DOMPurify.sanitize(html);
-  return <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />;
+  // Wrap the sanitized HTML with a div that has the className
+  const wrappedHtml = `<div class="${className || ''}">${sanitizedHtml}</div>`;
+  return <div dangerouslySetInnerHTML={{ __html: wrappedHtml }} />;
 };
 
 export default SafeHtml;
