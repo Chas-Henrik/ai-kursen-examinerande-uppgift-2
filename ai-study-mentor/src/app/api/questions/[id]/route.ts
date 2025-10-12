@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Question from "@/models/Question";
+import mongoose from "mongoose";
 
 export async function GET(
   _req: NextRequest,
@@ -9,6 +10,10 @@ export async function GET(
   await connectDB();
 
   const { id } = await params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
 
   try {
     const questions = await Question.findById(id);

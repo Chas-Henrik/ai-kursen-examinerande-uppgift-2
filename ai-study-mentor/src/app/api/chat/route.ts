@@ -6,6 +6,7 @@ import { Ollama } from "@langchain/ollama";
 import connectDB from "@/lib/mongodb";
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -22,6 +23,10 @@ export async function POST(req: NextRequest) {
   }
 
   const { query, documentId, sessionId } = await req.json();
+
+  if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+    return NextResponse.json({ error: "Invalid sessionId" }, { status: 400 });
+  }
 
   const session = await Session.findById(sessionId);
   if (!session) {

@@ -7,6 +7,7 @@ import Document from "@/models/Document";
 import Question from "@/models/Question";
 import { QuestionItem } from "@/models/Question";
 import Session from "@/models/Session";
+import mongoose from "mongoose";
 
 /**
  * Parses raw Markdown output from Gemma into JSON.
@@ -32,6 +33,10 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   const { documentId, sessionId } = await req.json();
+
+  if (!mongoose.Types.ObjectId.isValid(documentId) || !mongoose.Types.ObjectId.isValid(sessionId)) {
+    return NextResponse.json({ error: "Invalid documentId or sessionId" }, { status: 400 });
+  }
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
   const index = pinecone.index("ai-study-mentor");

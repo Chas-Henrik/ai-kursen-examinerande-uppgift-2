@@ -4,6 +4,7 @@ import Session from "@/models/Session";
 import Document from "@/models/Document";
 import Question from "@/models/Question";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 export async function DELETE(
   req: NextRequest,
@@ -23,6 +24,10 @@ export async function DELETE(
   }
 
   const { id } = await params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
 
   try {
     const session = await Session.findById(id);
