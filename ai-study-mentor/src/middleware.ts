@@ -3,6 +3,15 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
+  if (['POST', 'PUT', 'DELETE'].includes(request.method)) {
+    const csrfTokenHeader = request.headers.get('x-csrf-token');
+    const csrfTokenCookie = request.cookies.get('csrfToken')?.value;
+
+    if (!csrfTokenHeader || !csrfTokenCookie || csrfTokenHeader !== csrfTokenCookie) {
+      return new NextResponse('Invalid CSRF token', { status: 403 });
+    }
+  }
+
   const token = request.cookies.get("token")?.value;
 
   if (!token) {

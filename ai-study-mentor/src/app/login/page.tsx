@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -25,7 +24,7 @@ export default function LoginPage() {
 
       if (res.ok) {
         const data = await res.json();
-        Cookies.set("token", data.token, { expires: 1 }); // Set cookie for 1 day
+        localStorage.setItem('csrfToken', data.csrfToken);
         router.push("/protected");
       } else {
         const data = await res.json();

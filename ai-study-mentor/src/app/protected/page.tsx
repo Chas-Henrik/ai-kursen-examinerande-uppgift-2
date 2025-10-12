@@ -61,8 +61,12 @@ export default function ProtectedPage() {
     setIsButtonsDisabled(true);
     try {
       const formData = new FormData(event.currentTarget);
+      const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/upload", {
         method: "POST",
+        headers: {
+          'X-CSRF-Token': csrfToken!,
+        },
         body: formData,
       });
       const data = await response.json();
@@ -85,8 +89,12 @@ export default function ProtectedPage() {
     setIsButtonsDisabled(true);
     try {
       const formData = new FormData(event.currentTarget);
+      const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/upload", {
         method: "POST",
+        headers: {
+          'X-CSRF-Token': csrfToken!,
+        },
         body: formData,
       });
       const data = await response.json();
@@ -110,9 +118,10 @@ export default function ProtectedPage() {
     setIsSendingQuestion(true);
     setIsButtonsDisabled(true);
     try {
+      const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'X-CSRF-Token': csrfToken! },
         body: JSON.stringify({ query, documentId, sessionId }),
       });
 
@@ -143,9 +152,10 @@ export default function ProtectedPage() {
     setIsGeneratingQuestions(true);
     setIsButtonsDisabled(true);
     try {
+      const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/generate-questions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'X-CSRF-Token': csrfToken! },
         body: JSON.stringify({ documentId, sessionId }),
       });
       const data: ApiResponseType = await response.json();
@@ -164,8 +174,12 @@ export default function ProtectedPage() {
   const handleDeleteSession = async (sessionId: string) => {
     setIsButtonsDisabled(true);
     try {
+      const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch(`/api/sessions/${sessionId}`, {
         method: "DELETE",
+        headers: {
+          'X-CSRF-Token': csrfToken!,
+        },
       });
 
       if (response.ok) {

@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 export async function POST(req: Request) {
   try {
@@ -25,7 +26,27 @@ export async function POST(req: Request) {
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
 
-    return NextResponse.json({ message: 'Login successful', token }, { status: 200 });
+    const csrfToken = crypto.randomBytes(32).toString('hex');
+
+    const response = NextResponse.json({ message: 'Login successful', csrfToken }, { status: 200 });
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60, // 1 hour
+    });
+
+    response.cookies.set('csrfToken', csrfToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+      maxAge: 60 * 60, // 1 hour
+    });
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
