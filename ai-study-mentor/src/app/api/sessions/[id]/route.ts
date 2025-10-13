@@ -6,6 +6,7 @@ import Question from "@/models/Question";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { Pinecone } from "@pinecone-database/pinecone";
+import { toLowercaseAlphanumeric } from "@/lib/utils";
 
 export async function DELETE(
   req: NextRequest,
@@ -18,8 +19,12 @@ export async function DELETE(
     return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
+  let userId: string;
   try {
-    jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    userId = decoded.userId;
   } catch {
     return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
@@ -38,20 +43,19 @@ export async function DELETE(
     }
 
     // Delete Pinecone index
-    if (session.pineconeIndexName) {
-      // Count other sessions referencing the same Pinecone index
+    const indexName = toLowercaseAlphanumeric(userId);
+    if (session.pineconeNameSpace) {
+      // Count other sessions referencing the same Pinecone namespace
       const count = await Session.countDocuments({
-        pineconeIndexName: session.pineconeIndexName,
+        pineconeNameSpace: session.pineconeNameSpace,
         _id: { $ne: session._id }, // exclude current session
       });
 
       if (count === 0) {
         // No other sessions reference this Pinecone index → safe to delete
         const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-        const existingIndexes = await pinecone.listIndexes();
-        if (existingIndexes.indexes?.some((index) => index.name === session.pineconeIndexName)) {
-          await pinecone.deleteIndex(session.pineconeIndexName);
-        }
+        await pinecone.index(indexName).namespace(session.pineconeNameSpace).deleteAll();
+        console.log(`Deleted Pinecone namespace: ${session.pineconeNameSpace}`);
       }
     }
 
@@ -73,10 +77,12 @@ export async function DELETE(
     await Session.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true, message: "Session deleted successfully" });
-  } catch {
-    return NextResponse.json(
-      { ok: false, message: "Internal server error" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error deleting session:", error.message);
+      return NextResponse.json({ ok: false, message: "Error deleting session.", error: error.message }, { status: 500 });
+    }
+    console.error("Error deleting session:", error);
+    return NextResponse.json({ ok: false, message:"Failed to delete session." }, { status: 500 });
   }
 }

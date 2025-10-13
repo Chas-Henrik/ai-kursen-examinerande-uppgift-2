@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         _id: 1,
         documentId: 1,
         documentName: 1,
-        pineconeIndexName: 1,
+        pineconeNameSpace: 1,
         chatHistory: 1,
         createdAt: 1,
         questionId: 1,

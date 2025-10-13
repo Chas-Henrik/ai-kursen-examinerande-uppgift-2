@@ -7,6 +7,7 @@ import { connectDB } from '@/lib';
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { toLowercaseAlphanumeric } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   await connectDB();
@@ -16,8 +17,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  let userId: string;
   try {
-    jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    userId = decoded.userId;
   } catch {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
   }
@@ -43,11 +48,12 @@ export async function POST(req: NextRequest) {
   const queryEmbedding = await embeddings.embedQuery(query);
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const index = pinecone.index(session.pineconeIndexName);
+  const indexName = toLowercaseAlphanumeric(userId);
+  const index = pinecone.index(indexName);
 
-  console.log("Using Pinecone index:", session.pineconeIndexName);
+  console.log("Using Pinecone namespace:", session.pineconeNameSpace);
 
-  const queryResult = await index.query({
+  const queryResult = await index.namespace(session.pineconeNameSpace).query({
     topK: 3,
     vector: queryEmbedding,
     filter: { documentId: { $eq: documentId } },
@@ -109,7 +115,6 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         let botMessage = "";
         for await (const chunk of stream) {
-          console.log("Received chunk:", chunk);
           botMessage += chunk;
           controller.enqueue(chunk);
           session.chatHistory[session.chatHistory.length - 1].text += chunk;

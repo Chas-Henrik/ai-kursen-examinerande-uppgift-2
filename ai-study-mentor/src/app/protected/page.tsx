@@ -206,8 +206,8 @@ export default function ProtectedPage() {
         setSessionId("");
         setSelectedSessionId("");
       } else {
-        console.error(`Message: ${jsonData.message}`);
-        alert(`${jsonData.message}`);
+        console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
+        alert(`${jsonData.message}\nError: ${jsonData.error || "Unknown error"}`);
       }
     } finally {
       setIsDeletingSession(false);

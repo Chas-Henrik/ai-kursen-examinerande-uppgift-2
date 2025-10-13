@@ -96,19 +96,18 @@ export async function POST(req: NextRequest) {
 
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
-    const pcIndexName = toLowercaseAlphanumeric(filename);
+    const indexName = toLowercaseAlphanumeric(userId);
     // Delete index (irreversible)
-    // await pinecone.deleteIndex("some-index-name");
+    // await pinecone.deleteIndex("ai-study-mentor");
 
     const existingIndexes = await pinecone.listIndexes();
     console.log("Existing Pinecone indexes:", existingIndexes);
     if (!existingIndexes.indexes || 
       existingIndexes.indexes.length === 0 || 
-      !existingIndexes.indexes?.some((index) => index.name === pcIndexName)) {
-      console.log(`Creating Pinecone index: ${pcIndexName}`);
+      !existingIndexes.indexes?.some((index) => index.name === indexName)) {
+      console.log(`Creating Pinecone index: ${indexName}`);
       await pinecone.createIndex({
-        name: pcIndexName,
-        // dimension: 1536, // OpenAI embeddings dimension
+        name: indexName,
         dimension: 384, // HuggingFace embeddings dimension
         metric: "cosine",
         spec: {
@@ -121,7 +120,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const index = pinecone.index(pcIndexName);
+    // Connect to the index
+    const index = pinecone.index(indexName);
 
     const pineconeVectors = vectors.map((vector, i) => ({
       id: `${document.id}-chunk-${i}`,
@@ -133,13 +133,16 @@ export async function POST(req: NextRequest) {
       },
     }));
 
-    await index.upsert(pineconeVectors);
+    // Pinecone namespace: only contains vectors for this specific document
+    const pcNameSpace = toLowercaseAlphanumeric(filename);
+
+    await index.namespace(pcNameSpace).upsert(pineconeVectors);
 
     const session = new Session({
       userId: new mongoose.Types.ObjectId(userId),
       documentId: document.id,
       documentName: filename,
-      pineconeIndexName: pcIndexName,
+      pineconeNameSpace: pcNameSpace,
       chatHistory: [],
     });
     await session.save();

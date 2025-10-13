@@ -7,7 +7,9 @@ import Document from "@/models/Document";
 import Question from "@/models/Question";
 import { QuestionItem } from "@/models/Question";
 import Session from "@/models/Session";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { toLowercaseAlphanumeric } from "@/lib/utils";
 
 /**
  * Parses raw Markdown output from Gemma into JSON.
@@ -32,6 +34,21 @@ function parseGemmaJSON<T>(raw: string): T {
 export async function POST(req: NextRequest) {
   await connectDB();
 
+  const token = req.cookies.get("token")?.value;
+  if (!token) {
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
+  }
+
+  let userId: string;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    userId = decoded.userId;
+  } catch {
+    return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
+  }
+
   const { documentId, sessionId } = await req.json();
 
   if (!mongoose.Types.ObjectId.isValid(documentId) || !mongoose.Types.ObjectId.isValid(sessionId)) {
@@ -44,9 +61,8 @@ export async function POST(req: NextRequest) {
   }
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const index = pinecone.index(session.pineconeIndexName);
-
-  console.log("Using Pinecone index:", session.pineconeIndexName);
+  const indexName = toLowercaseAlphanumeric(userId);
+  const index = pinecone.index(indexName);
 
   const document = await Document.findById(documentId);
   if (!document) {
@@ -58,7 +74,9 @@ export async function POST(req: NextRequest) {
   });
   const queryEmbedding = await embeddings.embedQuery(document.text);
 
-  const queryResult = await index.query({
+  console.log("Using Pinecone namespace:", session.pineconeNameSpace);
+
+  const queryResult = await index.namespace(session.pineconeNameSpace).query({
     topK: 10,
     vector: queryEmbedding,
     filter: { documentId: { $eq: documentId } },
