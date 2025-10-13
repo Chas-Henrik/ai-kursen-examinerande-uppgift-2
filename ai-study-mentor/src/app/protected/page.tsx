@@ -69,7 +69,13 @@ export default function ProtectedPage() {
         },
         body: formData,
       });
-      const data = await response.json();
+      const jsonData: ApiResponseType = await response.json();
+      if (!jsonData.ok) {
+        console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
+        alert(`${jsonData.message}\nError: ${jsonData.error || "Unknown error"}`);
+        return;
+      }
+      const data = jsonData.data as { text: string; documentId: string; sessionId: string };
       setExtractedText(data.text);
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
@@ -97,7 +103,13 @@ export default function ProtectedPage() {
         },
         body: formData,
       });
-      const data = await response.json();
+      const jsonData: ApiResponseType = await response.json();
+      if (!jsonData.ok) {
+        console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
+        alert(`${jsonData.message}\nError: ${jsonData.error || "Unknown error"}`);
+        return;
+      }
+      const data = jsonData.data as { text: string; documentId: string; sessionId: string };
       setExtractedText(data.text);
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
