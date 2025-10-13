@@ -104,14 +104,12 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         let botMessage = "";
         for await (const chunk of stream) {
+          console.log("Received chunk:", chunk);
           botMessage += chunk;
           controller.enqueue(chunk);
-
-          // Optionally truncate to first sentence on the fly
-          const truncated = botMessage.split(/(?<=[.!?])\s/)[0];
-          session.chatHistory[session.chatHistory.length - 1].text = truncated;
-          await session.save();
+          session.chatHistory[session.chatHistory.length - 1].text += chunk;
         }
+        await session.save();
         controller.close();
       },
     }),
