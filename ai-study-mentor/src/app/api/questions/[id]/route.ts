@@ -12,7 +12,7 @@ export async function GET(
   const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
   }
 
   try {
@@ -20,15 +20,15 @@ export async function GET(
 
     if (!questions) {
       return NextResponse.json(
-        { error: "Questions not found" },
+        { ok: false, message: "Questions not found" },
         { status: 404 },
       );
     }
 
-    return NextResponse.json({ questions });
+    return NextResponse.json({ ok: true, data: questions });
   } catch {
     return NextResponse.json(
-      { error: "Error fetching questions" },
+      { ok: false, message: "Internal server error" },
       { status: 500 },
     );
   }

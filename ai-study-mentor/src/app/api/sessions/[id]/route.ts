@@ -15,26 +15,26 @@ export async function DELETE(
 
   const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
   try {
     jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
   } catch {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
 
   const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
   }
 
   try {
     const session = await Session.findById(id);
 
     if (!session) {
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      return NextResponse.json({ ok: false, message: "Session not found" }, { status: 404 });
     }
 
     // Delete Pinecone index
@@ -72,10 +72,10 @@ export async function DELETE(
     }
     await Session.findByIdAndDelete(id);
 
-    return NextResponse.json({ message: "Session deleted successfully" });
+    return NextResponse.json({ ok: true, message: "Session deleted successfully" });
   } catch {
     return NextResponse.json(
-      { error: "Error deleting session" },
+      { ok: false, message: "Internal server error" },
       { status: 500 },
     );
   }

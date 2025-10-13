@@ -35,6 +35,7 @@ export default function ProtectedPage() {
   const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
   const [isSendingQuestion, setIsSendingQuestion] = useState(false);
   const [isButtonsDisabled, setIsButtonsDisabled] = useState(false);
+  const [isDeletingSession, setIsDeletingSession] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   useTheme();
 
@@ -184,6 +185,7 @@ export default function ProtectedPage() {
   };
 
   const handleDeleteSession = async (sessionId: string) => {
+    setIsDeletingSession(true);
     setIsButtonsDisabled(true);
     try {
       const csrfToken = localStorage.getItem('csrfToken');
@@ -194,15 +196,21 @@ export default function ProtectedPage() {
         },
       });
 
-      if (response.ok) {
+      const jsonData: ApiResponseType = await response.json();
+
+      if (jsonData.ok) {
         fetchSessions();
         setExtractedText("");
         setMessages([]);
         setDocumentId("");
         setSessionId("");
         setSelectedSessionId("");
+      } else {
+        console.error(`Message: ${jsonData.message}`);
+        alert(`${jsonData.message}`);
       }
     } finally {
+      setIsDeletingSession(false);
       setIsButtonsDisabled(false);
     }
   };
@@ -220,12 +228,17 @@ export default function ProtectedPage() {
 
       if (session.questionId) {
         const response = await fetch(`/api/questions/${session.questionId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setQuestions(data.questions.questions);
+        const jsonData: ApiResponseType = await response.json();
+
+        if (jsonData.ok) {
+          const data = jsonData.data as { questions: QuestionItem[] };
+          setQuestions(data.questions);
         } else {
           setQuestions([]);
+          console.error(`Message: ${jsonData.message}`);
+          alert(`${jsonData.message}`);
         }
+        
       } else {
         setQuestions([]);
       }
@@ -239,7 +252,7 @@ export default function ProtectedPage() {
     <div className="flex h-screen bg-background">
       <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-md border-r border-gray-200 relative">
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
-        {isSelectingSession && (
+        {(isSelectingSession || isDeletingSession) && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="absolute inset-0 bg-background opacity-75"></div>
             <Spinner />
