@@ -80,9 +80,6 @@ export async function POST(req: NextRequest) {
     temperature: 0,
   });
 
-  console.log("query:", query);
-  console.log("Context for query:\n", context);
-
   const prompt = `
   <sytemInstructions>
     You are a helpful AI-assistant. 

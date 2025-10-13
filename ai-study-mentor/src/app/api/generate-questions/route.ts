@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
   - Answer with a single string.
   - Escape double quotes (\") inside questions and answers.
   - Escape back ticks (\`) inside questions and answers.
-  - If no answer, omit "answer".
+  - If the answer is not explicitly in the document, generate a reasonable one.
   - No trailing commas.
   - Output ONLY JSON.
   Use only information from the following document: ${context}
