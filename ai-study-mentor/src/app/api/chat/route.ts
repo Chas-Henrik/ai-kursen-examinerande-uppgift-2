@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
   const ollama = new Ollama({
     baseUrl: "http://localhost:11434",
-    model: "gemma3:1b",
+    model: "gemma3:4b",
     temperature: 0,
   });
 
