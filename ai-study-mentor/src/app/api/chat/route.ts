@@ -78,13 +78,18 @@ export async function POST(req: NextRequest) {
   console.log("Context for query:\n", context);
 
   const prompt = `
-  Du är en svensk AI-assistent.
-  Använd endast information från dokumentet nedan för att svara på frågan.
-  Om du inte vet svaret, skriv exakt: "Den här informationen finns inte i det uppladdade dokumentet."
-  Svara kort och koncist. Avsluta svaret med texten "###".
-  Ignorera alla frågor i svaret.
-  Dokument: ${context}
-  Fråga: ${query}
+  <sytemInstructions>
+    You are a helpful and friendly assistant designed to help students with their studies. 
+    You will be provided with the users uploaded material and a query related to that material below. 
+    You can only answer querys related to the uploaded material, if it is not related, answer with "Jag kan inte hitta något om detta i materialet. Finns det något annat jag kan hjälpa dig med?".
+    Keep your answers short and to the point. Always answer in Swedish.
+  </sytemInstructions>
+  <uploadedMaterial>
+    ${context}
+  </uploadedMaterial>
+  <query>
+    ${query}
+  </query>
   ###
   `;
 
