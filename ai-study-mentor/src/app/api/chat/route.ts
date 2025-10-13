@@ -3,7 +3,7 @@ import { Pinecone } from "@pinecone-database/pinecone";
 // import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
 import { Ollama } from "@langchain/ollama";
-import connectDB from "@/lib/mongodb";
+import { connectDB } from '@/lib';
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -43,7 +43,9 @@ export async function POST(req: NextRequest) {
   const queryEmbedding = await embeddings.embedQuery(query);
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const index = pinecone.index("ai-study-mentor");
+  const index = pinecone.index(session.pineconeIndexName);
+
+  console.log("Using Pinecone index:", session.pineconeIndexName);
 
   const queryResult = await index.query({
     topK: 3,

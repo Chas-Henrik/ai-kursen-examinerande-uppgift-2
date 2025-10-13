@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pinecone } from "@pinecone-database/pinecone";
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
 import { Ollama } from "@langchain/ollama";
-import connectDB from "@/lib/mongodb";
+import { connectDB } from '@/lib';
 import Document from "@/models/Document";
 import Question from "@/models/Question";
 import { QuestionItem } from "@/models/Question";
@@ -38,8 +38,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid documentId or sessionId" }, { status: 400 });
   }
 
+  const session = await Session.findById(sessionId);
+  if (!session) {
+    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+  }
+
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const index = pinecone.index("ai-study-mentor");
+  const index = pinecone.index(session.pineconeIndexName);
+
+  console.log("Using Pinecone index:", session.pineconeIndexName);
 
   const document = await Document.findById(documentId);
   if (!document) {
@@ -100,7 +107,6 @@ export async function POST(req: NextRequest) {
     response.splice(10);
   }
 
-  const session = await Session.findById(sessionId);
   if (session && session.questionId) {
     await Question.findByIdAndDelete(session.questionId);
   }

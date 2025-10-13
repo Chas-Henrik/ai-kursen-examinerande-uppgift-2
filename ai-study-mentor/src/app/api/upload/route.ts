@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { pdfToText } from "pdf-ts";
-import connectDB from "@/lib/mongodb";
+import { connectDB } from '@/lib';
+import { toLowercaseAlphanumeric } from "@/lib/utils";
 import Document from "@/models/Document";
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-// import { OpenAIEmbeddings } from '@langchain/openai';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
 import { Pinecone } from "@pinecone-database/pinecone";
 
@@ -101,14 +101,18 @@ export async function POST(req: NextRequest) {
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
 
-  const indexName = "ai-study-mentor";
-  // Delete the entire index (irreversible)
-  // await pinecone.deleteIndex(indexName);
+  const pcIndexName = toLowercaseAlphanumeric(filename);
+  // Delete index (irreversible)
+  // await pinecone.deleteIndex("some-index-name");
 
   const existingIndexes = await pinecone.listIndexes();
-  if (!existingIndexes.indexes?.some((index) => index.name === indexName)) {
+  console.log("Existing Pinecone indexes:", existingIndexes);
+  if (!existingIndexes.indexes || 
+    existingIndexes.indexes.length === 0 || 
+    !existingIndexes.indexes?.some((index) => index.name === pcIndexName)) {
+    console.log(`Creating Pinecone index: ${pcIndexName}`);
     await pinecone.createIndex({
-      name: indexName,
+      name: pcIndexName,
       // dimension: 1536, // OpenAI embeddings dimension
       dimension: 384, // HuggingFace embeddings dimension
       metric: "cosine",
@@ -118,10 +122,11 @@ export async function POST(req: NextRequest) {
           region: "us-east-1",
         },
       },
+      waitUntilReady: true,
     });
   }
 
-  const index = pinecone.index(indexName);
+  const index = pinecone.index(pcIndexName);
 
   const pineconeVectors = vectors.map((vector, i) => ({
     id: `${document.id}-chunk-${i}`,
@@ -139,6 +144,7 @@ export async function POST(req: NextRequest) {
     userId: new mongoose.Types.ObjectId(userId),
     documentId: document.id,
     documentName: filename,
+    pineconeIndexName: pcIndexName,
     chatHistory: [],
   });
   await session.save();

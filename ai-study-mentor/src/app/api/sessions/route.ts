@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb";
+import { connectDB } from '@/lib';
 import Session from "@/models/Session";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
         _id: 1,
         documentId: 1,
         documentName: 1,
+        pineconeIndexName: 1,
         chatHistory: 1,
         createdAt: 1,
         questionId: 1,
