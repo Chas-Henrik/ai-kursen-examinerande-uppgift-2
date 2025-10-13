@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
 
   const prompt = `
   You are a JSON generator.
-  Create exactly 10 distinct study questions. Respond in swedish with an array of exactly 10 JSON objects.
+  Create exactly 10 distinct study questions. Respond with an array of exactly 10 JSON objects.
   Rules:
   - The array must match the following format: [ {"question":"string", "answer":"string"} ]
   - Answer with a single string.

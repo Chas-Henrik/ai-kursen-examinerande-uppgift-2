@@ -85,14 +85,14 @@ export async function POST(req: NextRequest) {
 
   const prompt = `
   <sytemInstructions>
-    You are a helpful and friendly assistant designed to help students with their studies. 
-    You will be provided with the users uploaded material and a query related to that material below. 
-    You can only answer querys related to the uploaded material, if it is not related, answer with "Jag kan inte hitta något om detta i materialet. Finns det något annat jag kan hjälpa dig med?".
-    Keep your answers short and to the point. Always answer in Swedish.
+    You are a helpful AI-assistant. 
+    You will be provided with material and a query. 
+    You can only answer queries related to the material, if it is not related, answer with "Jag kan inte hitta något om detta i materialet. Finns det något annat jag kan hjälpa dig med?".
+    Keep your answers short and concise.
   </sytemInstructions>
-  <uploadedMaterial>
+  <material>
     ${context}
-  </uploadedMaterial>
+  </material>
   <query>
     ${query}
   </query>
