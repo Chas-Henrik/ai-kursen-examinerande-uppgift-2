@@ -49,10 +49,11 @@ export default function RegisterPage() {
               <input
                 type="text"
                 placeholder="Ditt namn"
+                minLength={1}
                 className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 bg-background text-foreground border-gray-300 "
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                required
+                required={false}
               />
             </div>
             <div className="mt-4">
@@ -75,6 +76,7 @@ export default function RegisterPage() {
               </label>
               <input
                 type="password"
+                minLength={8}
                 placeholder="Ditt lösenord"
                 className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600 bg-background text-foreground border-gray-300 "
                 id="password"
