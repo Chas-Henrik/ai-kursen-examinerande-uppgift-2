@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
   const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
   let userId: string;
@@ -24,18 +24,18 @@ export async function POST(req: NextRequest) {
     };
     userId = decoded.userId;
   } catch {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
 
   const { query, documentId, sessionId } = await req.json();
 
   if (!mongoose.Types.ObjectId.isValid(sessionId)) {
-    return NextResponse.json({ error: "Invalid sessionId" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "Invalid sessionId" }, { status: 400 });
   }
 
   const session = await Session.findById(sessionId);
   if (!session) {
-    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    return NextResponse.json({ ok: false, message: "Session not found" }, { status: 404 });
   }
 
   // Initialize embeddings model
@@ -112,9 +112,7 @@ export async function POST(req: NextRequest) {
   return new Response(
     new ReadableStream({
       async start(controller) {
-        let botMessage = "";
         for await (const chunk of stream) {
-          botMessage += chunk;
           controller.enqueue(chunk);
           session.chatHistory[session.chatHistory.length - 1].text += chunk;
         }

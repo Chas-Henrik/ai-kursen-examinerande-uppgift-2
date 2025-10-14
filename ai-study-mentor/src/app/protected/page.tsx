@@ -165,6 +165,17 @@ export default function ProtectedPage() {
         return;
       }
 
+      const contentType = response.headers.get("content-type") || "";
+
+      if (contentType.includes("application/json")) {
+        const data: ApiResponseType = await response.json();
+        if (!data.ok) {
+          console.error(`Message: ${data.message}, Error: ${data.error || "Unknown error"}`);
+          alert(`${data.message}\nError: ${data.error || "Unknown error"}`);
+          return;
+        }
+      }
+
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       let botMessage = "";
