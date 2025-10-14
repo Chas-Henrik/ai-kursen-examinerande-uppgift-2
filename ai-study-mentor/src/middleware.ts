@@ -3,6 +3,17 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
+   const { pathname, origin } = request.nextUrl;
+  // Skip middleware for public and auth routes
+  if (
+    pathname === '/' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname.startsWith('/api/auth')
+  ) {
+    return NextResponse.next();
+  }
+
   if (['POST', 'PUT', 'DELETE'].includes(request.method)) {
     const csrfTokenHeader = request.headers.get('x-csrf-token');
     const csrfTokenCookie = request.cookies.get('csrfToken')?.value;
@@ -15,6 +26,9 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
 
   if (!token) {
+    if (request.nextUrl.pathname.startsWith('/api')) {
+      return NextResponse.json({ ok: false, message: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -23,10 +37,16 @@ export async function middleware(request: NextRequest) {
     await jwtVerify(token, secret);
     return NextResponse.next();
   } catch {
+    if (request.nextUrl.pathname.startsWith('/api')) {
+      return NextResponse.json({ ok: false, message: 'Unauthorized' }, { status: 401 });
+    }
     return NextResponse.redirect(new URL("/login", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/protected/:path*"], // Protect routes under /protected
+  matcher: [
+    '/protected/:path*',
+    '/api/:path*',
+  ],
 };

@@ -41,6 +41,13 @@ export default function ProtectedPage() {
 
   const fetchSessions = async () => {
     const response = await fetch("/api/sessions");
+
+    // Added check for 401 status to redirect to login
+    if (response.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+
     const data = await response.json();
     setSessions(data.sessions);
   };
@@ -70,6 +77,13 @@ export default function ProtectedPage() {
         },
         body: formData,
       });
+
+      // Added check for 401 status to redirect to login
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       const jsonData: ApiResponseType = await response.json();
       if (!jsonData.ok) {
         console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
@@ -104,6 +118,13 @@ export default function ProtectedPage() {
         },
         body: formData,
       });
+
+      // Added check for 401 status to redirect to login
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       const jsonData: ApiResponseType = await response.json();
       if (!jsonData.ok) {
         console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
@@ -138,6 +159,12 @@ export default function ProtectedPage() {
         body: JSON.stringify({ query, documentId, sessionId }),
       });
 
+      // Added check for 401 status to redirect to login
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       const reader = response.body!.getReader();
       const decoder = new TextDecoder();
       let botMessage = "";
@@ -171,6 +198,13 @@ export default function ProtectedPage() {
         headers: { "Content-Type": "application/json", 'X-CSRF-Token': csrfToken! },
         body: JSON.stringify({ documentId, sessionId }),
       });
+
+      // Added check for 401 status to redirect to login
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
       const data: ApiResponseType = await response.json();
       if (!data.ok) {
         console.error(`Message: ${data.message}, Error: ${data.error || "Unknown error"}`);
@@ -195,6 +229,12 @@ export default function ProtectedPage() {
           'X-CSRF-Token': csrfToken!,
         },
       });
+
+      // Added check for 401 status to redirect to login
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
 
       const jsonData: ApiResponseType = await response.json();
 
@@ -228,6 +268,13 @@ export default function ProtectedPage() {
 
       if (session.questionId) {
         const response = await fetch(`/api/questions/${session.questionId}`);
+
+        // Added check for 401 status to redirect to login
+        if (response.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+
         const jsonData: ApiResponseType = await response.json();
 
         if (jsonData.ok) {
