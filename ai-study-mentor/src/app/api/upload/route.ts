@@ -14,11 +14,13 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
+    // Check for authentication token
     const token = req.cookies.get("token")?.value;
     if (!token) {
       return NextResponse.json({ ok: false, message:"Unauthorized" }, { status: 401 });
     }
 
+    // Verify JWT token and extract userId
     let userId: string;
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, message:"Invalid token" }, { status: 401 });
     }
 
+    // Parse form data
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const link = formData.get("link") as string;
@@ -36,17 +39,23 @@ export async function POST(req: NextRequest) {
     let text: string;
     let filename: string;
 
+    // Extract text from PDF file
     if (file) {
-      const bytes = await file.arrayBuffer(); // Uint8Array compatible
-      text = await pdfToText(new Uint8Array(bytes));
+      
+      const bytes = await file.arrayBuffer(); // Turn file into bytes with arrayBuffer()
+      text = await pdfToText(new Uint8Array(bytes)); // Convert bytes to Uint8Array so pdfToText can extract text
       filename = file.name;
+
+      // Extract text from URL link
     } else if (link) {
       try {
-        // Test with: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
-        const response = await fetch(link);
-        const arrayBuffer = await response.arrayBuffer(); // Uint8Array compatible
-        text = await pdfToText(new Uint8Array(arrayBuffer));
+        
+        const response = await fetch(link); // Fetch the PDF from the link
+        
+        const arrayBuffer = await response.arrayBuffer(); // Turn link into bytes with arrayBuffer()
+        text = await pdfToText(new Uint8Array(arrayBuffer)); // Convert bytes to Uint8Array so pdfToText can extract text
         filename = link;
+
       } catch {
         return NextResponse.json({ ok: false, message:"Failed to fetch the URL" }, { status: 500 });
       }
@@ -79,6 +88,7 @@ export async function POST(req: NextRequest) {
       await document.save();
     }
 
+    // Split text into chunks
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 500,
       chunkOverlap: 100,
@@ -86,26 +96,27 @@ export async function POST(req: NextRequest) {
     const chunks = await textSplitter.splitText(text);
 
     // Initialize embeddings model
-    // Using HuggingFace embeddings as an alternative to OpenAI
-    // Make sure to set up the model and any required API keys or configurations
-    // const embeddings = new OpenAIEmbeddings({ openAIApiKey: process.env.OPENAI_API_KEY });
     const embeddings = new HuggingFaceTransformersEmbeddings({
       model: "sentence-transformers/all-MiniLM-L6-v2",
     });
-    const vectors = await embeddings.embedDocuments(chunks);
 
-    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
+    const vectors = await embeddings.embedDocuments(chunks);  // Generate embeddings for the chunks
 
-    const indexName = toLowercaseAlphanumeric(userId);
+    const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! }); // Initialize Pinecone client
+
+    const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
     // Delete index (irreversible)
     // await pinecone.deleteIndex("ai-study-mentor");
 
+    // Create Pinecone index if it doesn't exist
     const existingIndexes = await pinecone.listIndexes();
     console.log("Existing Pinecone indexes:", existingIndexes);
     if (!existingIndexes.indexes || 
       existingIndexes.indexes.length === 0 || 
       !existingIndexes.indexes?.some((index) => index.name === indexName)) {
       console.log(`Creating Pinecone index: ${indexName}`);
+
+      // Create the index with server settings
       await pinecone.createIndex({
         name: indexName,
         dimension: 384, // HuggingFace embeddings dimension
@@ -120,9 +131,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Connect to the index
-    const index = pinecone.index(indexName);
+    const index = pinecone.index(indexName); // Connect to the index
 
+    // Construct entries for insert in Pinecone
     const pineconeVectors = vectors.map((vector, i) => ({
       id: `${document.id}-chunk-${i}`,
       values: vector,
@@ -134,10 +145,11 @@ export async function POST(req: NextRequest) {
     }));
 
     // Pinecone namespace: only contains vectors for this specific document
-    const pcNameSpace = toLowercaseAlphanumeric(filename);
+    const pcNameSpace = toLowercaseAlphanumeric(filename); // Check if filename is valid Alphanumeric for Pinecone namespace
 
     await index.namespace(pcNameSpace).upsert(pineconeVectors);
 
+    // Create a new session for this document
     const session = new Session({
       userId: new mongoose.Types.ObjectId(userId),
       documentId: document.id,

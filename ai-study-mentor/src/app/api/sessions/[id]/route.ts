@@ -14,11 +14,13 @@ export async function DELETE(
 ) {
   await connectDB();
 
+  // Check for authentication token
   const token = req.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
+  // Verify JWT token and extract userId
   let userId: string;
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -29,8 +31,9 @@ export async function DELETE(
     return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
 
-  const { id } = await params;
+  const { id } = await params; // Extract session id from params
 
+  // Check if id is a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
   }
@@ -43,7 +46,7 @@ export async function DELETE(
     }
 
     // Delete Pinecone index
-    const indexName = toLowercaseAlphanumeric(userId);
+    const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
     if (session.pineconeNameSpace) {
       // Count other sessions referencing the same Pinecone namespace
       const count = await Session.countDocuments({
@@ -71,6 +74,8 @@ export async function DELETE(
         await Document.findByIdAndDelete(session.documentId);
       }
     }
+
+    // Delete associated questions, if any
     if (session.questionId) {
       await Question.findByIdAndDelete(session.questionId);
     }

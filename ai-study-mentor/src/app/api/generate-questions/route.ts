@@ -34,11 +34,13 @@ function parseGemmaJSON<T>(raw: string): T {
 export async function POST(req: NextRequest) {
   await connectDB();
 
+  // Check for authentication token
   const token = req.cookies.get("token")?.value;
   if (!token) {
     return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
+  // Verify JWT token and extract userId
   let userId: string;
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -48,34 +50,43 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
+  
+  const { documentId, sessionId } = await req.json(); // Parse request body
 
-  const { documentId, sessionId } = await req.json();
-
+  // Check if documentId and sessionId are valid ObjectIds
   if (!mongoose.Types.ObjectId.isValid(documentId) || !mongoose.Types.ObjectId.isValid(sessionId)) {
-    return NextResponse.json({ error: "Invalid documentId or sessionId" }, { status: 400 });
+    return NextResponse.json({ ok: false,  message: "Invalid documentId or sessionId" }, { status: 400 });
   }
 
   const session = await Session.findById(sessionId);
   if (!session) {
-    return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    return NextResponse.json({ ok: false,  message: "Session not found" }, { status: 404 });
   }
+  
+  const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! }); // Initialize Pinecone client
 
-  const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! });
-  const indexName = toLowercaseAlphanumeric(userId);
-  const index = pinecone.index(indexName);
+  const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
 
+  const index = pinecone.index(indexName); // Get Pinecone index
+
+  // Fetch the document to generate questions from
   const document = await Document.findById(documentId);
   if (!document) {
-    return NextResponse.json({ error: "Document not found" }, { status: 404 });
+    return NextResponse.json({ ok: false,  message: "Document not found" }, { status: 404 });
   }
 
+  // Initialize embeddings model
   const embeddings = new HuggingFaceTransformersEmbeddings({
     model: "sentence-transformers/all-MiniLM-L6-v2",
   });
-  const queryEmbedding = await embeddings.embedQuery(document.text);
+
+  const queryEmbedding = await embeddings.embedQuery(document.text); // Generate embedding for the document text
 
   console.log("Using Pinecone namespace:", session.pineconeNameSpace);
 
+  // Find relevant documents in Pinecone with query embedding
+  // Searching in the users index and the current session namespace
+  // We use topK=10 to get the three most relevant documents
   const queryResult = await index.namespace(session.pineconeNameSpace).query({
     topK: 10,
     vector: queryEmbedding,
@@ -83,15 +94,18 @@ export async function POST(req: NextRequest) {
     includeMetadata: true,
   });
 
+  // Combine the text of the top matches into a single context string
   const context = queryResult.matches
     .map((match) => (match.metadata as { text: string }).text)
     .join("\n\n");
 
+  // Initialize Ollama client
   const ollama = new Ollama({
     baseUrl: "http://localhost:11434",
     model: "gemma3:4b"
   });
 
+  // Prompt with system instructions and context
   const prompt = `
   You are a JSON generator.
   Create exactly 10 distinct study questions as JSON.
@@ -106,8 +120,11 @@ export async function POST(req: NextRequest) {
   - Use only information from the following document: ${context}
   `;
 
+  // Invoke Ollama model with the prompt
   const rawResponse = await ollama.invoke(prompt);
   let response: QuestionItem[];
+
+  // Parse the JSON response from Gemma
   try {
     response = parseGemmaJSON<QuestionItem[]>(rawResponse);
     console.log("Raw Gemma response length:", response.length);
@@ -125,14 +142,17 @@ export async function POST(req: NextRequest) {
     response.splice(10);
   }
 
+  // Delete previous questions for this session, if any
   if (session && session.questionId) {
     await Question.findByIdAndDelete(session.questionId);
   }
 
+  // Save new questions to the database
   const newQuestion = await Question.create({
     questions: response,
   });
 
+  // Link the new questions to the session
   await Session.findByIdAndUpdate(
     sessionId,
     { questionId: newQuestion._id },

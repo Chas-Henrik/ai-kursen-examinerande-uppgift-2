@@ -11,19 +11,19 @@ export async function POST(req: Request) {
     const { email, password } = await req.json();
 
     if (!email || !password) {
-      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
+      return NextResponse.json({ ok: false, message: 'Email and password are required' }, { status: 400 });
     }
 
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ ok: false,  message: 'Invalid credentials' }, { status: 401 });
     }
 
     // Hash and compare passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
+      return NextResponse.json({ ok: false,  message: 'Invalid credentials' }, { status: 401 });
     }
 
     // Generate JWT token
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     const csrfToken = crypto.randomBytes(32).toString('hex');
 
     // Create response
-    const response = NextResponse.json({ message: 'Login successful', csrfToken }, { status: 200 });
+    const response = NextResponse.json({ ok: true, message: 'Login successful', csrfToken }, { status: 200 });
 
     // Set cookies
     response.cookies.set('token', token, {
@@ -59,6 +59,6 @@ export async function POST(req: Request) {
     return response;
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ ok: false, message: 'Internal server error' }, { status: 500 });
   }
 }

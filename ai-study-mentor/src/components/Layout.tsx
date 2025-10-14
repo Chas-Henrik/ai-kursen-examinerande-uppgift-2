@@ -10,6 +10,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+// Layout component with header and theme switching
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();

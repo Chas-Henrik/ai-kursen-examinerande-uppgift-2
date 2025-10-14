@@ -4,15 +4,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  
+  // State variables for form inputs and error message
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  
   const router = useRouter();
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    // Call the login API
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -22,10 +27,13 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
+      // Set CSRF token in localStorage and redirect on success
       if (res.ok) {
         const data = await res.json();
         localStorage.setItem('csrfToken', data.csrfToken);
         router.push("/protected");
+
+      // Give error message on failure
       } else {
         const data = await res.json();
         setError(data.message || "Login failed");
@@ -35,6 +43,7 @@ export default function LoginPage() {
     }
   };
 
+  // Render the login form
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="px-8 py-6 mt-4 text-left bg-background shadow-lg  rounded-lg border border-gray-200 ">

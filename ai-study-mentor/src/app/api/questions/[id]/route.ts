@@ -9,12 +9,14 @@ export async function GET(
 ) {
   await connectDB();
 
-  const { id } = await params;
+  const { id } = await params; // Parse params to get the id
 
+  // Validate the id as mongoose ObjectId
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
   }
 
+  // Fetch questions by id    
   try {
     const questions = await Question.findById(id);
 

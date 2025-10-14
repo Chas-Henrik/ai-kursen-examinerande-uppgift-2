@@ -7,11 +7,13 @@ import mongoose from "mongoose";
 export async function GET(req: NextRequest) {
   await connectDB();
 
+  // Check for authentication token
   const token = req.cookies.get("token")?.value;
   if (!token) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
+  // Verify JWT token and extract userId
   let userId: string;
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
@@ -19,9 +21,10 @@ export async function GET(req: NextRequest) {
     };
     userId = decoded.userId;
   } catch {
-    return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "Invalid token" }, { status: 401 });
   }
 
+  // Aggregate sessions to include document details
   const sessions = await Session.aggregate([
     { $match: { userId: new mongoose.Types.ObjectId(userId) } },
     {
@@ -48,5 +51,5 @@ export async function GET(req: NextRequest) {
     { $sort: { createdAt: -1 } },
   ]);
 
-  return NextResponse.json({ sessions });
+  return NextResponse.json({ ok: true, data: sessions });
 }

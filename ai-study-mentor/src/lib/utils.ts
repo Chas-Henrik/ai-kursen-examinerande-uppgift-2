@@ -1,3 +1,4 @@
+// Utility function to convert a string to a lowercase alphanumeric format
 export function toLowercaseAlphanumeric(input: string): string {
   return input
     .toLowerCase()                  // convert to lowercase

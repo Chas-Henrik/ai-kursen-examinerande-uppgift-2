@@ -4,17 +4,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+
+  // State variables for form inputs and error message
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
+  const router = useRouter();
+  
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     try {
+      // Call the register API  
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -34,6 +39,7 @@ export default function RegisterPage() {
     }
   };
 
+  // Render the registration form
   return (
     <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="px-8 py-6 mt-4 text-left bg-background shadow-lg  rounded-lg border border-gray-200 ">

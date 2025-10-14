@@ -5,6 +5,7 @@ interface SafeHtmlProps {
   className?: string;
 }
 
+// SafeHtml component to safely render sanitized HTML content
 const SafeHtml: React.FC<SafeHtmlProps> = ({ html, className }) => {
   if (!html) return null;
   const sanitizedHtml = DOMPurify.sanitize(html);

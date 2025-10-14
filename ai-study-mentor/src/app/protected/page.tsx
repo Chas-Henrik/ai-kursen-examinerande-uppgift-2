@@ -7,11 +7,13 @@ import SafeHtml from "../../components/SafeHtml";
 import { QuestionItem } from "@/models/Question";
 import { ApiResponseType } from "@/types";
 
+// Shape of a chat message for chat history in session
 interface Message {
   text: string;
   isUser: boolean;
 }
 
+// Shape of a session for session history
 interface Session {
   _id: string;
   documentId: string;
@@ -39,6 +41,7 @@ export default function ProtectedPage() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   useTheme();
 
+  // Fetch sessions for session history
   const fetchSessions = async () => {
     const response = await fetch("/api/sessions");
 
@@ -48,14 +51,21 @@ export default function ProtectedPage() {
       return;
     }
 
-    const data = await response.json();
-    setSessions(data.sessions);
+    const data : ApiResponseType = await response.json();
+
+    if (!data.ok) {
+      console.error(`Message: ${data.message}, Error: ${data.error || "Unknown error"}`);
+      alert(`${data.message}\nError: ${data.error || "Unknown error"}`);
+      return;
+    }
+    setSessions(data.data as Session[]);
   };
 
   useEffect(() => {
     fetchSessions();
   }, []);
 
+  // Auto-scroll chat to bottom on new message
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -63,13 +73,18 @@ export default function ProtectedPage() {
     }
   }, [messages]);
 
+  // Handle file upload
   const handleFileSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setIsButtonsDisabled(true);
     try {
+
+      // Prepare form data and CSRF token
       const formData = new FormData(event.currentTarget);
       const csrfToken = localStorage.getItem('csrfToken');
+
+      // Call upload API with CSRF token in headers
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
@@ -91,26 +106,33 @@ export default function ProtectedPage() {
         return;
       }
       const data = jsonData.data as { text: string; documentId: string; sessionId: string };
+
+      // Set states with new session data
       setExtractedText(data.text);
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
       setMessages([]);
       setQuestions([]);
       setSelectedSessionId(data.sessionId);
-      fetchSessions();
+      fetchSessions(); // Refresh session history
     } finally {
       setIsLoading(false);
       setIsButtonsDisabled(false);
     }
   };
 
+  // Handle link upload
   const handleLinkSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     setIsButtonsDisabled(true);
     try {
+
+      // Prepare form data and CSRF token
       const formData = new FormData(event.currentTarget);
       const csrfToken = localStorage.getItem('csrfToken');
+
+      // Call upload API with CSRF token in headers
       const response = await fetch("/api/upload", {
         method: "POST",
         headers: {
@@ -132,19 +154,22 @@ export default function ProtectedPage() {
         return;
       }
       const data = jsonData.data as { text: string; documentId: string; sessionId: string };
+
+      // Set states with new session data
       setExtractedText(data.text);
       setDocumentId(data.documentId);
       setSessionId(data.sessionId);
       setMessages([]);
       setQuestions([]);
       setSelectedSessionId(data.sessionId);
-      fetchSessions();
+      fetchSessions(); // Refresh session history
     } finally {
       setIsLoading(false);
       setIsButtonsDisabled(false);
     }
   };
 
+  // Handle query submission
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessages((prev) => [...prev, { text: query, isUser: true }]);
@@ -152,6 +177,8 @@ export default function ProtectedPage() {
     setIsSendingQuestion(true);
     setIsButtonsDisabled(true);
     try {
+
+      // Call chat API with CSRF token in headers
       const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -176,16 +203,24 @@ export default function ProtectedPage() {
         }
       }
 
-      const reader = response.body!.getReader();
+      const reader = response.body!.getReader(); // Use getReader() to handle streamed response
+
+      // Initialize TextDecoder with default UTF-8 interpreter to decode the streamed response
       const decoder = new TextDecoder();
       let botMessage = "";
 
+      // Loop through the stream until done is returned as true
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        botMessage += decoder.decode(value);
+
+        botMessage += decoder.decode(value); // Decode the current chunk and append to botMessage
+
+        // Update the last message in chat with the current botMessage
         setMessages((prev) => {
           const lastMessage = prev[prev.length - 1];
+
+          // If the last message is from the bot, update it. Otherwise, add a new bot message.
           if (!lastMessage.isUser) {
             return [...prev.slice(0, -1), { text: botMessage, isUser: false }];
           } else {
@@ -199,10 +234,13 @@ export default function ProtectedPage() {
     }
   };
 
+  // Handle question generation
   const handleGenerateQuestions = async () => {
     setIsGeneratingQuestions(true);
     setIsButtonsDisabled(true);
     try {
+
+      // Call generate-questions API with CSRF token in headers
       const csrfToken = localStorage.getItem('csrfToken');
       const response = await fetch("/api/generate-questions", {
         method: "POST",
@@ -222,6 +260,8 @@ export default function ProtectedPage() {
         alert(`${data.message}\nError: ${data.error || "Unknown error"}`);
         return;
       }
+
+      // Set generated questions
       setQuestions(data.data as QuestionItem[]);
     } finally {
       setIsGeneratingQuestions(false);
@@ -229,6 +269,7 @@ export default function ProtectedPage() {
     }
   };
 
+  // Handle session deletion
   const handleDeleteSession = async (sessionId: string) => {
     setIsDeletingSession(true);
     setIsButtonsDisabled(true);
@@ -250,12 +291,16 @@ export default function ProtectedPage() {
       const jsonData: ApiResponseType = await response.json();
 
       if (jsonData.ok) {
-        fetchSessions();
-        setExtractedText("");
-        setMessages([]);
-        setDocumentId("");
-        setSessionId("");
-        setSelectedSessionId("");
+        fetchSessions(); // Refresh sessions after deletion
+
+        // If the deleted session is currently selected, clear the main view
+        if (sessionId === selectedSessionId) {
+          setExtractedText("");
+          setMessages([]);
+          setDocumentId("");
+          setSessionId("");
+          setSelectedSessionId("");
+        }
       } else {
         console.error(`Message: ${jsonData.message}, Error: ${jsonData.error || "Unknown error"}`);
         alert(`${jsonData.message}\nError: ${jsonData.error || "Unknown error"}`);
@@ -266,17 +311,21 @@ export default function ProtectedPage() {
     }
   };
 
+  // Handle session selection from history
   const handleSessionClick = async (session: Session) => {
     setIsSelectingSession(true);
     setIsButtonsDisabled(true);
     try {
       await fetchSessions(); // Refresh sessions to get the latest data
+
+      // Set states with selected session data
       setDocumentId(session.documentId);
       setSessionId(session._id);
       setMessages(session.chatHistory);
       setExtractedText(session.text);
       setSelectedSessionId(session._id);
 
+      // Fetch questions if the session has a questionId
       if (session.questionId) {
         const response = await fetch(`/api/questions/${session.questionId}`);
 
@@ -290,15 +339,15 @@ export default function ProtectedPage() {
 
         if (jsonData.ok) {
           const data = jsonData.data as { questions: QuestionItem[] };
-          setQuestions(data.questions);
+          setQuestions(data.questions); // Set questions from fetched data
         } else {
-          setQuestions([]);
+          setQuestions([]); // Clear questions if fetch failed
           console.error(`Message: ${jsonData.message}`);
           alert(`${jsonData.message}`);
         }
         
       } else {
-        setQuestions([]);
+        setQuestions([]); // No questions for this session
       }
     } finally {
       setIsSelectingSession(false);
@@ -309,6 +358,7 @@ export default function ProtectedPage() {
   return (
     <div className="flex h-screen bg-background">
       <div className="w-1/4 bg-background p-4 overflow-y-auto shadow-md border-r border-gray-200 relative">
+        {/* Sidebar with session history */}
         <h2 className="text-xl font-semibold mb-4">Historik</h2>
         {(isSelectingSession || isDeletingSession) && (
           <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -329,7 +379,7 @@ export default function ProtectedPage() {
                   }
                   className="flex-grow text-foreground"
                 >
-                  <SafeHtml html={session.documentName} />
+                  <SafeHtml html={session.documentName} /> {/* Use SafeHtml component to render document name safely */}
                 </span>
                 <button
                   onClick={() => handleDeleteSession(session._id)}
@@ -345,6 +395,7 @@ export default function ProtectedPage() {
       <div className="w-3/4 p-4 flex flex-col">
         <div className="flex-grow">
           <h1 className="text-3xl font-bold mb-6 text-foreground">
+            {/* Main content area */}
             AI Study Mentor
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -388,14 +439,16 @@ export default function ProtectedPage() {
               </form>
             </div>
           </div>
+          {/* Display extracted text and chat if a document is loaded */}
           {extractedText && (
             <div className="mt-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Extraherad text</h2>
               <div className="p-4 bg-gray-50 rounded-md max-h-60 overflow-y-auto">
-                <SafeHtml html={extractedText} className="text-gray-700" />
+                <SafeHtml html={extractedText} className="text-gray-700" /> {/* Use SafeHtml component to render extracted text safely */}
               </div>
             </div>
           )}
+          {/* Display chat if a document is loaded */}
           {documentId && (
             <div className="mt-8 bg-background p-6 rounded-lg shadow-md flex-grow flex flex-col border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Chatt</h2>
@@ -411,11 +464,12 @@ export default function ProtectedPage() {
                     <div
                       className={`p-3 rounded-lg shadow-md ${message.isUser ? "bg-blue-500 text-white" : "bg-gray-300  text-gray-800 "}`}
                     >
-                      <SafeHtml html={message.text} />
+                      <SafeHtml html={message.text} /> {/* Use SafeHtml component to render message text safely */}
                     </div>
                   </div>
                 ))}
               </div>
+              {/* Chat input form */}
               <form onSubmit={handleQuerySubmit} className="mt-4 flex">
                 <input
                   type="text"
@@ -436,6 +490,7 @@ export default function ProtectedPage() {
               </form>
             </div>
           )}
+          {/* Display question generation if a document is loaded */}
           {documentId && (
             <div className="my-8 bg-background p-6 rounded-lg shadow-md border border-gray-200">
               <button
@@ -455,10 +510,10 @@ export default function ProtectedPage() {
                     <div className="list-decimal list-inside space-y-2 text-gray-700">
                       {questions?.map((questionItem, index) => (
                         <div key={index}>
-                          <SafeHtml html={`${index + 1}. ${questionItem.question}`} />
+                          <SafeHtml html={`${index + 1}. ${questionItem.question}`} /> {/* Use SafeHtml component to render question safely */}
                           <details className="ml-4 mt-1 text-blue-600">
                             <summary className="cursor-pointer">Svar</summary>
-                            <SafeHtml html={questionItem.answer} />
+                            <SafeHtml html={questionItem.answer} /> {/* Use SafeHtml component to render answer safely */}
                           </details>
                         </div>
                       ))}
