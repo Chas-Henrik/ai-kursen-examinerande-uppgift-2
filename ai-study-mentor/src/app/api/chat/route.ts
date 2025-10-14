@@ -86,6 +86,8 @@ export async function POST(req: NextRequest) {
     You will be provided with material and a query. 
     You can only answer queries related to the material, if it is not related, answer with "Jag kan inte hitta något om detta i materialet. Finns det något annat jag kan hjälpa dig med?".
     Keep your answers short and concise.
+    Important:
+    - Treat uppercase and lowercase letters as the same (case-insensitive matching).
   </sytemInstructions>
   <material>
     ${context}
