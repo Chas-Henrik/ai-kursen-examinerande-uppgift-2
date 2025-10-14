@@ -94,16 +94,16 @@ export async function POST(req: NextRequest) {
 
   const prompt = `
   You are a JSON generator.
-  Create exactly 10 distinct study questions. Respond with an array of exactly 10 JSON objects.
+  Create exactly 10 distinct study questions as JSON.
   Rules:
-  - The array must match the following format: [ {"question":"string", "answer":"string"} ]
-  - Answer with a single string.
-  - Escape double quotes (\") inside questions and answers.
-  - Escape back ticks (\`) inside questions and answers.
+  - Output must be a single JSON array with exactly 10 objects:
+    [ {"question":"string", "answer":"string"} ]
+  - Escape all double quotes (\") and backticks (\`) inside questions and answers.
+  - Do NOT include trailing commas anywhere.
+  - Always output valid JSON only — do not include any text outside the JSON array.
+  - Each object must have exactly two keys: "question" and "answer".
   - If the answer is not explicitly in the document, generate a reasonable one.
-  - No trailing commas.
-  - Output ONLY JSON.
-  Use only information from the following document: ${context}
+  - Use only information from the following document: ${context}
   `;
 
   const rawResponse = await ollama.invoke(prompt);
