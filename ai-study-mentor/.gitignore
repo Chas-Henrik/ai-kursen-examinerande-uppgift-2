@@ -39,3 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# development and debug files
+debug-*.js
+debug-*.mjs
+test-*.js
+test-*.mjs
+test-*.ts
+comprehensive-*.mjs
+*-debug.js
+*-debug.mjs
+
+# uploads directory
+/uploads/
+
+# test directories
+/test/
+/tests/
