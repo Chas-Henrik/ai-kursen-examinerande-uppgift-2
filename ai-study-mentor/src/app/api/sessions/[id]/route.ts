@@ -79,6 +79,8 @@ export async function DELETE(
     if (session.questionId) {
       await Question.findByIdAndDelete(session.questionId);
     }
+
+    // Finally, delete the session itself
     await Session.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true, message: "Session deleted successfully" });

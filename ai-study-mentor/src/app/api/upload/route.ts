@@ -159,6 +159,7 @@ export async function POST(req: NextRequest) {
     });
     await session.save();
 
+    //Return extracted text and id for the document and session
     return NextResponse.json({ 
       ok: true, 
       data: {
