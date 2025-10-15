@@ -74,14 +74,6 @@ export async function POST(req: NextRequest) {
     .map((match) => (match.metadata as { text: string }).text)
     .join("\n\n");
 
-  // Optional cleaning:
-  // const context = rawContext
-  //   .replace(/Fråga:.*$/gim, '')
-  //   .replace(/Svar:.*$/gim, '')
-  //   .replace(/Uppgift:.*$/gim, '')
-  //   .replace(/\d+\s+(Övning|Uppgift).*/gim, '')
-  //   .trim();
-
   // Initialize Ollama client with our model
   // Temperature 0 to get more precise answers
   const ollama = new Ollama({
