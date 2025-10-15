@@ -29,8 +29,9 @@ interface UploadedDocument {
 // Chat hook för API-anrop
 function useChatAPI() {
   const sendMessage = async (
-    message: string
-  ): Promise<{ response: string; sources?: Source[] }> => {
+    message: string,
+    sessionId?: string | null
+  ): Promise<{ response: string; sources?: Source[]; sessionId?: string }> => {
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -38,7 +39,10 @@ function useChatAPI() {
           "Content-Type": "application/json",
         },
         credentials: "include", // Använd httpOnly cookies
-        body: JSON.stringify({ message: message }),
+        body: JSON.stringify({
+          message: message,
+          sessionId: sessionId,
+        }),
       });
 
       if (!response.ok) {
@@ -54,6 +58,7 @@ function useChatAPI() {
       return {
         response: data.response,
         sources: data.sources || [],
+        sessionId: data.sessionId,
       };
     } catch (error: unknown) {
       console.error("Chat API error:", error);
@@ -64,7 +69,17 @@ function useChatAPI() {
   return { sendMessage };
 }
 
-export default function MainContent() {
+interface MainContentProps {
+  sessionId: string | null;
+  onSessionIdChange: (sessionId: string) => void;
+  onSessionCreated?: (sessionId: string) => void;
+}
+
+export default function MainContent({
+  sessionId,
+  onSessionIdChange,
+  onSessionCreated,
+}: MainContentProps) {
   const [activeTab, setActiveTab] = useState<"chat" | "study">("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -115,7 +130,14 @@ export default function MainContent() {
     setIsLoading(true);
 
     try {
-      const response = await sendMessage(userMessage.content);
+      const response = await sendMessage(userMessage.content, sessionId);
+
+      // Uppdatera sessionId om det är första meddelandet
+      if (response.sessionId && !sessionId) {
+        onSessionIdChange(response.sessionId);
+        // Notifiera att en ny session skapades
+        onSessionCreated?.(response.sessionId);
+      }
 
       const aiMessage: Message = {
         id: `ai-${Date.now()}`,
@@ -140,6 +162,27 @@ export default function MainContent() {
       setIsLoading(false);
     }
   };
+
+  // Rensa meddelanden när sessionId ändras
+  useEffect(() => {
+    if (sessionId === null) {
+      // Ny konversation - rensa och visa välkomstmeddelande
+      setMessages([]);
+      setInputMessage("");
+      const welcomeMessage: Message = {
+        id: "welcome",
+        type: "ai",
+        content:
+          "Hej! Jag är din AI-studieassistent. Ladda upp dokument och ställ frågor om innehållet så hjälper jag dig att förstå materialet bättre. Vad kan jag hjälpa dig med idag?",
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+    } else {
+      // TODO: Ladda meddelanden för den valda sessionen
+      // För nu, visa bara att en session är vald
+      setMessages([]);
+    }
+  }, [sessionId]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

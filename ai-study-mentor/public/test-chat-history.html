@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chat History</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { border: 1px solid #ccc; padding: 20px; margin: 10px 0; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Test Chat History Funktionalitet</h1>
+    
+    <div class="container">
+        <h2>1. Logga in</h2>
+        <input type="email" id="email" placeholder="E-post" value="test@example.com">
+        <input type="password" id="password" placeholder="Lösenord" value="testpassword">
+        <button onclick="login()">Logga in</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>2. Skicka Chat Meddelande</h2>
+        <input type="text" id="message" placeholder="Skriv meddelande..." value="Vad är AI?">
+        <button onclick="sendMessage()">Skicka</button>
+        <div id="chatResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>3. Hämta Sessions (Chat History)</h2>
+        <button onclick="getSessions()">Hämta Sessioner</button>
+        <div id="sessionsResult"></div>
+    </div>
+
+    <div class="container">
+        <h2>4. Test Auth Status</h2>
+        <button onclick="checkAuth()">Kontrollera Auth</button>
+        <div id="authResult"></div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="success">✅ Inloggning lyckades!</div>';
+                    try {
+                        const jsonData = JSON.parse(data);
+                        console.log('Login response:', jsonData);
+                    } catch(e) {
+                        console.log('Login response (text):', data);
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Inloggning misslyckades: ' + response.status + '</div><pre>' + data + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            const resultDiv = document.getElementById('chatResult');
+            resultDiv.innerHTML = 'Skickar meddelande...';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        message: message,
+                        sessionId: currentSessionId 
+                    })
+                });
+                
+                const data = await response.text();
+                
+                if (response.ok) {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        currentSessionId = jsonData.sessionId;
+                        resultDiv.innerHTML = '<div class="success">✅ Meddelande skickat! Session ID: ' + currentSessionId + '</div><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+                    } catch(e) {
+                        resultDiv.innerHTML = '<div class="success">✅ Meddelande skickat!</div><pre>' + data + '</pre>';
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Chat misslyckades: ' + response.status + '</div><pre>' + data + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+
+        async function getSessions() {
+            const resultDiv = document.getElementById('sessionsResult');
+            resultDiv.innerHTML = 'Hämtar sessioner...';
+            
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const data = await response.text();
+                
+                if (response.ok) {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        resultDiv.innerHTML = '<div class="success">✅ Sessioner hämtade!</div><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+                    } catch(e) {
+                        resultDiv.innerHTML = '<div class="success">✅ Sessioner hämtade!</div><pre>' + data + '</pre>';
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Sessions misslyckades: ' + response.status + '</div><pre>' + data + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+
+        async function checkAuth() {
+            const resultDiv = document.getElementById('authResult');
+            resultDiv.innerHTML = 'Kontrollerar autentisering...';
+            
+            try {
+                const response = await fetch('/api/auth/me', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const data = await response.text();
+                
+                if (response.ok) {
+                    try {
+                        const jsonData = JSON.parse(data);
+                        resultDiv.innerHTML = '<div class="success">✅ Autentiserad!</div><pre>' + JSON.stringify(jsonData, null, 2) + '</pre>';
+                    } catch(e) {
+                        resultDiv.innerHTML = '<div class="success">✅ Autentiserad!</div><pre>' + data + '</pre>';
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Inte autentiserad: ' + response.status + '</div><pre>' + data + '</pre>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Sessions API</title>
+  </head>
+  <body>
+    <h1>Test Sessions API</h1>
+    <button id="testBtn">Test Sessions API</button>
+    <div id="result"></div>
+
+    <script>
+      document.getElementById("testBtn").addEventListener("click", async () => {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = "Testing...";
+
+        try {
+          console.log("Testing sessions API endpoint...");
+
+          // First, let's check if the API endpoint exists
+          const response = await fetch("http://localhost:3002/api/sessions", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Add a test token - you might need to adjust this
+              Authorization: "Bearer test-token",
+            },
+          });
+
+          console.log("Response status:", response.status);
+
+          const data = await response.text();
+          console.log("Response body:", data);
+
+          if (response.ok) {
+            resultDiv.innerHTML = `
+                        <h3>✅ Sessions API is working!</h3>
+                        <p>Status: ${response.status}</p>
+                        <pre>${data}</pre>
+                    `;
+            try {
+              const jsonData = JSON.parse(data);
+              console.log("Parsed JSON data:", jsonData);
+            } catch (e) {
+              console.log("Response is not JSON:", data);
+            }
+          } else {
+            resultDiv.innerHTML = `
+                        <h3>❌ Sessions API returned error</h3>
+                        <p>Status: ${response.status}</p>
+                        <pre>${data}</pre>
+                    `;
+          }
+        } catch (error) {
+          console.error("❌ Error testing sessions API:", error);
+          resultDiv.innerHTML = `
+                    <h3>❌ Error testing sessions API</h3>
+                    <pre>${error.message}</pre>
+                `;
+        }
+      });
+    </script>
+  </body>
+</html>

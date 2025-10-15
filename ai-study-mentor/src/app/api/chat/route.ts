@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import { searchSimilarDocuments } from "@/lib/pinecone";
 import { generateEmbeddings } from "@/lib/documentProcessor";
+import { connectDB } from "@/lib/db";
+import { ChatSession } from "@/models/ChatSession";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,7 +30,7 @@ export async function POST(request: NextRequest) {
     const requestBody = await request.json();
     console.log("📝 Request body:", requestBody);
 
-    const { message, conversationHistory = [] } = requestBody;
+    const { message, conversationHistory = [], sessionId } = requestBody;
     console.log(
       "💬 Message:",
       message,
@@ -76,7 +78,9 @@ export async function POST(request: NextRequest) {
 
     // Steg 3: Förbered kontext för AI-modellen (begränsa längd)
     const context = relevantDocuments
-      .map((doc, index) => `[Källa ${index + 1}]: ${doc.text.substring(0, 800)}...`) // Begränsa varje chunk till 800 tecken
+      .map(
+        (doc, index) => `[Källa ${index + 1}]: ${doc.text.substring(0, 800)}...`
+      ) // Begränsa varje chunk till 800 tecken
       .join("\n\n");
 
     // Steg 4: Generera svar med Ollama
@@ -96,10 +100,63 @@ export async function POST(request: NextRequest) {
       chunkIndex: doc.chunkIndex || 0,
     }));
 
+    // Steg 6: Spara konversation till databas
+    await connectDB();
+
+    let currentSession;
+    let actualSessionId = sessionId;
+
+    if (sessionId) {
+      // Uppdatera befintlig session
+      currentSession = await ChatSession.findById(sessionId);
+      if (currentSession && currentSession.userId.toString() === user.userId) {
+        currentSession.messages.push(
+          {
+            role: "user",
+            content: message,
+            timestamp: new Date(),
+          },
+          {
+            role: "assistant",
+            content: aiResponse,
+            timestamp: new Date(),
+          }
+        );
+        currentSession.updatedAt = new Date();
+        await currentSession.save();
+        actualSessionId = (currentSession._id as any).toString();
+      }
+    } else {
+      // Skapa ny session (låt MongoDB generera _id automatiskt)
+      const sessionTitle =
+        message.substring(0, 50) + (message.length > 50 ? "..." : "");
+      currentSession = new ChatSession({
+        userId: user.userId,
+        title: sessionTitle,
+        messages: [
+          {
+            role: "user",
+            content: message,
+            timestamp: new Date(),
+          },
+          {
+            role: "assistant",
+            content: aiResponse,
+            timestamp: new Date(),
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      await currentSession.save();
+      actualSessionId = (currentSession._id as any).toString();
+    }
+
     return NextResponse.json({
       response: aiResponse,
       sources,
-      conversationId: `conv_${Date.now()}`,
+      conversationId: actualSessionId,
+      sessionId: actualSessionId,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -178,7 +235,7 @@ Svar:`;
         },
       }),
     });
-    
+
     clearTimeout(timeoutId);
 
     console.log("📡 Ollama response status:", response.status);

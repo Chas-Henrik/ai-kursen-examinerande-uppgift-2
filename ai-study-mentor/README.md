@@ -128,7 +128,8 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 | ❓ **AI Studiefrågor**      | ✅     | Automatisk generering av flervalsfrågor från text |
 | 📚 **Studiesession**        | ✅     | Interaktiv frågespel med poäng och förklaringar   |
 | 🔍 **Sessionsökning**       | ✅     | Sök och filtrera tidigare studiesessioner         |
-| 🛡️ **Felhantering**         | ✅     | ErrorBoundary komponenter och loading states      |
+| � **Chat History**         | ✅     | Sessions visas i sidebar, cookie-baserad auth     |
+| �🛡️ **Felhantering**         | ✅     | ErrorBoundary komponenter och loading states      |
 | 🎯 **Byggoptimering**       | ✅     | TypeScript-fel fixade, debug-filer rensade        |
 
 ### 🎉 NYLIGEN TILLAGDA FUNKTIONER
@@ -151,6 +152,7 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 3. **Memory Constraints** - Optimerat med llama3.2:1b (1.3GB vs 6GB)
 4. **Token Inconsistency** - Standardiserat till httpOnly cookies
 5. **MongoDB Schema Issues** - Uppdaterad filtypsvalidering
+6. **Chat History 401 Errors** - SessionHistory nu använder cookies istället för headers
 
 #### Performance Optimeringar
 
@@ -225,6 +227,7 @@ ai-study-mentor/
 | `/api/auth/logout`      | POST  | Logga ut användare | ✅   |
 | `/api/documents/upload` | POST  | Ladda upp PDF      | ✅   |
 | `/api/chat`             | POST  | AI chat med RAG    | ✅   |
+| `/api/sessions`         | GET   | Hämta chat history | ✅   |
 
 ### Tekniska Specifikationer
 

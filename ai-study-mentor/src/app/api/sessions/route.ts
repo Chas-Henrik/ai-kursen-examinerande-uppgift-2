@@ -3,14 +3,6 @@ import { getAuthenticatedUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { ChatSession } from "@/models/ChatSession";
 
-type SessionDocument = {
-  _id: { toString(): string };
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  messages?: Array<{ content: string }>;
-};
-
 interface SessionData {
   id: string;
   title: string;
@@ -20,18 +12,13 @@ interface SessionData {
   lastMessage: string;
 }
 
-interface GroupedSessions {
-  today: SessionData[];
-  yesterday: SessionData[];
-  lastWeek: SessionData[];
-  older: SessionData[];
-}
-
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const user = getAuthenticatedUser(request);
-    if (!user) {
+    let user;
+    try {
+      user = await getAuthenticatedUser(request);
+    } catch {
       return NextResponse.json(
         { error: "Autentisering krävs" },
         { status: 401 }
@@ -67,12 +54,25 @@ export async function GET(request: NextRequest) {
 
     const totalSessions = await ChatSession.countDocuments(searchQuery);
 
-    // Group sessions by date
-    const groupedSessions = groupSessionsByDate(sessions as SessionDocument[]);
+    // Transform sessions to expected format
+    const sessionData: SessionData[] = sessions.map((session) => ({
+      id: (session._id as any).toString(),
+      title: session.title,
+      createdAt: session.createdAt,
+      updatedAt: session.updatedAt,
+      messageCount: session.messages?.length || 0,
+      lastMessage:
+        session.messages?.length > 0
+          ? session.messages[session.messages.length - 1].content.substring(
+              0,
+              100
+            )
+          : "",
+    }));
 
     return NextResponse.json({
       success: true,
-      sessions: groupedSessions,
+      sessions: sessionData,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(totalSessions / limit),
@@ -141,54 +141,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-function groupSessionsByDate(sessions: SessionDocument[]): GroupedSessions {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-  const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-  const grouped: GroupedSessions = {
-    today: [],
-    yesterday: [],
-    lastWeek: [],
-    older: [],
-  };
-
-  sessions.forEach((session) => {
-    const sessionDate = new Date(session.updatedAt);
-    const sessionDay = new Date(
-      sessionDate.getFullYear(),
-      sessionDate.getMonth(),
-      sessionDate.getDate()
-    );
-
-    const sessionData: SessionData = {
-      id: session._id?.toString() || "",
-      title: session.title,
-      createdAt: session.createdAt,
-      updatedAt: session.updatedAt,
-      messageCount: session.messages?.length || 0,
-      lastMessage:
-        session.messages && session.messages.length > 0
-          ? session.messages[session.messages.length - 1].content.substring(
-              0,
-              100
-            ) + "..."
-          : "Ny session",
-    };
-
-    if (sessionDay.getTime() === today.getTime()) {
-      grouped.today.push(sessionData);
-    } else if (sessionDay.getTime() === yesterday.getTime()) {
-      grouped.yesterday.push(sessionData);
-    } else if (sessionDate >= lastWeek) {
-      grouped.lastWeek.push(sessionData);
-    } else {
-      grouped.older.push(sessionData);
-    }
-  });
-
-  return grouped;
 }
