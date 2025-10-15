@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import { generateToken } from "@/lib/jwt";
@@ -76,15 +75,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hasha lösenordet
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    // Skapa ny användare
+    // Skapa ny användare (lösenordet hashas automatiskt av pre-save middleware)
     const user = new User({
       name: name.trim(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword,
+      password: password, // Sparas i klartext här, hashas av middleware
     });
 
     const savedUser = await user.save();

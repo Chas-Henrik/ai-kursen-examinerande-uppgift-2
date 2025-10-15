@@ -46,18 +46,13 @@ const documentSchema = new Schema<IDocument>(
     vectorIds: {
       type: [String],
       default: [],
-      validate: {
-        validator: function (this: IDocument, vectorIds: string[]) {
-          return vectorIds.length === this.chunks.length;
-        },
-        message: "Antalet vektor-IDn måste matcha antalet textdelar",
-      },
+      // Removed validation - vectorIds kan vara tom tills vi får ID:n från Pinecone
     },
     fileType: {
       type: String,
       required: [true, "Filtyp är obligatorisk"],
       enum: {
-        values: ["pdf", "txt", "docx", "doc"],
+        values: [".pdf", ".txt", ".docx", ".doc"],
         message: "Filtypen {VALUE} stöds inte",
       },
     },

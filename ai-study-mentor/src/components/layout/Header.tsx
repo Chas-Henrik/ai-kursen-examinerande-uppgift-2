@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import AuthModal from "@/components/auth/AuthModal";
+import Link from "next/link";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
@@ -23,8 +24,20 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between px-6 py-4">
-        {/* Logo */}
-        <h1 className="text-xl font-bold text-primary">AI Studie Mentor</h1>
+        {/* Logo & Navigation */}
+        <div className="flex items-center gap-6">
+          <h1 className="text-xl font-bold text-primary">AI Studie Mentor</h1>
+
+          {/* Navigation Menu */}
+          <nav className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary transition-colors"
+            >
+              Hem
+            </Link>
+          </nav>
+        </div>
 
         {/* Navigation and Controls */}
         <div className="flex items-center gap-4">

@@ -1,21 +1,43 @@
-import fs from 'fs';
-import path from 'path';
-import pdf from 'pdf-parse';
+import fs from "fs";
+import path from "path";
+
+// Import pdf-parse traditionellt för att undvika debug-problem
+import pdf from "pdf-parse";
 
 /**
  * Extraherar text från PDF-fil
  */
 export async function extractTextFromPDF(filePath: string): Promise<string> {
   try {
+    console.log("📖 Försöker läsa PDF från:", filePath);
+
     if (!fs.existsSync(filePath)) {
-      throw new Error('PDF-filen kunde inte hittas.');
+      console.log("❌ PDF-fil finns inte:", filePath);
+      throw new Error("PDF-filen kunde inte hittas.");
     }
 
+    console.log("📄 Läser PDF-data...");
     const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdf(dataBuffer);
-    
+
+    console.log("🔍 Parsar PDF med pdf-parse...");
+
+    // Lägg till timeout för PDF parsing (max 2 minuter)
+    const PDF_TIMEOUT = 120000; // 2 minuter
+    const data = await Promise.race([
+      pdf(dataBuffer),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () =>
+            reject(new Error("PDF parsing tog för lång tid (över 2 minuter)")),
+          PDF_TIMEOUT
+        )
+      ),
+    ]);
+
     if (!data.text || data.text.trim().length === 0) {
-      throw new Error('Ingen text kunde extraheras från PDF-filen. Filen kan vara skadad eller innehålla endast bilder.');
+      throw new Error(
+        "Ingen text kunde extraheras från PDF-filen. Filen kan vara skadad eller innehålla endast bilder."
+      );
     }
 
     return data.text.trim();
@@ -23,7 +45,7 @@ export async function extractTextFromPDF(filePath: string): Promise<string> {
     if (error instanceof Error) {
       throw new Error(`Fel vid läsning av PDF: ${error.message}`);
     }
-    throw new Error('Ett oväntat fel uppstod vid läsning av PDF-filen.');
+    throw new Error("Ett oväntat fel uppstod vid läsning av PDF-filen.");
   }
 }
 
@@ -33,13 +55,13 @@ export async function extractTextFromPDF(filePath: string): Promise<string> {
 export async function extractTextFromTxt(filePath: string): Promise<string> {
   try {
     if (!fs.existsSync(filePath)) {
-      throw new Error('Textfilen kunde inte hittas.');
+      throw new Error("Textfilen kunde inte hittas.");
     }
 
-    const text = fs.readFileSync(filePath, 'utf-8');
-    
+    const text = fs.readFileSync(filePath, "utf-8");
+
     if (!text || text.trim().length === 0) {
-      throw new Error('Textfilen är tom eller innehåller ingen läsbar text.');
+      throw new Error("Textfilen är tom eller innehåller ingen läsbar text.");
     }
 
     return text.trim();
@@ -47,7 +69,7 @@ export async function extractTextFromTxt(filePath: string): Promise<string> {
     if (error instanceof Error) {
       throw new Error(`Fel vid läsning av textfil: ${error.message}`);
     }
-    throw new Error('Ett oväntat fel uppstod vid läsning av textfilen.');
+    throw new Error("Ett oväntat fel uppstod vid läsning av textfilen.");
   }
 }
 
@@ -55,44 +77,47 @@ export async function extractTextFromTxt(filePath: string): Promise<string> {
  * Delar upp text i mindre delar (chunks) för bättre AI-bearbetning
  */
 export function splitTextIntoChunks(
-  text: string, 
-  chunkSize: number = 1000, 
+  text: string,
+  chunkSize: number = 1000,
   overlap: number = 200
 ): string[] {
   if (!text || text.trim().length === 0) {
-    throw new Error('Ingen text att dela upp.');
+    throw new Error("Ingen text att dela upp.");
   }
 
   if (chunkSize <= 0) {
-    throw new Error('Chunk-storleken måste vara större än 0.');
+    throw new Error("Chunk-storleken måste vara större än 0.");
   }
 
   if (overlap < 0 || overlap >= chunkSize) {
-    throw new Error('Överlappningen måste vara mellan 0 och chunk-storleken.');
+    throw new Error("Överlappningen måste vara mellan 0 och chunk-storleken.");
   }
 
   const chunks: string[] = [];
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+
   if (sentences.length === 0) {
     return [text.trim()];
   }
 
-  let currentChunk = '';
-  
+  let currentChunk = "";
+
   for (let i = 0; i < sentences.length; i++) {
-    const sentence = sentences[i].trim() + '.';
-    
+    const sentence = sentences[i].trim() + ".";
+
     // Om att lägga till denna mening skulle överskrida chunk-storleken
-    if (currentChunk.length + sentence.length > chunkSize && currentChunk.length > 0) {
+    if (
+      currentChunk.length + sentence.length > chunkSize &&
+      currentChunk.length > 0
+    ) {
       chunks.push(currentChunk.trim());
-      
+
       // Starta ny chunk med överlappning
-      const wordsInChunk = currentChunk.split(' ');
+      const wordsInChunk = currentChunk.split(" ");
       const overlapWords = wordsInChunk.slice(-Math.floor(overlap / 6)); // Ungefär 6 tecken per ord
-      currentChunk = overlapWords.join(' ') + ' ' + sentence;
+      currentChunk = overlapWords.join(" ") + " " + sentence;
     } else {
-      currentChunk += (currentChunk.length > 0 ? ' ' : '') + sentence;
+      currentChunk += (currentChunk.length > 0 ? " " : "") + sentence;
     }
   }
 
@@ -101,34 +126,47 @@ export function splitTextIntoChunks(
     chunks.push(currentChunk.trim());
   }
 
-  return chunks.length > 0 ? chunks : [text.trim()];
+  const finalChunks = chunks.length > 0 ? chunks : [text.trim()];
+
+  // Begränsa antalet chunks för performance (max 100 chunks)
+  const MAX_CHUNKS = 100;
+  if (finalChunks.length > MAX_CHUNKS) {
+    console.log(
+      `⚠️ Begränsar från ${finalChunks.length} till ${MAX_CHUNKS} chunks för performance`
+    );
+    return finalChunks.slice(0, MAX_CHUNKS);
+  }
+
+  return finalChunks;
 }
 
 /**
  * Genererar embeddings från text med hjälp av Ollama (nomic-embed-text)
  */
-export async function generateEmbeddings(chunks: string[]): Promise<number[][]> {
+export async function generateEmbeddings(
+  chunks: string[]
+): Promise<number[][]> {
   if (!chunks || chunks.length === 0) {
-    throw new Error('Inga text-chunks att generera embeddings från.');
+    throw new Error("Inga text-chunks att generera embeddings från.");
   }
 
-  const ollamaBaseUrl = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-  
+  const ollamaBaseUrl = process.env.OLLAMA_BASE_URL || "http://localhost:11434";
+
   try {
     const embeddings: number[][] = [];
-    
+
     for (const chunk of chunks) {
       if (chunk.trim().length === 0) {
         continue;
       }
 
       const response = await fetch(`${ollamaBaseUrl}/api/embeddings`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: 'nomic-embed-text',
+          model: "nomic-embed-text",
           prompt: chunk,
         }),
       });
@@ -139,16 +177,16 @@ export async function generateEmbeddings(chunks: string[]): Promise<number[][]> 
       }
 
       const data = await response.json();
-      
+
       if (!data.embedding || !Array.isArray(data.embedding)) {
-        throw new Error('Ogiltigt svar från Ollama embeddings API.');
+        throw new Error("Ogiltigt svar från Ollama embeddings API.");
       }
 
       embeddings.push(data.embedding);
     }
 
     if (embeddings.length === 0) {
-      throw new Error('Inga embeddings kunde genereras från text-chunks.');
+      throw new Error("Inga embeddings kunde genereras från text-chunks.");
     }
 
     return embeddings;
@@ -156,7 +194,7 @@ export async function generateEmbeddings(chunks: string[]): Promise<number[][]> 
     if (error instanceof Error) {
       throw new Error(`Fel vid generering av embeddings: ${error.message}`);
     }
-    throw new Error('Ett oväntat fel uppstod vid generering av embeddings.');
+    throw new Error("Ett oväntat fel uppstod vid generering av embeddings.");
   }
 }
 
@@ -178,15 +216,15 @@ export async function processDocument(filePath: string): Promise<{
     const fileExt = path.extname(filePath).toLowerCase();
     const fileName = path.basename(filePath);
     const stats = fs.statSync(filePath);
-    
+
     let text: string;
 
     // Extrahera text baserat på filtyp
     switch (fileExt) {
-      case '.pdf':
+      case ".pdf":
         text = await extractTextFromPDF(filePath);
         break;
-      case '.txt':
+      case ".txt":
         text = await extractTextFromTxt(filePath);
         break;
       default:
@@ -195,7 +233,7 @@ export async function processDocument(filePath: string): Promise<{
 
     // Dela upp texten i chunks
     const chunks = splitTextIntoChunks(text);
-    
+
     // Generera embeddings
     const embeddings = await generateEmbeddings(chunks);
 
@@ -216,7 +254,7 @@ export async function processDocument(filePath: string): Promise<{
     if (error instanceof Error) {
       throw new Error(`Fel vid bearbetning av dokument: ${error.message}`);
     }
-    throw new Error('Ett oväntat fel uppstod vid bearbetning av dokumentet.');
+    throw new Error("Ett oväntat fel uppstod vid bearbetning av dokumentet.");
   }
 }
 
@@ -229,7 +267,7 @@ export async function cleanupFile(filePath: string): Promise<void> {
       fs.unlinkSync(filePath);
     }
   } catch (error) {
-    console.error('Fel vid rensning av fil:', filePath, error);
+    console.error("Fel vid rensning av fil:", filePath, error);
     // Vi kastar inte ett fel här eftersom filrensning inte ska stoppa processen
   }
 }

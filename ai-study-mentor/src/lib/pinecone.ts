@@ -1,4 +1,4 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import { Pinecone } from "@pinecone-database/pinecone";
 
 // Initialisera Pinecone klient
 let pineconeClient: Pinecone | null = null;
@@ -10,7 +10,7 @@ export async function initializePinecone(): Promise<Pinecone> {
 
   const apiKey = process.env.PINECONE_API_KEY;
   if (!apiKey) {
-    throw new Error('PINECONE_API_KEY saknas i miljövariabler');
+    throw new Error("PINECONE_API_KEY saknas i miljövariabler");
   }
 
   pineconeClient = new Pinecone({
@@ -38,7 +38,7 @@ export async function uploadEmbeddingsToPinecone(
 ): Promise<void> {
   try {
     const pc = await initializePinecone();
-    const indexName = process.env.PINECONE_INDEX_NAME || 'ai-study-mentor';
+    const indexName = process.env.PINECONE_INDEX_NAME || "ai-study-mentor";
     const index = pc.index(indexName);
 
     // Förbered vektorer för uppladdning
@@ -66,31 +66,65 @@ export async function uploadEmbeddingsToPinecone(
 
     console.log(`✅ Laddat upp ${vectors.length} embeddings till Pinecone`);
   } catch (error) {
-    console.error('Fel vid uppladdning till Pinecone:', error);
-    throw new Error(`Fel vid uppladdning till Pinecone: ${error instanceof Error ? error.message : 'Okänt fel'}`);
+    console.error("Fel vid uppladdning till Pinecone:", error);
+    throw new Error(
+      `Fel vid uppladdning till Pinecone: ${
+        error instanceof Error ? error.message : "Okänt fel"
+      }`
+    );
   }
 }
 
 /**
- * Söker liknande dokument baserat på text-query
+ * Söker liknande dokument baserat på embedding-vektor
  */
 export async function searchSimilarDocuments(
-  query: string,
+  queryEmbedding: number[],
   userId: string,
   topK: number = 5
-): Promise<any[]> {
+): Promise<
+  Array<{
+    text: string;
+    score: number;
+    fileName?: string;
+    chunkIndex?: number;
+    metadata?: Record<string, unknown>;
+  }>
+> {
   try {
     const pc = await initializePinecone();
-    const indexName = process.env.PINECONE_INDEX_NAME || 'ai-study-mentor';
+    const indexName = process.env.PINECONE_INDEX_NAME || "ai-study-mentor";
     const index = pc.index(indexName);
 
-    // Först måste vi generera embedding för query
-    // Detta kräver samma embedding-modell som användes för dokumenten
-    // För nu returnerar vi tom array - implementeras senare med Ollama
-    return [];
+    // Sök i användarens namespace
+    const searchResults = await index.namespace(userId).query({
+      vector: queryEmbedding,
+      topK: topK,
+      includeMetadata: true,
+      filter: {
+        userId: userId, // Extra säkerhet - filtrera på userId
+      },
+    });
+
+    // Formatera resultat
+    const results = searchResults.matches.map((match) => ({
+      text: String(match.metadata?.text || ""),
+      score: match.score || 0,
+      fileName: String(match.metadata?.fileName || "Okänd källa"),
+      chunkIndex: Number(match.metadata?.chunkIndex) || 0,
+      metadata: match.metadata,
+    }));
+
+    console.log(
+      `🎯 Hittade ${results.length} relevanta dokument för användare ${userId}`
+    );
+
+    return results;
   } catch (error) {
-    console.error('Fel vid sökning i Pinecone:', error);
-    throw new Error(`Fel vid sökning: ${error instanceof Error ? error.message : 'Okänt fel'}`);
+    console.error("Fel vid sökning i Pinecone:", error);
+    throw new Error(
+      `Fel vid sökning: ${error instanceof Error ? error.message : "Okänt fel"}`
+    );
   }
 }
 
@@ -103,7 +137,7 @@ export async function deleteDocumentVectors(
 ): Promise<void> {
   try {
     const pc = await initializePinecone();
-    const indexName = process.env.PINECONE_INDEX_NAME || 'ai-study-mentor';
+    const indexName = process.env.PINECONE_INDEX_NAME || "ai-study-mentor";
     const index = pc.index(indexName);
 
     // Ta bort alla vektorer för detta dokument
@@ -114,7 +148,11 @@ export async function deleteDocumentVectors(
 
     console.log(`✅ Tagit bort embeddings för ${fileName}`);
   } catch (error) {
-    console.error('Fel vid borttagning från Pinecone:', error);
-    throw new Error(`Fel vid borttagning: ${error instanceof Error ? error.message : 'Okänt fel'}`);
+    console.error("Fel vid borttagning från Pinecone:", error);
+    throw new Error(
+      `Fel vid borttagning: ${
+        error instanceof Error ? error.message : "Okänt fel"
+      }`
+    );
   }
 }
