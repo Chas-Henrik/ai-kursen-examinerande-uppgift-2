@@ -24,7 +24,11 @@ const storage = multer.diskStorage({
 });
 
 // Filfilter för säkerhet
-const fileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => {
+const fileFilter = (
+  req: Request,
+  file: Express.Multer.File,
+  cb: (error: Error | null, acceptFile?: boolean) => void
+) => {
   // Tillåtna filtyper
   const allowedTypes = [".pdf", ".txt", ".docx"];
   const fileExt = path.extname(file.originalname).toLowerCase();

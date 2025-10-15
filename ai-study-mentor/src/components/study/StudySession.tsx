@@ -14,7 +14,9 @@ export default function StudySession({
 }: StudySessionProps) {
   const [questions, setQuestions] = useState<StudyQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<string, string | string[] | boolean>>({});
+  const [userAnswers, setUserAnswers] = useState<
+    Record<string, string | string[] | boolean>
+  >({});
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +66,10 @@ export default function StudySession({
     generateQuestions();
   }, [generateQuestions]);
 
-  const handleAnswer = (questionId: string, answer: string | string[] | boolean) => {
+  const handleAnswer = (
+    questionId: string,
+    answer: string | string[] | boolean
+  ) => {
     setUserAnswers((prev) => ({
       ...prev,
       [questionId]: answer,
@@ -97,7 +102,12 @@ export default function StudySession({
         if (userAnswer === question.correctAnswer) correct++;
       } else if (question.type === "short-answer") {
         // For short answer, we'll be lenient and count it as correct if answered
-        if (userAnswer && typeof userAnswer === 'string' && userAnswer.trim().length > 0) correct++;
+        if (
+          userAnswer &&
+          typeof userAnswer === "string" &&
+          userAnswer.trim().length > 0
+        )
+          correct++;
       }
     });
     return Math.round((correct / questions.length) * 100);
@@ -408,7 +418,7 @@ export default function StudySession({
         {/* Short Answer */}
         {currentQuestion.type === "short-answer" && (
           <textarea
-            value={typeof userAnswer === 'string' ? userAnswer : ""}
+            value={typeof userAnswer === "string" ? userAnswer : ""}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
             placeholder="Skriv ditt svar här..."
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
@@ -446,7 +456,11 @@ export default function StudySession({
 
           <button
             onClick={nextQuestion}
-            disabled={userAnswer === undefined || userAnswer === null || userAnswer === ""}
+            disabled={
+              userAnswer === undefined ||
+              userAnswer === null ||
+              userAnswer === ""
+            }
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {currentQuestionIndex === questions.length - 1

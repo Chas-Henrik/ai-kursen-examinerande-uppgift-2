@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Steg 3: Förbered kontext för AI-modellen
+    // Steg 3: Förbered kontext för AI-modellen (begränsa längd)
     const context = relevantDocuments
-      .map((doc, index) => `[Källa ${index + 1}]: ${doc.text}`)
+      .map((doc, index) => `[Källa ${index + 1}]: ${doc.text.substring(0, 800)}...`) // Begränsa varje chunk till 800 tecken
       .join("\n\n");
 
     // Steg 4: Generera svar med Ollama
@@ -138,7 +138,7 @@ async function generateAIResponse(
       "\n";
   }
 
-  const prompt = `Du är en hjälpsam AI-assistent som svarar på frågor baserat på tillhandahållen information. Svara alltid på svenska och var tydlig och informativ.
+  const prompt = `Du är en hjälpsam AI-assistent som ger korta, tydliga svar på svenska baserat på tillhandahållen information.
 
 ${conversationContext}
 
@@ -148,7 +148,7 @@ ${context}
 
 Fråga: ${question}
 
-Svar på svenska baserat på informationen ovan. Om informationen inte räcker för att svara på frågan, säg det tydligt. Referera gärna till specifika delar av texten när det är relevant.
+Ge ett kort och precist svar på svenska (max 2-3 meningar) baserat på informationen ovan. Om informationen inte räcker, säg det tydligt.
 
 Svar:`;
 
@@ -158,11 +158,15 @@ Svar:`;
       `${ollamaBaseUrl}/api/generate`
     );
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minuter timeout
+
     const response = await fetch(`${ollamaBaseUrl}/api/generate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: "llama3.2:1b", // Mindre modell som passar i systemets minne (1.5GB vs 6GB)
         prompt: prompt,
@@ -170,10 +174,12 @@ Svar:`;
         options: {
           temperature: 0.7,
           top_p: 0.9,
-          max_tokens: 300, // Begränsa för mindre modell
+          num_predict: 200, // Minska för snabbare svar
         },
       }),
     });
+    
+    clearTimeout(timeoutId);
 
     console.log("📡 Ollama response status:", response.status);
 

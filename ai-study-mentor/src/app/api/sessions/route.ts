@@ -165,7 +165,7 @@ function groupSessionsByDate(sessions: SessionDocument[]): GroupedSessions {
     );
 
     const sessionData: SessionData = {
-      id: session._id?.toString() || '',
+      id: session._id?.toString() || "",
       title: session.title,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,

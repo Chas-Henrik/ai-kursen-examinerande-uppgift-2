@@ -115,32 +115,32 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 
 ### ✅ KOMPLETT - Implementerade Funktioner
 
-| Funktion                       | Status | Beskrivning                                          |
-| ------------------------------ | ------ | ---------------------------------------------------- |
-| 🔐 **Autentisering**           | ✅     | JWT med httpOnly cookies, bcrypt-hashning            |
-| 🎨 **UI/UX**                   | ✅     | Responsive design, mörk/ljus tema, Tailwind CSS     |
-| 📄 **Filuppladdning**          | ✅     | PDF-parsing, validering, felhantering               |
-| 🤖 **AI Chat**                 | ✅     | Integrerat i huvudgränssnittet med källreferenser   |
-| 🔍 **Semantisk Sökning**       | ✅     | Pinecone vektorsökning med användarnamespaces       |
-| 📊 **Embedding Generation**    | ✅     | Nomic-embed-text för dokumentvektorisering          |
-| 🛡️ **Säkerhet**                | ✅     | CORS, autentisering på alla endpoints               |
-| � **Dokumenthantering**       | ✅     | UI för att visa/ta bort uppladdade dokument         |
-| ❓ **AI Studiefrågor**         | ✅     | Automatisk generering av flervalsfrågor från text   |
-| 📚 **Studiesession**           | ✅     | Interaktiv frågespel med poäng och förklaringar    |
-| 🔍 **Sessionsökning**          | ✅     | Sök och filtrera tidigare studiesessioner          |
-| 🛡️ **Felhantering**            | ✅     | ErrorBoundary komponenter och loading states        |
-| 🎯 **Byggoptimering**          | ✅     | TypeScript-fel fixade, debug-filer rensade         |
+| Funktion                    | Status | Beskrivning                                       |
+| --------------------------- | ------ | ------------------------------------------------- |
+| 🔐 **Autentisering**        | ✅     | JWT med httpOnly cookies, bcrypt-hashning         |
+| 🎨 **UI/UX**                | ✅     | Responsive design, mörk/ljus tema, Tailwind CSS   |
+| 📄 **Filuppladdning**       | ✅     | PDF-parsing, validering, felhantering             |
+| 🤖 **AI Chat**              | ✅     | Integrerat i huvudgränssnittet med källreferenser |
+| 🔍 **Semantisk Sökning**    | ✅     | Pinecone vektorsökning med användarnamespaces     |
+| 📊 **Embedding Generation** | ✅     | Nomic-embed-text för dokumentvektorisering        |
+| 🛡️ **Säkerhet**             | ✅     | CORS, autentisering på alla endpoints             |
+| � **Dokumenthantering**     | ✅     | UI för att visa/ta bort uppladdade dokument       |
+| ❓ **AI Studiefrågor**      | ✅     | Automatisk generering av flervalsfrågor från text |
+| 📚 **Studiesession**        | ✅     | Interaktiv frågespel med poäng och förklaringar   |
+| 🔍 **Sessionsökning**       | ✅     | Sök och filtrera tidigare studiesessioner         |
+| 🛡️ **Felhantering**         | ✅     | ErrorBoundary komponenter och loading states      |
+| 🎯 **Byggoptimering**       | ✅     | TypeScript-fel fixade, debug-filer rensade        |
 
 ### 🎉 NYLIGEN TILLAGDA FUNKTIONER
 
-| Funktion                    | Beskrivning                                                |
-| --------------------------- | ---------------------------------------------------------- |
-| **StudySession.tsx**        | Komplett studiequiz med olika frågetyper                  |
-| **DocumentManager.tsx**     | Översikt över dokument med sessionslansering              |
-| **questionGenerator.ts**    | AI-driven generering av studiefrågor på svenska           |
-| **Sessions API**            | RESTful API för sessionshantering med sökning             |
-| **Error Boundaries**        | Robust felhantering genom hela applikationen              |
-| **Loading Skeletons**       | Förbättrad användarupplevelse med loading states          |
+| Funktion                 | Beskrivning                                      |
+| ------------------------ | ------------------------------------------------ |
+| **StudySession.tsx**     | Komplett studiequiz med olika frågetyper         |
+| **DocumentManager.tsx**  | Översikt över dokument med sessionslansering     |
+| **questionGenerator.ts** | AI-driven generering av studiefrågor på svenska  |
+| **Sessions API**         | RESTful API för sessionshantering med sökning    |
+| **Error Boundaries**     | Robust felhantering genom hela applikationen     |
+| **Loading Skeletons**    | Förbättrad användarupplevelse med loading states |
 
 ### 🔧 TEKNISKA PRESTATIONER
 

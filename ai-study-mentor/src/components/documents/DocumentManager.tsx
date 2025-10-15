@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import StudySession from '../study/StudySession';
+import { useState, useEffect } from "react";
+import StudySession from "../study/StudySession";
 
 interface Document {
   id: string;

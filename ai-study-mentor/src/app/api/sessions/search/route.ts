@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedUser } from '@/lib/auth';
-import { connectDB } from '@/lib/db';
-import { ChatSession } from '@/models/ChatSession';
+import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUser } from "@/lib/auth";
+import { connectDB } from "@/lib/db";
+import { ChatSession } from "@/models/ChatSession";
 
 type SessionDocument = {
   _id: { toString(): string };
@@ -70,29 +70,33 @@ export async function POST(request: NextRequest) {
     const totalResults = await ChatSession.countDocuments(searchConditions);
 
     // Process results to highlight matches and extract relevant messages
-    const processedResults = (sessions as SessionDocument[]).map((session: SessionDocument) => {
-      const matchingMessages = (session.messages || [])
-        .filter(
-          (message: { role: string; content: string; timestamp: Date }) =>
-            message.content.toLowerCase().includes(query.toLowerCase()) ||
-            session.title.toLowerCase().includes(query.toLowerCase())
-        )
-        .slice(0, 3); // Show max 3 matching messages per session
+    const processedResults = (sessions as SessionDocument[]).map(
+      (session: SessionDocument) => {
+        const matchingMessages = (session.messages || [])
+          .filter(
+            (message: { role: string; content: string; timestamp: Date }) =>
+              message.content.toLowerCase().includes(query.toLowerCase()) ||
+              session.title.toLowerCase().includes(query.toLowerCase())
+          )
+          .slice(0, 3); // Show max 3 matching messages per session
 
-      return {
-        sessionId: session._id?.toString() || '',
-        title: session.title,
-        createdAt: session.createdAt,
-        updatedAt: session.updatedAt,
-        totalMessages: session.messages.length,
-        matchingMessages: matchingMessages.map((msg: { role: string; content: string; timestamp: Date }) => ({
-          role: msg.role,
-          content: highlightSearchTerm(msg.content, query),
-          timestamp: msg.timestamp,
-        })),
-        titleMatch: session.title.toLowerCase().includes(query.toLowerCase()),
-      };
-    });
+        return {
+          sessionId: session._id?.toString() || "",
+          title: session.title,
+          createdAt: session.createdAt,
+          updatedAt: session.updatedAt,
+          totalMessages: session.messages.length,
+          matchingMessages: matchingMessages.map(
+            (msg: { role: string; content: string; timestamp: Date }) => ({
+              role: msg.role,
+              content: highlightSearchTerm(msg.content, query),
+              timestamp: msg.timestamp,
+            })
+          ),
+          titleMatch: session.title.toLowerCase().includes(query.toLowerCase()),
+        };
+      }
+    );
 
     return NextResponse.json({
       success: true,
