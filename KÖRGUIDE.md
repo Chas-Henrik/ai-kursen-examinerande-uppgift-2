@@ -1,7 +1,7 @@
 # 🚀 KÖRGUIDE – AI Study Mentor
 
 Välkommen till **AI Study Mentor** 👋  
-En webbaserad studiementor där användaren kan ladda upp eget studiematerial (PDF, textfil eller webblänk) och chatta med en svensk AI-mentor som hjälper till att förstå innehållet och skapa studiefrågor.
+En webbaserad studiementor där användaren kan ladda upp eget studiematerial (PDF) och chatta med en svensk AI-mentor som hjälper till att förstå innehållet och skapa studiefrågor.
 
 ---
 
@@ -70,16 +70,16 @@ npm run dev
 
 ## 🧠 Funktioner
 
-| Funktion                       | Beskrivning                                                     |
-| ------------------------------ | --------------------------------------------------------------- |
-| 👤 **Autentisering**           | Registrera, logga in och logga ut användare (JWT, bcrypt, CSFR) |
-| 🗂️ **Dokumentuppladdning**     | Ladda upp PDF.                                                  |
-| 🧹 **Textutdragning**          | pdf-ts                                                          |
-| 🔍 **Semantisk sökning (RAG)** | Pinecone hanterar embeddings och kontext                        |
-| 🤖 **AI-svar (Ollama)**        | Gemma 3-4b svarar kort på svenska                               |
-| 💬 **Chatgränssnitt**          | Svensk UI med ljust/mörkt läge och historik                     |
-| 🧾 **Studiefrågor**            | Genererar 10–15 korta frågor utifrån innehållet                 |
-| 💾 **Databas**                 | MongoDB Atlas lagrar användare, dokument och sessioner          |
+| Funktion                       | Beskrivning                                                |
+| ------------------------------ | ---------------------------------------------------------- |
+| 👤 **Autentisering**           | Registrera, logga in och logga ut användare (JWT, bcrypt)  |
+| 🗂️ **Dokumentuppladdning**     | Ladda upp PDF.                                             |
+| 🧹 **Textutdragning**          | pdf-ts extraherar ren text                                 |
+| 🔍 **Semantisk sökning (RAG)** | Pinecone hanterar embeddings och kontext                   |
+| 🤖 **AI-svar (Ollama)**        | Gemma 3-4b svarar kort på samma språk som frågan ställs på |
+| 💬 **Chatgränssnitt**          | Svensk UI med ljust/mörkt läge och historik                |
+| 🧾 **Studiefrågor**            | Genererar 10 korta frågor utifrån innehållet               |
+| 💾 **Databas**                 | MongoDB Atlas lagrar användare, dokument och sessioner     |
 
 ---
 
