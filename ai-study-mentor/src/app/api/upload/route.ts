@@ -105,8 +105,6 @@ export async function POST(req: NextRequest) {
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! }); // Initialize Pinecone client
 
     const indexName = toLowercaseAlphanumeric(userId); // Convert userId to valid Pinecone index name
-    // Delete index (irreversible)
-    // await pinecone.deleteIndex("ai-study-mentor");
 
     // Create Pinecone index if it doesn't exist
     const existingIndexes = await pinecone.listIndexes();

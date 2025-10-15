@@ -38,6 +38,7 @@ export async function DELETE(
     return NextResponse.json({ ok: false, message: "Invalid id" }, { status: 400 });
   }
 
+  // Find session
   try {
     const session = await Session.findById(id);
 

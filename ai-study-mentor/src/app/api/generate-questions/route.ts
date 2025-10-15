@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false,  message: "Invalid documentId or sessionId" }, { status: 400 });
   }
 
+  // Check for valid session
   const session = await Session.findById(sessionId);
   if (!session) {
     return NextResponse.json({ ok: false,  message: "Session not found" }, { status: 404 });
