@@ -7,18 +7,21 @@
 ## 🏗️ Arkitektur & Teknologier
 
 ### Frontend
+
 - **Next.js 15.5.4** - React-baserat fullstack framework med Turbopack
 - **TypeScript** - Typsäker utveckling
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Hooks** - Tillståndshantering och API-integration
 
 ### Backend & API
+
 - **Next.js API Routes** - Serverless funktioner
 - **MongoDB** - Dokumentdatabas med Mongoose ODM
 - **JWT Authentication** - Säker autentisering med httpOnly cookies
 - **Multer** - Filuppladdningshantering
 
 ### AI & Machine Learning
+
 - **Ollama** - Lokal AI-modellserver
   - `llama3.2:1b` (1.3GB) - Text generation och chat
   - `nomic-embed-text:latest` (274MB) - Embedding generation
@@ -28,6 +31,7 @@
   - Namespace per användare för dataseparation
 
 ### Dokumentbehandling
+
 - **pdf-parse** - PDF textextraktion
 - **Custom chunking** - Intelligent textuppdelning (max 100 chunks per dokument)
 - **RAG (Retrieval Augmented Generation)** - Kontext-medveten AI
@@ -35,6 +39,7 @@
 ## 🚀 Installation & Setup
 
 ### Systemkrav
+
 - **Node.js 18+** - JavaScript runtime
 - **MongoDB Atlas** - Databas (cloud eller lokal)
 - **Ollama** - Lokal AI-modellserver
@@ -109,24 +114,27 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 ## ✨ Funktioner & Status
 
 ### ✅ KOMPLETT - Funktioner
-| Funktion | Status | Beskrivning |
-|----------|--------|-------------|
-| 🔐 **Autentisering** | ✅ | JWT med httpOnly cookies, bcrypt-hashning |
-| 🎨 **UI/UX** | ✅ | Responsive design, mörk/ljus tema, Tailwind CSS |
-| 📄 **Filuppladdning** | ✅ | PDF-parsing, validering, felhantering |
-| 🤖 **AI Chat** | ✅ | Integrerat i huvudgränssnittet med källreferenser |
-| 🔍 **Semantisk Sökning** | ✅ | Pinecone vektorsökning med användarnamespaces |
-| 📊 **Embedding Generation** | ✅ | Nomic-embed-text för dokumentvektorisering |
-| 🛡️ **Säkerhet** | ✅ | CORS, autentisering på alla endpoints |
+
+| Funktion                    | Status | Beskrivning                                       |
+| --------------------------- | ------ | ------------------------------------------------- |
+| 🔐 **Autentisering**        | ✅     | JWT med httpOnly cookies, bcrypt-hashning         |
+| 🎨 **UI/UX**                | ✅     | Responsive design, mörk/ljus tema, Tailwind CSS   |
+| 📄 **Filuppladdning**       | ✅     | PDF-parsing, validering, felhantering             |
+| 🤖 **AI Chat**              | ✅     | Integrerat i huvudgränssnittet med källreferenser |
+| 🔍 **Semantisk Sökning**    | ✅     | Pinecone vektorsökning med användarnamespaces     |
+| 📊 **Embedding Generation** | ✅     | Nomic-embed-text för dokumentvektorisering        |
+| 🛡️ **Säkerhet**             | ✅     | CORS, autentisering på alla endpoints             |
 
 ### 🚧 PÅGÅENDE - Utvecklingsområden
-| Funktion | Status | Beskrivning |
-|----------|--------|-------------|
-| 📋 **Dokumenthantering** | 🔄 | UI för att visa/ta bort uppladdade dokument |
+
+| Funktion                 | Status | Beskrivning                                 |
+| ------------------------ | ------ | ------------------------------------------- |
+| 📋 **Dokumenthantering** | 🔄     | UI för att visa/ta bort uppladdade dokument |
 
 ### 🔧 TEKNISKA PRESTATIONER
 
 #### Lösta Utmaningar
+
 1. **PDF-parse Import Problem** - Löst med dynamiska imports
 2. **Dubbel Password Hashing** - Fixat i autentiserings-API
 3. **Memory Constraints** - Optimerat med llama3.2:1b (1.3GB vs 6GB)
@@ -134,6 +142,7 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 5. **MongoDB Schema Issues** - Uppdaterad filtypsvalidering
 
 #### Performance Optimeringar
+
 - **Chunking Limit:** Max 100 chunks per dokument
 - **PDF Timeout:** 2 minuter för stora filer
 - **Memory Management:** Optimerade AI-modeller
@@ -197,17 +206,19 @@ ai-study-mentor/
 ## 🔧 Utvecklingsdetaljer
 
 ### API Endpoints
-| Endpoint | Metod | Syfte | Auth |
-|----------|-------|-------|------|
-| `/api/auth/register` | POST | Skapa nytt konto | ❌ |
-| `/api/auth/login` | POST | Logga in användare | ❌ |
-| `/api/auth/logout` | POST | Logga ut användare | ✅ |
-| `/api/documents/upload` | POST | Ladda upp PDF | ✅ |
-| `/api/chat` | POST | AI chat med RAG | ✅ |
+
+| Endpoint                | Metod | Syfte              | Auth |
+| ----------------------- | ----- | ------------------ | ---- |
+| `/api/auth/register`    | POST  | Skapa nytt konto   | ❌   |
+| `/api/auth/login`       | POST  | Logga in användare | ❌   |
+| `/api/auth/logout`      | POST  | Logga ut användare | ✅   |
+| `/api/documents/upload` | POST  | Ladda upp PDF      | ✅   |
+| `/api/chat`             | POST  | AI chat med RAG    | ✅   |
 
 ### Tekniska Specifikationer
 
 #### AI Pipeline
+
 1. **Dokumentuppladdning** → PDF-parse extraktion
 2. **Textchunking** → Max 100 chunks per dokument
 3. **Embedding Generation** → Nomic-embed-text (768 dimensioner)
@@ -216,6 +227,7 @@ ai-study-mentor/
 6. **AI Generation** → llama3.2:1b med kontext
 
 #### Säkerhetsimplementering
+
 - **httpOnly Cookies** för JWT-lagring
 - **CORS** konfiguration för säkra API-anrop
 - **Bcrypt** för lösenordshashning
@@ -225,6 +237,7 @@ ai-study-mentor/
 ## 🧪 Testing & Utveckling
 
 ### Lokalt Utvecklingsflöde
+
 ```bash
 # Starta utvecklingsmiljö
 npm run dev
@@ -237,6 +250,7 @@ ollama run llama3.2:1b "Hej, hur fungerar du?"
 ```
 
 ### Felsökning
+
 - **Memory Issues**: Använd llama3.2:1b istället för större modeller
 - **PDF Parse Errors**: Kontrollera att test-filer finns i temp-mappen
 - **Auth Problems**: Verifiera JWT_SECRET och cookie-inställningar
@@ -245,12 +259,14 @@ ollama run llama3.2:1b "Hej, hur fungerar du?"
 ## 🎯 Utvecklingshistorik
 
 ### Genomförda Milstolpar
+
 - ✅ **STAGE 1**: Grundläggande Next.js setup med autentisering
 - ✅ **STAGE 2**: Filuppladdning och PDF-processing
 - ✅ **STAGE 3**: AI Chat interface med RAG-integration
 - 🔄 **STAGE 4**: Dokumenthantering UI (pågående)
 
 ### Tekniska Prestationer
+
 - **End-to-End Funktionalitet**: Fullständigt fungerande AI-assisterad chattbot
 - **Performance Optimization**: Memory-optimerade AI-modeller för development
 - **Security Implementation**: Säker autentisering och datahantering
@@ -263,6 +279,7 @@ ollama run llama3.2:1b "Hej, hur fungerar du?"
 Detta projekt är utvecklat som del av **AI-kursen Examinerande Uppgift 2**.
 
 ### Bidrag
+
 - Följ TypeScript best practices
 - Använd Tailwind CSS för styling
 - Implementera error handling

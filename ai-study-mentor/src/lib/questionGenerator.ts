@@ -1,57 +1,73 @@
-import { generateEmbedding } from '@/lib/embeddings';
+import { generateEmbedding } from "@/lib/embeddings";
 
 interface StudyQuestion {
   id: string;
-  type: 'multiple-choice' | 'true-false' | 'short-answer';
+  type: "multiple-choice" | "true-false" | "short-answer";
   question: string;
   options?: string[];
   correctAnswer: string | boolean;
   explanation: string;
-  difficulty: 'lätt' | 'medel' | 'svår';
+  difficulty: "lätt" | "medel" | "svår";
 }
 
 export async function generateStudyQuestions(
   documentText: string,
   questionCount: number = 10,
-  difficulty: 'lätt' | 'medel' | 'svår' = 'medel'
+  difficulty: "lätt" | "medel" | "svår" = "medel"
 ): Promise<StudyQuestion[]> {
   try {
     // Split document into manageable chunks for question generation
     const chunks = splitIntoContextChunks(documentText, 800);
     const questions: StudyQuestion[] = [];
-    
+
     // Calculate how many questions of each type to generate
     const multipleChoiceCount = Math.ceil(questionCount * 0.5); // 50%
     const trueFalseCount = Math.ceil(questionCount * 0.3); // 30%
-    const shortAnswerCount = questionCount - multipleChoiceCount - trueFalseCount; // 20%
+    const shortAnswerCount =
+      questionCount - multipleChoiceCount - trueFalseCount; // 20%
 
     // Generate multiple choice questions
-    for (let i = 0; i < multipleChoiceCount && questions.length < questionCount; i++) {
+    for (
+      let i = 0;
+      i < multipleChoiceCount && questions.length < questionCount;
+      i++
+    ) {
       const chunk = chunks[i % chunks.length];
-      const mcQuestion = await generateMultipleChoiceQuestion(chunk, difficulty);
+      const mcQuestion = await generateMultipleChoiceQuestion(
+        chunk,
+        difficulty
+      );
       if (mcQuestion) questions.push(mcQuestion);
     }
 
     // Generate true/false questions
-    for (let i = 0; i < trueFalseCount && questions.length < questionCount; i++) {
+    for (
+      let i = 0;
+      i < trueFalseCount && questions.length < questionCount;
+      i++
+    ) {
       const chunk = chunks[(i + multipleChoiceCount) % chunks.length];
       const tfQuestion = await generateTrueFalseQuestion(chunk, difficulty);
       if (tfQuestion) questions.push(tfQuestion);
     }
 
     // Generate short answer questions
-    for (let i = 0; i < shortAnswerCount && questions.length < questionCount; i++) {
-      const chunk = chunks[(i + multipleChoiceCount + trueFalseCount) % chunks.length];
+    for (
+      let i = 0;
+      i < shortAnswerCount && questions.length < questionCount;
+      i++
+    ) {
+      const chunk =
+        chunks[(i + multipleChoiceCount + trueFalseCount) % chunks.length];
       const saQuestion = await generateShortAnswerQuestion(chunk, difficulty);
       if (saQuestion) questions.push(saQuestion);
     }
 
     // Shuffle questions for variety
     return shuffleArray(questions).slice(0, questionCount);
-
   } catch (error) {
-    console.error('Error generating study questions:', error);
-    throw new Error('Kunde inte generera studiefrågor');
+    console.error("Error generating study questions:", error);
+    throw new Error("Kunde inte generera studiefrågor");
   }
 }
 
@@ -62,7 +78,7 @@ async function generateMultipleChoiceQuestion(
   try {
     const prompt = createMultipleChoicePrompt(context, difficulty);
     const response = await callOllamaForQuestion(prompt);
-    
+
     if (!response) return null;
 
     const parsed = parseMultipleChoiceResponse(response);
@@ -70,15 +86,15 @@ async function generateMultipleChoiceQuestion(
 
     return {
       id: generateQuestionId(),
-      type: 'multiple-choice',
+      type: "multiple-choice",
       question: parsed.question,
       options: parsed.options,
       correctAnswer: parsed.correctAnswer,
       explanation: parsed.explanation,
-      difficulty: difficulty as 'lätt' | 'medel' | 'svår'
+      difficulty: difficulty as "lätt" | "medel" | "svår",
     };
   } catch (error) {
-    console.error('Error generating multiple choice question:', error);
+    console.error("Error generating multiple choice question:", error);
     return null;
   }
 }
@@ -90,7 +106,7 @@ async function generateTrueFalseQuestion(
   try {
     const prompt = createTrueFalsePrompt(context, difficulty);
     const response = await callOllamaForQuestion(prompt);
-    
+
     if (!response) return null;
 
     const parsed = parseTrueFalseResponse(response);
@@ -98,14 +114,14 @@ async function generateTrueFalseQuestion(
 
     return {
       id: generateQuestionId(),
-      type: 'true-false',
+      type: "true-false",
       question: parsed.question,
       correctAnswer: parsed.correctAnswer,
       explanation: parsed.explanation,
-      difficulty: difficulty as 'lätt' | 'medel' | 'svår'
+      difficulty: difficulty as "lätt" | "medel" | "svår",
     };
   } catch (error) {
-    console.error('Error generating true/false question:', error);
+    console.error("Error generating true/false question:", error);
     return null;
   }
 }
@@ -117,7 +133,7 @@ async function generateShortAnswerQuestion(
   try {
     const prompt = createShortAnswerPrompt(context, difficulty);
     const response = await callOllamaForQuestion(prompt);
-    
+
     if (!response) return null;
 
     const parsed = parseShortAnswerResponse(response);
@@ -125,36 +141,39 @@ async function generateShortAnswerQuestion(
 
     return {
       id: generateQuestionId(),
-      type: 'short-answer',
+      type: "short-answer",
       question: parsed.question,
       correctAnswer: parsed.correctAnswer,
       explanation: parsed.explanation,
-      difficulty: difficulty as 'lätt' | 'medel' | 'svår'
+      difficulty: difficulty as "lätt" | "medel" | "svår",
     };
   } catch (error) {
-    console.error('Error generating short answer question:', error);
+    console.error("Error generating short answer question:", error);
     return null;
   }
 }
 
 async function callOllamaForQuestion(prompt: string): Promise<string | null> {
   try {
-    const response = await fetch(`${process.env.OLLAMA_BASE_URL}/api/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama3.2:1b',
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: 0.7,
-          top_p: 0.9,
-          max_tokens: 300
-        }
-      }),
-    });
+    const response = await fetch(
+      `${process.env.OLLAMA_BASE_URL}/api/generate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama3.2:1b",
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: 0.7,
+            top_p: 0.9,
+            max_tokens: 300,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Ollama API error: ${response.status}`);
@@ -163,19 +182,24 @@ async function callOllamaForQuestion(prompt: string): Promise<string | null> {
     const data = await response.json();
     return data.response?.trim() || null;
   } catch (error) {
-    console.error('Error calling Ollama for question generation:', error);
+    console.error("Error calling Ollama for question generation:", error);
     return null;
   }
 }
 
-function createMultipleChoicePrompt(context: string, difficulty: string): string {
+function createMultipleChoicePrompt(
+  context: string,
+  difficulty: string
+): string {
   const difficultyInstructions = {
-    'lätt': 'enkla och grundläggande begrepp',
-    'medel': 'mer detaljerad förståelse och analys',
-    'svår': 'djup analys och kritiskt tänkande'
+    lätt: "enkla och grundläggande begrepp",
+    medel: "mer detaljerad förståelse och analys",
+    svår: "djup analys och kritiskt tänkande",
   };
 
-  return `Du är en expert på att skapa studiefrågor på svenska. Baserat på följande text, skapa EN flervalsfrÅga med svårighetsgrad "${difficulty}" som fokuserar på ${difficultyInstructions[difficulty as keyof typeof difficultyInstructions]}.
+  return `Du är en expert på att skapa studiefrågor på svenska. Baserat på följande text, skapa EN flervalsfrÅga med svårighetsgrad "${difficulty}" som fokuserar på ${
+    difficultyInstructions[difficulty as keyof typeof difficultyInstructions]
+  }.
 
 KONTEXT:
 ${context}
@@ -233,22 +257,25 @@ FÖRKLARING: [Kort förklaring på svenska]`;
 
 function parseMultipleChoiceResponse(response: string): any {
   try {
-    const lines = response.split('\n').map(line => line.trim()).filter(line => line);
-    
-    let question = '';
+    const lines = response
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line);
+
+    let question = "";
     const options: string[] = [];
-    let correctAnswer = '';
-    let explanation = '';
+    let correctAnswer = "";
+    let explanation = "";
 
     for (const line of lines) {
-      if (line.startsWith('FRÅGA:')) {
-        question = line.replace('FRÅGA:', '').trim();
+      if (line.startsWith("FRÅGA:")) {
+        question = line.replace("FRÅGA:", "").trim();
       } else if (line.match(/^[A-D]\)/)) {
         options.push(line);
-      } else if (line.startsWith('RÄTT_SVAR:')) {
-        correctAnswer = line.replace('RÄTT_SVAR:', '').trim();
-      } else if (line.startsWith('FÖRKLARING:')) {
-        explanation = line.replace('FÖRKLARING:', '').trim();
+      } else if (line.startsWith("RÄTT_SVAR:")) {
+        correctAnswer = line.replace("RÄTT_SVAR:", "").trim();
+      } else if (line.startsWith("FÖRKLARING:")) {
+        explanation = line.replace("FÖRKLARING:", "").trim();
       }
     }
 
@@ -257,27 +284,30 @@ function parseMultipleChoiceResponse(response: string): any {
     }
     return null;
   } catch (error) {
-    console.error('Error parsing multiple choice response:', error);
+    console.error("Error parsing multiple choice response:", error);
     return null;
   }
 }
 
 function parseTrueFalseResponse(response: string): any {
   try {
-    const lines = response.split('\n').map(line => line.trim()).filter(line => line);
-    
-    let question = '';
+    const lines = response
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line);
+
+    let question = "";
     let correctAnswer: boolean | null = null;
-    let explanation = '';
+    let explanation = "";
 
     for (const line of lines) {
-      if (line.startsWith('PÅSTÅENDE:')) {
-        question = line.replace('PÅSTÅENDE:', '').trim();
-      } else if (line.startsWith('SVAR:')) {
-        const answer = line.replace('SVAR:', '').trim().toLowerCase();
-        correctAnswer = answer === 'sant' || answer === 'true';
-      } else if (line.startsWith('FÖRKLARING:')) {
-        explanation = line.replace('FÖRKLARING:', '').trim();
+      if (line.startsWith("PÅSTÅENDE:")) {
+        question = line.replace("PÅSTÅENDE:", "").trim();
+      } else if (line.startsWith("SVAR:")) {
+        const answer = line.replace("SVAR:", "").trim().toLowerCase();
+        correctAnswer = answer === "sant" || answer === "true";
+      } else if (line.startsWith("FÖRKLARING:")) {
+        explanation = line.replace("FÖRKLARING:", "").trim();
       }
     }
 
@@ -286,26 +316,29 @@ function parseTrueFalseResponse(response: string): any {
     }
     return null;
   } catch (error) {
-    console.error('Error parsing true/false response:', error);
+    console.error("Error parsing true/false response:", error);
     return null;
   }
 }
 
 function parseShortAnswerResponse(response: string): any {
   try {
-    const lines = response.split('\n').map(line => line.trim()).filter(line => line);
-    
-    let question = '';
-    let correctAnswer = '';
-    let explanation = '';
+    const lines = response
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line);
+
+    let question = "";
+    let correctAnswer = "";
+    let explanation = "";
 
     for (const line of lines) {
-      if (line.startsWith('FRÅGA:')) {
-        question = line.replace('FRÅGA:', '').trim();
-      } else if (line.startsWith('EXEMPEL_SVAR:')) {
-        correctAnswer = line.replace('EXEMPEL_SVAR:', '').trim();
-      } else if (line.startsWith('FÖRKLARING:')) {
-        explanation = line.replace('FÖRKLARING:', '').trim();
+      if (line.startsWith("FRÅGA:")) {
+        question = line.replace("FRÅGA:", "").trim();
+      } else if (line.startsWith("EXEMPEL_SVAR:")) {
+        correctAnswer = line.replace("EXEMPEL_SVAR:", "").trim();
+      } else if (line.startsWith("FÖRKLARING:")) {
+        explanation = line.replace("FÖRKLARING:", "").trim();
       }
     }
 
@@ -314,22 +347,27 @@ function parseShortAnswerResponse(response: string): any {
     }
     return null;
   } catch (error) {
-    console.error('Error parsing short answer response:', error);
+    console.error("Error parsing short answer response:", error);
     return null;
   }
 }
 
 function splitIntoContextChunks(text: string, chunkSize: number): string[] {
-  const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
+  const sentences = text
+    .split(/[.!?]+/)
+    .filter((sentence) => sentence.trim().length > 0);
   const chunks: string[] = [];
-  let currentChunk = '';
+  let currentChunk = "";
 
   for (const sentence of sentences) {
-    if (currentChunk.length + sentence.length > chunkSize && currentChunk.length > 0) {
+    if (
+      currentChunk.length + sentence.length > chunkSize &&
+      currentChunk.length > 0
+    ) {
       chunks.push(currentChunk.trim());
       currentChunk = sentence.trim();
     } else {
-      currentChunk += (currentChunk ? '. ' : '') + sentence.trim();
+      currentChunk += (currentChunk ? ". " : "") + sentence.trim();
     }
   }
 

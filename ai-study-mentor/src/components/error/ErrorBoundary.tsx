@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { Component, ReactNode } from 'react';
+import React, { Component, ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -25,15 +25,15 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error for debugging
-    console.error('ErrorBoundary caught an error:', error);
-    console.error('Error info:', errorInfo);
+    console.error("ErrorBoundary caught an error:", error);
+    console.error("Error info:", errorInfo);
 
     // You could also log to an error reporting service here
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Only log in browser, not during SSR
-      console.group('🚨 React Error Boundary');
-      console.error('Error:', error);
-      console.error('Component Stack:', errorInfo.componentStack);
+      console.group("🚨 React Error Boundary");
+      console.error("Error:", error);
+      console.error("Component Stack:", errorInfo.componentStack);
       console.groupEnd();
     }
   }
@@ -49,19 +49,25 @@ export default class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg">
           <div className="text-red-600 dark:text-red-400 mb-4">
-            <svg className="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={1.5} 
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" 
+            <svg
+              className="w-16 h-16 mx-auto mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
               />
             </svg>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Något gick fel
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
-              Ett oväntat fel uppstod i applikationen. Vi ber om ursäkt för besväret.
+              Ett oväntat fel uppstod i applikationen. Vi ber om ursäkt för
+              besväret.
             </p>
           </div>
 
@@ -74,7 +80,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             >
               Försök igen
             </button>
-            
+
             <button
               onClick={() => {
                 window.location.reload();
@@ -86,7 +92,7 @@ export default class ErrorBoundary extends Component<Props, State> {
           </div>
 
           {/* Error details in development */}
-          {process.env.NODE_ENV === 'development' && this.state.error && (
+          {process.env.NODE_ENV === "development" && this.state.error && (
             <details className="mt-6 w-full max-w-2xl">
               <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
                 Visa feldetaljer (endast utvecklingsläge)

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 // Chat Message Skeleton
 export function ChatMessageSkeleton() {
@@ -82,11 +82,14 @@ export function StudyQuestionSkeleton() {
         {/* Question content */}
         <div className="mb-6">
           <div className="h-5 bg-gray-300 dark:bg-gray-600 rounded w-full mb-4"></div>
-          
+
           {/* Answer options */}
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-md">
+              <div
+                key={index}
+                className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-md"
+              >
                 <div className="w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
                 <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded flex-1"></div>
               </div>
@@ -134,13 +137,22 @@ export function CardSkeleton() {
 }
 
 // Table Skeleton
-export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+export function TableSkeleton({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number;
+  columns?: number;
+}) {
   return (
     <div className="animate-pulse">
       <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
         {/* Table header */}
         <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <div className="grid" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+          <div
+            className="grid"
+            style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+          >
             {Array.from({ length: columns }).map((_, index) => (
               <div key={index} className="p-4">
                 <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
@@ -148,11 +160,17 @@ export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; column
             ))}
           </div>
         </div>
-        
+
         {/* Table rows */}
         {Array.from({ length: rows }).map((_, rowIndex) => (
-          <div key={rowIndex} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-            <div className="grid" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+          <div
+            key={rowIndex}
+            className="border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+          >
+            <div
+              className="grid"
+              style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+            >
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <div key={colIndex} className="p-4">
                   <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-full"></div>
@@ -167,16 +185,24 @@ export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; column
 }
 
 // Loading Spinner
-export function LoadingSpinner({ size = 'md', text }: { size?: 'sm' | 'md' | 'lg'; text?: string }) {
+export function LoadingSpinner({
+  size = "md",
+  text,
+}: {
+  size?: "sm" | "md" | "lg";
+  text?: string;
+}) {
   const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12'
+    sm: "w-4 h-4",
+    md: "w-8 h-8",
+    lg: "w-12 h-12",
   };
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
-      <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]}`}></div>
+      <div
+        className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]}`}
+      ></div>
       {text && (
         <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">{text}</p>
       )}
@@ -193,7 +219,7 @@ export function PageLoadingSkeleton() {
         <div className="h-8 bg-gray-300 dark:bg-gray-600 rounded w-1/3"></div>
         <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
       </div>
-      
+
       {/* Content grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, index) => (

@@ -1,21 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { StudyQuestion } from '@/lib/questionGenerator';
+import { useState, useEffect } from "react";
+import { StudyQuestion } from "@/lib/questionGenerator";
 
 interface StudySessionProps {
   documentId: string;
   onClose: () => void;
 }
 
-export default function StudySession({ documentId, onClose }: StudySessionProps) {
+export default function StudySession({
+  documentId,
+  onClose,
+}: StudySessionProps) {
   const [questions, setQuestions] = useState<StudyQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [difficulty, setDifficulty] = useState<'lätt' | 'medel' | 'svår'>('medel');
+  const [difficulty, setDifficulty] = useState<"lätt" | "medel" | "svår">(
+    "medel"
+  );
   const [showExplanation, setShowExplanation] = useState(false);
 
   useEffect(() => {
@@ -27,22 +32,22 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
       setLoading(true);
       setError(null);
 
-      const response = await fetch('/api/study/questions', {
-        method: 'POST',
+      const response = await fetch("/api/study/questions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           documentId,
           questionCount: 10,
-          difficulty
+          difficulty,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Kunde inte generera frågor');
+        throw new Error(errorData.error || "Kunde inte generera frågor");
       }
 
       const data = await response.json();
@@ -52,23 +57,23 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
       setShowResults(false);
       setShowExplanation(false);
     } catch (error) {
-      console.error('Error generating questions:', error);
-      setError(error instanceof Error ? error.message : 'Ett fel uppstod');
+      console.error("Error generating questions:", error);
+      setError(error instanceof Error ? error.message : "Ett fel uppstod");
     } finally {
       setLoading(false);
     }
   };
 
   const handleAnswer = (questionId: string, answer: any) => {
-    setUserAnswers(prev => ({
+    setUserAnswers((prev) => ({
       ...prev,
-      [questionId]: answer
+      [questionId]: answer,
     }));
   };
 
   const nextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
       setShowExplanation(false);
     } else {
       setShowResults(true);
@@ -77,20 +82,20 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
 
   const previousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
       setShowExplanation(false);
     }
   };
 
   const calculateScore = () => {
     let correct = 0;
-    questions.forEach(question => {
+    questions.forEach((question) => {
       const userAnswer = userAnswers[question.id];
-      if (question.type === 'multiple-choice') {
+      if (question.type === "multiple-choice") {
         if (userAnswer === question.correctAnswer) correct++;
-      } else if (question.type === 'true-false') {
+      } else if (question.type === "true-false") {
         if (userAnswer === question.correctAnswer) correct++;
-      } else if (question.type === 'short-answer') {
+      } else if (question.type === "short-answer") {
         // For short answer, we'll be lenient and count it as correct if answered
         if (userAnswer && userAnswer.trim().length > 0) correct++;
       }
@@ -110,7 +115,9 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Genererar studiefrågor...</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Genererar studiefrågor...
+          </p>
         </div>
       </div>
     );
@@ -120,8 +127,18 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
     return (
       <div className="text-center py-8">
         <div className="text-red-600 dark:text-red-400 mb-4">
-          <svg className="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          <svg
+            className="h-12 w-12 mx-auto mb-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.962-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
           </svg>
           <p className="font-semibold">Ett fel uppstod</p>
           <p className="text-sm">{error}</p>
@@ -145,7 +162,9 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
   if (questions.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-600 dark:text-gray-400 mb-4">Inga frågor kunde genereras från detta dokument.</p>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          Inga frågor kunde genereras från detta dokument.
+        </p>
         <button
           onClick={onClose}
           className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
@@ -165,29 +184,47 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
             Studiesession slutförd!
           </h2>
           <div className="text-6xl font-bold mb-4">
-            <span className={score >= 80 ? 'text-green-600' : score >= 60 ? 'text-yellow-600' : 'text-red-600'}>
+            <span
+              className={
+                score >= 80
+                  ? "text-green-600"
+                  : score >= 60
+                  ? "text-yellow-600"
+                  : "text-red-600"
+              }
+            >
               {score}%
             </span>
           </div>
           <p className="text-gray-600 dark:text-gray-400">
-            Du besvarade {questions.filter(q => userAnswers[q.id]).length} av {questions.length} frågor
+            Du besvarade {questions.filter((q) => userAnswers[q.id]).length} av{" "}
+            {questions.length} frågor
           </p>
         </div>
 
         <div className="space-y-4 mb-8">
           {questions.map((question, index) => {
             const userAnswer = userAnswers[question.id];
-            const isCorrect = question.type === 'multiple-choice' || question.type === 'true-false'
-              ? userAnswer === question.correctAnswer
-              : !!userAnswer; // For short answers, just check if answered
+            const isCorrect =
+              question.type === "multiple-choice" ||
+              question.type === "true-false"
+                ? userAnswer === question.correctAnswer
+                : !!userAnswer; // For short answers, just check if answered
 
             return (
-              <div key={question.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <div
+                key={question.id}
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+              >
                 <div className="flex items-start gap-3">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                    isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {isCorrect ? '✓' : '✗'}
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      isCorrect
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {isCorrect ? "✓" : "✗"}
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900 dark:text-white mb-2">
@@ -199,7 +236,8 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
                       </p>
                     )}
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      <strong>Rätt svar:</strong> {question.correctAnswer.toString()}
+                      <strong>Rätt svar:</strong>{" "}
+                      {question.correctAnswer.toString()}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-500">
                       {question.explanation}
@@ -248,7 +286,9 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
           </h2>
           <select
             value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value as 'lätt' | 'medel' | 'svår')}
+            onChange={(e) =>
+              setDifficulty(e.target.value as "lätt" | "medel" | "svår")
+            }
             className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           >
             <option value="lätt">Lätt</option>
@@ -266,8 +306,18 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
           onClick={onClose}
           className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -275,13 +325,19 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
       {/* Progress */}
       <div className="mb-6">
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-          <span>Fråga {currentQuestionIndex + 1} av {questions.length}</span>
+          <span>
+            Fråga {currentQuestionIndex + 1} av {questions.length}
+          </span>
           <span className="capitalize">{currentQuestion.difficulty}</span>
         </div>
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
           <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+            style={{
+              width: `${
+                ((currentQuestionIndex + 1) / questions.length) * 100
+              }%`,
+            }}
           ></div>
         </div>
       </div>
@@ -293,21 +349,28 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
         </h3>
 
         {/* Multiple Choice */}
-        {currentQuestion.type === 'multiple-choice' && (
+        {currentQuestion.type === "multiple-choice" && (
           <div className="space-y-3">
             {currentQuestion.options?.map((option, index) => {
               const letter = String.fromCharCode(65 + index); // A, B, C, D
               return (
-                <label key={index} className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                <label
+                  key={index}
+                  className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name={`question-${currentQuestion.id}`}
                     value={letter}
                     checked={userAnswer === letter}
-                    onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+                    onChange={(e) =>
+                      handleAnswer(currentQuestion.id, e.target.value)
+                    }
                     className="w-4 h-4 text-blue-600"
                   />
-                  <span className="text-gray-900 dark:text-white">{option}</span>
+                  <span className="text-gray-900 dark:text-white">
+                    {option}
+                  </span>
                 </label>
               );
             })}
@@ -315,7 +378,7 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
         )}
 
         {/* True/False */}
-        {currentQuestion.type === 'true-false' && (
+        {currentQuestion.type === "true-false" && (
           <div className="space-y-3">
             <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
               <input
@@ -343,9 +406,9 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
         )}
 
         {/* Short Answer */}
-        {currentQuestion.type === 'short-answer' && (
+        {currentQuestion.type === "short-answer" && (
           <textarea
-            value={userAnswer || ''}
+            value={userAnswer || ""}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
             placeholder="Skriv ditt svar här..."
             className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
@@ -378,15 +441,17 @@ export default function StudySession({ documentId, onClose }: StudySessionProps)
             onClick={() => setShowExplanation(!showExplanation)}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            {showExplanation ? 'Dölj förklaring' : 'Visa förklaring'}
+            {showExplanation ? "Dölj förklaring" : "Visa förklaring"}
           </button>
-          
+
           <button
             onClick={nextQuestion}
             disabled={!userAnswer && userAnswer !== false} // Allow false as valid answer
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {currentQuestionIndex === questions.length - 1 ? 'Slutför' : 'Nästa →'}
+            {currentQuestionIndex === questions.length - 1
+              ? "Slutför"
+              : "Nästa →"}
           </button>
         </div>
       </div>
