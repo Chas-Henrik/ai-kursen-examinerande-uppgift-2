@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { Request } from "express";
 
 // Säkerställ att uploads-mappen finns
 const uploadsDir = path.join(process.cwd(), "uploads");
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 });
 
 // Filfilter för säkerhet
-const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
+const fileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => {
   // Tillåtna filtyper
   const allowedTypes = [".pdf", ".txt", ".docx"];
   const fileExt = path.extname(file.originalname).toLowerCase();
@@ -53,7 +54,7 @@ export const upload = multer({
 });
 
 // Felhantering för multer-fel
-export function handleMulterError(error: any) {
+export function handleMulterError(error: Error | multer.MulterError) {
   if (error instanceof multer.MulterError) {
     switch (error.code) {
       case "LIMIT_FILE_SIZE":

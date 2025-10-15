@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import Document from "@/models/Document";
 import { generateStudyQuestions } from "@/lib/questionGenerator";
@@ -7,7 +7,7 @@ import { generateStudyQuestions } from "@/lib/questionGenerator";
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyToken(request);
+    const user = getAuthenticatedUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Autentisering krävs" },
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyToken(request);
+    const user = getAuthenticatedUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Autentisering krävs" },

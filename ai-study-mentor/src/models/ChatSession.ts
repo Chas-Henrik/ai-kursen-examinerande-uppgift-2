@@ -150,3 +150,4 @@ const ChatSession: Model<IChatSession> =
   mongoose.model<IChatSession>("ChatSession", chatSessionSchema);
 
 export default ChatSession;
+export { ChatSession };

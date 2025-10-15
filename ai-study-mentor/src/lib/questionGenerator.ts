@@ -1,5 +1,3 @@
-import { generateEmbedding } from "@/lib/embeddings";
-
 interface StudyQuestion {
   id: string;
   type: "multiple-choice" | "true-false" | "short-answer";
@@ -255,7 +253,26 @@ EXEMPEL_SVAR: [Ett bra svar på 1-3 meningar]
 FÖRKLARING: [Kort förklaring på svenska]`;
 }
 
-function parseMultipleChoiceResponse(response: string): any {
+interface ParsedMultipleChoice {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
+
+interface ParsedTrueFalse {
+  question: string;
+  correctAnswer: boolean;
+  explanation: string;
+}
+
+interface ParsedShortAnswer {
+  question: string;
+  correctAnswer: string;
+  explanation: string;
+}
+
+function parseMultipleChoiceResponse(response: string): ParsedMultipleChoice | null {
   try {
     const lines = response
       .split("\n")
@@ -289,7 +306,7 @@ function parseMultipleChoiceResponse(response: string): any {
   }
 }
 
-function parseTrueFalseResponse(response: string): any {
+function parseTrueFalseResponse(response: string): ParsedTrueFalse | null {
   try {
     const lines = response
       .split("\n")
@@ -321,7 +338,7 @@ function parseTrueFalseResponse(response: string): any {
   }
 }
 
-function parseShortAnswerResponse(response: string): any {
+function parseShortAnswerResponse(response: string): ParsedShortAnswer | null {
   try {
     const lines = response
       .split("\n")

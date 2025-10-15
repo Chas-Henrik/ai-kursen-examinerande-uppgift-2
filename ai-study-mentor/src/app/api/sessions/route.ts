@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
-import { ChatSession, IChatSession } from "@/models/ChatSession";
+import { ChatSession } from "@/models/ChatSession";
+
+type SessionDocument = {
+  _id: { toString(): string };
+  title: string;
+  createdAt: Date;
+  updatedAt: Date;
+  messages?: Array<{ content: string }>;
+};
 
 interface SessionData {
   id: string;
@@ -22,7 +30,7 @@ interface GroupedSessions {
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyToken(request);
+    const user = getAuthenticatedUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Autentisering krävs" },
@@ -60,7 +68,7 @@ export async function GET(request: NextRequest) {
     const totalSessions = await ChatSession.countDocuments(searchQuery);
 
     // Group sessions by date
-    const groupedSessions = groupSessionsByDate(sessions);
+    const groupedSessions = groupSessionsByDate(sessions as SessionDocument[]);
 
     return NextResponse.json({
       success: true,
@@ -84,7 +92,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const user = await verifyToken(request);
+    const user = getAuthenticatedUser(request);
     if (!user) {
       return NextResponse.json(
         { error: "Autentisering krävs" },
@@ -135,7 +143,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function groupSessionsByDate(sessions: IChatSession[]): GroupedSessions {
+function groupSessionsByDate(sessions: SessionDocument[]): GroupedSessions {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
@@ -156,14 +164,14 @@ function groupSessionsByDate(sessions: IChatSession[]): GroupedSessions {
       sessionDate.getDate()
     );
 
-    const sessionData = {
-      id: session._id,
+    const sessionData: SessionData = {
+      id: session._id?.toString() || '',
       title: session.title,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
       messageCount: session.messages?.length || 0,
       lastMessage:
-        session.messages?.length > 0
+        session.messages && session.messages.length > 0
           ? session.messages[session.messages.length - 1].content.substring(
               0,
               100
