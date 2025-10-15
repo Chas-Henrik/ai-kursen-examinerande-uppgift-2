@@ -46,7 +46,7 @@ export async function DELETE(
     }
 
     // Delete Pinecone index
-    const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
+    const indexName = toLowercaseAlphanumeric(userId); // Convert userId to valid Pinecone index name
     if (session.pineconeNameSpace) {
       // Count other sessions referencing the same Pinecone namespace
       const count = await Session.countDocuments({

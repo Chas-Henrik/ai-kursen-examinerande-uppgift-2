@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! }); // Initialize Pinecone client
 
-  const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
+  const indexName = toLowercaseAlphanumeric(userId); // Convert userId to valid Pinecone index name
 
   const index = pinecone.index(indexName); // Get Pinecone index
 

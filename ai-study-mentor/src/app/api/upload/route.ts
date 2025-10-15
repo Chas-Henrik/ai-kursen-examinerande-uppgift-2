@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
 
     const pinecone = new Pinecone({ apiKey: process.env.PINECONE_API_KEY! }); // Initialize Pinecone client
 
-    const indexName = toLowercaseAlphanumeric(userId); // Check if userId is valid Alphanumeric for Pinecone index name
+    const indexName = toLowercaseAlphanumeric(userId); // Convert userId to valid Pinecone index name
     // Delete index (irreversible)
     // await pinecone.deleteIndex("ai-study-mentor");
 
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
     }));
 
     // Pinecone namespace: only contains vectors for this specific document
-    const pcNameSpace = toLowercaseAlphanumeric(filename); // Check if filename is valid Alphanumeric for Pinecone namespace
+    const pcNameSpace = toLowercaseAlphanumeric(filename); // Convert filename to valid Pinecone namespace
 
     await index.namespace(pcNameSpace).upsert(pineconeVectors);
 
