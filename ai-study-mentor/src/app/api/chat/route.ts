@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
         );
         currentSession.updatedAt = new Date();
         await currentSession.save();
-        actualSessionId = (currentSession._id as any).toString();
+        actualSessionId = String(currentSession._id);
       }
     } else {
       // Skapa ny session (låt MongoDB generera _id automatiskt)
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date(),
       });
       await currentSession.save();
-      actualSessionId = (currentSession._id as any).toString();
+      actualSessionId = String(currentSession._id);
     }
 
     return NextResponse.json({

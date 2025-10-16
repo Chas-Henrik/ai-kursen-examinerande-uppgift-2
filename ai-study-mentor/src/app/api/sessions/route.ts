@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     // Transform sessions to expected format
     const sessionData: SessionData[] = sessions.map((session) => ({
-      id: (session._id as any).toString(),
+      id: String(session._id),
       title: session.title,
       createdAt: session.createdAt,
       updatedAt: session.updatedAt,
