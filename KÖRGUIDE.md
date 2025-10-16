@@ -133,33 +133,45 @@ Logga in → Ladda upp → Ställ en fråga → Få svar baserat på innehållet
 
 ```
 
-## 🧠 Reflektion kring AI-komponenten
+🧠 Reflektion kring AI-komponenten
+###Vilken ny AI-teknik/bibliotek identifierades och hur tillämpades det?
 
-### Vilken ny AI-teknik/bibliotek identifierades och hur tillämpades det?
+Under projektet testade vi flera AI-verktyg och bibliotek för att jämföra deras kapacitet att både generera kod och driva själva applikationen:
 
-Under projektet testade vi flera AI-verktyg och bibliotek för att jämföra deras kapacitet att generera kod och driva applikationen:
+Gemini CLI (Google) – användes för kodgenerering och visade sig ge mest robust och välstrukturerad kod utifrån samma implementationsplan.
 
-* **Gemini (Google)** – användes för att generera kod och visade sig ge mest robust och strukturerad kod utifrån samma implementationsplan.
-* **Codex (OpenAI)** – fungerade bättre för att skapa UI och komponentlogik, men var mindre konsekvent i backend-hanteringen.
-* **GitHub Copilot** – användes som stöd vid mindre kodsnuttar, men inte som huvudkomponent.
+Codex (OpenAI) – presterade bättre vid skapandet av UI-komponenter, men saknade stabilitet och helhet jämfört med Gemini.
 
-I själva applikationen implementerades:
+GitHub Copilot – användes som kodstöd vid mindre moment, men inte som huvudmotor.
 
-* **Ollama + Gemma 3:4B** som lokal LLM-komponent för att analysera uppladdade dokument och svara på användarens frågor.
-* **Pinecone** som vektorbaserad databas i ett **RAG-flöde (Retrieval-Augmented Generation)** för att lagra och hämta relevanta text-embeddingar. Detta gör att modellen endast får den mest relevanta kontexten när den genererar svar.
+I den färdiga applikationen implementerades tre centrala AI-komponenter:
 
-### Motivering till val av teknik och bibliotek
+Ollama + Gemma 3:4B
+– Lokalt körd LLM (Large Language Model) för att analysera uppladdade dokument och besvara användarens frågor.
+– Valdes för sin höga prestanda, enkel lokalintegration och att den kan köras helt kostnadsfritt under utveckling.
 
-Vi valde **Gemini** för utvecklingsfasen eftersom den producerade tydlig, sammanhängande och välorganiserad kod för hela projektet, särskilt vid komplexa integrationer mellan frontend och backend.
+Pinecone
+– Används som vektorbaserad databas i ett RAG-flöde (Retrieval-Augmented Generation).
+– Lagrar embeddings av dokumentens textstycken och hämtar de mest relevanta delarna när användaren ställer en fråga, vilket ger AI:n rätt kontext.
 
-För den faktiska AI-funktionen valde vi **Ollama + Gemma 3:4B** eftersom:
+Hugging Face Transformers Embeddings
+– Denna modell användes för att skapa semantiska text-embeddingar av dokumenten innan de skickades till Pinecone.
+– all-MiniLM-L6-v2 valdes eftersom den är lättviktig, snabb, gratis och erbjuder bra balans mellan noggrannhet och prestanda vid semantisk sökning.
+– Kombinationen av denna embeddings-modell och Pinecone gjorde RAG-lösningen både effektiv och resurssnål.
 
-* modellen kan köras **gratis och lokalt**, vilket gör den idealisk under utveckling,
-* den hanterar **större dokument** på ett stabilt sätt,
-* den har **bra stöd för Pinecone**, vilket underlättar RAG-implementationen,
-* och den **inte kräver moln-API-kostnader**.
+###Motivering till val av teknik och bibliotek
 
-Vid fortsatt utveckling skulle man dock kunna uppgradera till en mer avancerad modell, som **GPT-4o** eller **Claude 3**, för att förbättra precision och svarskvalitet i en produktionsmiljö.
+Vi valde Gemini för utvecklingsfasen eftersom den producerade den mest konsekventa och läsbara koden, särskilt vid integration mellan frontend och backend.
+
+För AI-komponenten valdes Ollama + Gemma 3:4B eftersom:
+den kan köras gratis och lokalt, perfekt under utveckling,
+den hanterar större dokument stabilt,
+den har bra kompatibilitet med Pinecone,
+och den kräver inga externa API-kostnader.
+
+För textförståelse och sökbarhet användes Hugging Face MiniLM-modellen eftersom den tillförde semantisk sökfunktionalitet som var helt nödvändig för att RAG-arkitekturen skulle fungera korrekt.
+
+Vid fortsatt utveckling eller kommersiell lansering kan dessa komponenter enkelt bytas ut mot mer avancerade alternativ som OpenAI GPT-4o eller Claude, vilket skulle förbättra precision och svarskvalitet ytterligare.
 
 ---
 
