@@ -39,13 +39,6 @@ Innan du startar:
    Skapa en fil i projektets rotmapp:
    `.env.local`
 
-   ```env
-
-   MONGODB_URI="mongodb+srv://<User>:<Password>@cluster0.r6jzab0.mongodb.net/aiStudyMentorDatabase?retryWrites=true&w=majority&appName=Cluster0"
-JWT_SECRET=<Your JWT Secret>
-PINECONE_API_KEY=<Your Pinecone API Key>
-NODE_ENV=development # change to 'production' in production
-
    ```
 
 # MongoDB Atlas connection string
@@ -60,7 +53,7 @@ JWT_SECRET="byt-mig"
 
 NEXTAUTH_SECRET="byt-mig-ocksa"
 
-````
+´´´
 
 4. **Starta utvecklingsservern**
 
