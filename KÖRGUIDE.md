@@ -22,7 +22,7 @@ Innan du startar:
 1. **Klona projektet**
 
    ```bash
-   git clone https://github.com/<ditt-repo-namn>.git
+   https://github.com/Chas-Henrik/ai-kursen-examinerande-uppgift-2.git
    cd ai-study-mentor
    ```
 
