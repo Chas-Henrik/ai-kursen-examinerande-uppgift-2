@@ -37,25 +37,13 @@ Innan du startar:
 
 3. **Skapa miljöfil**
    Skapa en fil i projektets rotmapp:
-   `.env.local`
+   ```bash
+   MONGODB_URI="mongodb+srv://anvandare:losenord@cluster.mongodb.net/ai-study-mentor"
+   JWT_SECRET="byt-mig"  
+   NEXTAUTH_SECRET="byt-mig-ocksa"
+   ````
 
-   ```
-
-# MongoDB Atlas connection string
-
-MONGODB_URI="mongodb+srv://anvandare:losenord@cluster.mongodb.net/ai-study-mentor"
-
-# JWT secret for auth tokens
-
-JWT_SECRET="byt-mig"
-
-# Optional: NextAuth secret if we integrate next-auth later
-
-NEXTAUTH_SECRET="byt-mig-ocksa"
-
-´´´
-
-4. **Starta utvecklingsservern**
+5. **Starta utvecklingsservern**
 
 ```bash
 npm run dev
