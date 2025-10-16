@@ -40,7 +40,7 @@ Innan du startar:
    ```bash
    MONGODB_URI="mongodb+srv://anvandare:losenord@cluster.mongodb.net/ai-study-mentor"
    JWT_SECRET="byt-mig"  
-   NEXTAUTH_SECRET="byt-mig-ocksa"
+   PINECONE_API_KEY="byt-mig-ocksa"
    ````
 
 5. **Starta utvecklingsservern**
