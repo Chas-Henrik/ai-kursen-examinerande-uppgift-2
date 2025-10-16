@@ -41,6 +41,11 @@ Innan du startar:
 
    ```env
 
+   MONGODB_URI="mongodb+srv://<User>:<Password>@cluster0.r6jzab0.mongodb.net/aiStudyMentorDatabase?retryWrites=true&w=majority&appName=Cluster0"
+JWT_SECRET=<Your JWT Secret>
+PINECONE_API_KEY=<Your Pinecone API Key>
+NODE_ENV=development # change to 'production' in production
+
    ```
 
 # MongoDB Atlas connection string
@@ -146,3 +151,56 @@ Logga in → Ladda upp → Ställ en fråga → Få svar baserat på innehållet
 ```
 
 ```
+
+## 🧠 Reflektion kring AI-komponenten
+
+### Vilken ny AI-teknik/bibliotek identifierades och hur tillämpades det?
+
+Under projektet testade vi flera AI-verktyg och bibliotek för att jämföra deras kapacitet att generera kod och driva applikationen:
+
+* **Gemini (Google)** – användes för att generera kod och visade sig ge mest robust och strukturerad kod utifrån samma implementationsplan.
+* **Codex (OpenAI)** – fungerade bättre för att skapa UI och komponentlogik, men var mindre konsekvent i backend-hanteringen.
+* **GitHub Copilot** – användes som stöd vid mindre kodsnuttar, men inte som huvudkomponent.
+
+I själva applikationen implementerades:
+
+* **Ollama + Gemma 3:4B** som lokal LLM-komponent för att analysera uppladdade dokument och svara på användarens frågor.
+* **Pinecone** som vektorbaserad databas i ett **RAG-flöde (Retrieval-Augmented Generation)** för att lagra och hämta relevanta text-embeddingar. Detta gör att modellen endast får den mest relevanta kontexten när den genererar svar.
+
+### Motivering till val av teknik och bibliotek
+
+Vi valde **Gemini** för utvecklingsfasen eftersom den producerade tydlig, sammanhängande och välorganiserad kod för hela projektet, särskilt vid komplexa integrationer mellan frontend och backend.
+
+För den faktiska AI-funktionen valde vi **Ollama + Gemma 3:4B** eftersom:
+
+* modellen kan köras **gratis och lokalt**, vilket gör den idealisk under utveckling,
+* den hanterar **större dokument** på ett stabilt sätt,
+* den har **bra stöd för Pinecone**, vilket underlättar RAG-implementationen,
+* och den **inte kräver moln-API-kostnader**.
+
+Vid fortsatt utveckling skulle man dock kunna uppgradera till en mer avancerad modell, som **GPT-4o** eller **Claude 3**, för att förbättra precision och svarskvalitet i en produktionsmiljö.
+
+---
+
+### Varför behövdes AI-komponenten? Skulle ni kunna löst det på ett annat sätt?
+
+AI-komponenten är **helt nödvändig** för att applikationen ska fungera som tänkt. Systemets huvudsyfte är att låta användaren ladda upp egna dokument (t.ex. PDF:er eller textfiler) och därefter ställa frågor om innehållet. För att kunna analysera text över flera sidor, förstå sammanhang och ge korrekta, kontextuella svar krävs **språklig förståelse och semantisk tolkning** — något som endast en AI-modell kan erbjuda.
+
+Att försöka lösa detta utan AI hade i praktiken inte varit möjligt.
+En traditionell lösning, som exempelvis:
+
+* enkel **text- eller nyckelordsökning**,
+* eller **regex-baserade filter**,
+  hade bara kunnat hitta exakta ord eller fraser — inte förstå meningen bakom användarens fråga.
+
+AI-komponenten (genom LLM + RAG) gör däremot att applikationen **förstår betydelsen** av frågan, **matchar rätt kontext** ur dokumentet och **formulerar ett naturligt svar**.
+Det är därför inte realistiskt att ersätta AI-delen med klassisk programmering om målet är att användaren ska kunna konversera fritt kring sitt eget material.
+
+Kort sagt:
+👉 Utan AI hade applikationen bara kunnat **söka textsträngar**, men inte **förstå innehåll**.
+Med AI blir det istället möjligt att **analysera, resonera och svara som en mänsklig studieassistent**.
+
+---
+
+Vill du att jag lägger till en **kort inledande sammanfattning (2–3 meningar)** i toppen av denna reflektion — t.ex. en beskrivning av syftet med att använda AI i projektet — så README:n får en mer berättande ton?
+
