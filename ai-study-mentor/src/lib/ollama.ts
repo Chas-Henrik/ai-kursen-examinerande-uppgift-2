@@ -1,5 +1,3 @@
-import { Ollama } from "@langchain/community/llms/ollama";
-
 interface OllamaConfig {
   baseUrl: string;
   model: string;
@@ -7,7 +5,6 @@ interface OllamaConfig {
 }
 
 class OllamaService {
-  private ollama: Ollama;
   private config: OllamaConfig;
 
   constructor() {
@@ -16,22 +13,29 @@ class OllamaService {
       model: "llama3.2:1b",
       temperature: 0.3,
     };
-
-    this.ollama = new Ollama({
-      baseUrl: this.config.baseUrl,
-      model: this.config.model,
-      temperature: this.config.temperature,
-    });
   }
 
   async testOllamaConnection(): Promise<boolean> {
     try {
       console.log("🔌 Testar Ollama-anslutning...");
-      const response = await this.ollama.invoke(
-        'Hej, svara bara "Hej tillbaka" på svenska.'
-      );
-      console.log("✅ Ollama svarade:", response);
-      return response.toLowerCase().includes("hej");
+      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.config.model,
+          prompt: 'Hej, svara bara "Hej tillbaka" på svenska.',
+          stream: false
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const responseText = data.response || "";
+      console.log("✅ Ollama svarade:", responseText);
+      return responseText.toLowerCase().includes("hej");
     } catch (error) {
       console.error("❌ Ollama-anslutning misslyckades:", error);
       return false;
@@ -55,10 +59,25 @@ INSTRUKTIONER:
 SVAR:`;
 
       console.log("🤖 Genererar svar med Ollama...");
-      const response = await this.ollama.invoke(swedishPrompt);
+      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.config.model,
+          prompt: swedishPrompt,
+          stream: false
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const responseText = data.response || "";
 
       // Begränsa svarslängd
-      const sentences = response.split(". ");
+      const sentences = responseText.split(". ");
       const limitedResponse = sentences.slice(0, 4).join(". ");
 
       console.log("✅ Ollama svar genererat");
@@ -80,8 +99,22 @@ Fråga: ${question}
 Svara kortfattat på svenska baserat endast på kontexten ovan. Om informationen inte finns, säg att den inte finns i materialet.`;
 
     try {
-      const response = await this.ollama.invoke(prompt);
-      return response;
+      const response = await fetch(`${this.config.baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: this.config.model,
+          prompt: prompt,
+          stream: false
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.response || "";
     } catch (error) {
       console.error("Error generating Swedish response:", error);
       return "Kunde inte generera svar just nu. Försök igen senare.";

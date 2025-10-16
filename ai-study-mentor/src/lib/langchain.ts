@@ -150,7 +150,22 @@ INSTRUKTIONER:
 SVAR:`;
 
       console.log("🤖 Genererar kontextuellt svar...");
-      const response = await this.llm.call(prompt);
+      const ollamaResponse = await fetch(`${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3.2:1b',
+          prompt: prompt,
+          stream: false
+        })
+      });
+      
+      if (!ollamaResponse.ok) {
+        throw new Error(`HTTP ${ollamaResponse.status}`);
+      }
+      
+      const data = await ollamaResponse.json();
+      const response = data.response || "";
       console.log("✅ Kontextuellt svar genererat");
 
       return response;
