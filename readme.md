@@ -13,7 +13,7 @@ Innan du startar:
 - npm (ingår i Node)
 - Konto hos **MongoDB Atlas**
 - Konto/API-nyckel för **Pinecone**
-- **Ollama** installerat lokalt (Gemma3-4b-modellen)
+- **Ollama** installerat lokalt (Gemma 3:4B modellen)
 
 ---
 
@@ -62,7 +62,7 @@ npm run dev
 | 🗂️ **Dokumentuppladdning**     | Ladda upp PDF.                                             |
 | 🧹 **Textutdragning**          | pdf-ts extraherar ren text                                 |
 | 🔍 **Semantisk sökning (RAG)** | Pinecone hanterar embeddings och kontext                   |
-| 🤖 **AI-svar (Ollama)**        | Gemma 3-4b svarar kort på samma språk som frågan ställs på |
+| 🤖 **AI-svar (Ollama)**        | Gemma 3:4B svarar kort på samma språk som frågan ställs på |
 | 💬 **Chatgränssnitt**          | Svensk UI med ljust/mörkt läge och historik                |
 | 🧾 **Studiefrågor**            | Genererar 10 korta frågor och svar utifrån innehållet      |
 | 💾 **Databas**                 | MongoDB Atlas lagrar användare, dokument och sessioner     |
