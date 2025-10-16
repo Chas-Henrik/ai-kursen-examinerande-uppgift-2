@@ -128,8 +128,8 @@ Applikationen körs på **[http://localhost:3000](http://localhost:3000)**
 | ❓ **AI Studiefrågor**      | ✅     | Automatisk generering av flervalsfrågor från text |
 | 📚 **Studiesession**        | ✅     | Interaktiv frågespel med poäng och förklaringar   |
 | 🔍 **Sessionsökning**       | ✅     | Sök och filtrera tidigare studiesessioner         |
-| � **Chat History**         | ✅     | Sessions visas i sidebar, cookie-baserad auth     |
-| �🛡️ **Felhantering**         | ✅     | ErrorBoundary komponenter och loading states      |
+| � **Chat History**          | ✅     | Sessions visas i sidebar, cookie-baserad auth     |
+| �🛡️ **Felhantering**        | ✅     | ErrorBoundary komponenter och loading states      |
 | 🎯 **Byggoptimering**       | ✅     | TypeScript-fel fixade, debug-filer rensade        |
 
 ### 🎉 NYLIGEN TILLAGDA FUNKTIONER

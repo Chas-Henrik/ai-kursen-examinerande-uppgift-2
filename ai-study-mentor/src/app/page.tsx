@@ -20,7 +20,7 @@ export default function Home() {
   const handleSessionCreated = (sessionId: string) => {
     setCurrentSessionId(sessionId);
     // Trigger refresh of session list
-    setRefreshSessions(prev => prev + 1);
+    setRefreshSessions((prev) => prev + 1);
   };
 
   return (
