@@ -23,6 +23,7 @@
 ### AI & Machine Learning
 
 #### 🤖 AI Framework & Integration
+
 - **LangChain** - Framework för AI-applikationer
   - `RecursiveCharacterTextSplitter` - Intelligent textuppdelning (500 tecken chunks, 100 överlapp)
   - `HuggingFaceTransformersEmbeddings` - Embedding generation med Hugging Face
@@ -31,7 +32,9 @@
   - Structured prompts för konsistenta svenska svar
 
 #### 🧠 AI Modeller & Tjänster
+
 - **Ollama (Lokalt)** - AI-modellserver på localhost:11434
+
   - `llama3.2:1b` (1.3GB) - Primary chat model för konversation
   - `gemma3:4b` - Question generation och avancerad textbearbetning
   - `nomic-embed-text:latest` (274MB) - Embedding generation (LangChain integration)
@@ -41,6 +44,7 @@
   - Används för semantisk sökning och dokumentjämförelse
 
 #### 🗄️ Vector Database & Storage
+
 - **Pinecone** - Cloud vektordatabas för RAG
   - Serverless deployment i AWS us-east-1
   - 384-dimensionella vektorer (HuggingFace kompatibel)
@@ -64,6 +68,7 @@
 - **Pinecone Account** - Vektordatabas (gratis tier tillgänglig)
 
 #### 🖥️ Hårdvarukrav för AI-modeller
+
 - **Minst 8GB RAM** - För alla AI-modeller samtidigt
 - **6GB Disk** - För Ollama-modeller (~6GB totalt)
 - **100MB Extra** - För HuggingFace cache
@@ -99,7 +104,7 @@ OLLAMA_BASE_URL=http://localhost:11434
 
 # AI Models (automatisk konfiguration i kod)
 # PRIMARY_CHAT_MODEL=llama3.2:1b
-# QUESTION_MODEL=gemma3:4b  
+# QUESTION_MODEL=gemma3:4b
 # EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 ```
 
@@ -116,7 +121,7 @@ ollama serve
 
 # Ladda ner AI-modeller (totalt ~6GB)
 ollama pull llama3.2:1b          # 1.3GB - Primary chat model
-ollama pull gemma3:4b            # 4.9GB - Question generation 
+ollama pull gemma3:4b            # 4.9GB - Question generation
 ollama pull nomic-embed-text     # 274MB - Embedding generation
 
 # Verifiera att modellerna är installerade
@@ -280,12 +285,14 @@ ai-study-mentor/
 #### LangChain Implementation
 
 **Text Processing Pipeline:**
+
 1. **RecursiveCharacterTextSplitter** - Delar upp dokument i 1000-tecken chunks med 200-tecken överlapp
 2. **OllamaEmbeddings** - Konverterar text till 768-dimensionella vektorer med `nomic-embed-text`
 3. **PineconeStore** - Lagrar och söker vektorer i namespace per användare
 4. **Structured Prompts** - Genererar kontextuella svar på svenska
 
 **Key Features:**
+
 - Semantic chunking med flera separatorer (`\n\n`, `\n`, `. `, ` `)
 - Error handling med detaljerad loggning
 - Memory-efficient processing
@@ -294,20 +301,23 @@ ai-study-mentor/
 #### 🔄 AI Processing Pipeline
 
 **1. Dokumentbearbetning (Upload):**
+
 ```
-PDF → pdf-ts → Text Extraction → RecursiveCharacterTextSplitter 
-→ Chunks (500 chars, 100 overlap) → HuggingFace Embeddings 
+PDF → pdf-ts → Text Extraction → RecursiveCharacterTextSplitter
+→ Chunks (500 chars, 100 overlap) → HuggingFace Embeddings
 → Pinecone Vectors (384-dim) → User Index Storage
 ```
 
 **2. Chat & RAG Pipeline:**
+
 ```
-User Query → HuggingFace Embedding → Pinecone Similarity Search 
+User Query → HuggingFace Embedding → Pinecone Similarity Search
 → Top-3 Relevant Chunks → Context Assembly → Ollama LLM (llama3.2:1b)
 → Swedish Response Generation → Streaming Response
 ```
 
 **3. Question Generation:**
+
 ```
 Document Text → Context Preparation → Ollama LLM (gemma3:4b)
 → JSON Question/Answer Pairs → MongoDB Storage → UI Display
@@ -315,13 +325,13 @@ Document Text → Context Preparation → Ollama LLM (gemma3:4b)
 
 #### 🎯 AI Performance Specifications
 
-| Component | Model/Service | Size | Dimensions | Purpose |
-|-----------|---------------|------|------------|---------|
-| **Chat LLM** | `llama3.2:1b` | 1.3GB | N/A | Conversational AI |
-| **Question LLM** | `gemma3:4b` | 4.9GB | N/A | Question generation |
-| **Embeddings** | `all-MiniLM-L6-v2` | 90MB | 384-dim | Semantic search |
-| **Vector DB** | Pinecone Serverless | Cloud | 384-dim | RAG retrieval |
-| **Text Processing** | LangChain Splitters | N/A | N/A | Chunk management |
+| Component           | Model/Service       | Size  | Dimensions | Purpose             |
+| ------------------- | ------------------- | ----- | ---------- | ------------------- |
+| **Chat LLM**        | `llama3.2:1b`       | 1.3GB | N/A        | Conversational AI   |
+| **Question LLM**    | `gemma3:4b`         | 4.9GB | N/A        | Question generation |
+| **Embeddings**      | `all-MiniLM-L6-v2`  | 90MB  | 384-dim    | Semantic search     |
+| **Vector DB**       | Pinecone Serverless | Cloud | 384-dim    | RAG retrieval       |
+| **Text Processing** | LangChain Splitters | N/A   | N/A        | Chunk management    |
 
 #### AI Pipeline
 
@@ -358,6 +368,7 @@ ollama run llama3.2:1b "Hej, hur fungerar du?"
 ### 🔧 AI Felsökning
 
 #### Ollama Problem
+
 ```bash
 # Kontrollera att Ollama kör
 curl http://localhost:11434/api/tags
@@ -371,17 +382,20 @@ ollama run gemma3:4b "Generate a test question"
 ```
 
 #### Pinecone Problem
+
 - **Dimension Mismatch**: Kontrollera 384-dimensioner (HuggingFace)
-- **API Key**: Verifiera giltighet i Pinecone dashboard  
+- **API Key**: Verifiera giltighet i Pinecone dashboard
 - **Index Creation**: Indexes skapas automatiskt per användare
 - **Namespace**: Separata namespaces per dokument
 
 #### Embedding Problem
+
 - **HuggingFace Cache**: `~/.cache/huggingface/transformers/`
 - **Model Download**: Första gången tar tid (~90MB)
 - **Memory**: sentence-transformers kräver ~500MB RAM
 
 #### Allmän AI Felsökning
+
 - **Memory Issues**: Använd llama3.2:1b (1.3GB) för mindre RAM-användning
 - **Timeout**: Stora PDF:er kan ta upp till 2 minuter
 - **Connection**: Alla AI-tjänster kräver stabil internetanslutning första gången
