@@ -184,23 +184,19 @@ Vid fortsatt utveckling skulle man dock kunna uppgradera till en mer avancerad m
 
 ### Varför behövdes AI-komponenten? Skulle ni kunna löst det på ett annat sätt?
 
-AI-komponenten är **helt nödvändig** för att applikationen ska fungera som tänkt. Systemets huvudsyfte är att låta användaren ladda upp egna dokument (t.ex. PDF:er eller textfiler) och därefter ställa frågor om innehållet. För att kunna analysera text över flera sidor, förstå sammanhang och ge korrekta, kontextuella svar krävs **språklig förståelse och semantisk tolkning** — något som endast en AI-modell kan erbjuda.
+AI-komponenten är **helt nödvändig** för att applikationen ska fungera som tänkt. Systemets huvudsyfte är att låta användaren ladda upp egna dokument (t.ex. PDF:er eller textfiler) och därefter ställa frågor om innehållet. För att kunna analysera text över flera sidor, förstå sammanhang och ge korrekta, kontextuella svar krävs **språklig förståelse och semantisk tolkning** något som endast en AI-modell kan erbjuda.
 
 Att försöka lösa detta utan AI hade i praktiken inte varit möjligt.
 En traditionell lösning, som exempelvis:
 
 * enkel **text- eller nyckelordsökning**,
 * eller **regex-baserade filter**,
-  hade bara kunnat hitta exakta ord eller fraser — inte förstå meningen bakom användarens fråga.
+  hade bara kunnat hitta exakta ord eller fraser och inte förstå meningen bakom användarens fråga.
 
 AI-komponenten (genom LLM + RAG) gör däremot att applikationen **förstår betydelsen** av frågan, **matchar rätt kontext** ur dokumentet och **formulerar ett naturligt svar**.
 Det är därför inte realistiskt att ersätta AI-delen med klassisk programmering om målet är att användaren ska kunna konversera fritt kring sitt eget material.
 
-Kort sagt:
-👉 Utan AI hade applikationen bara kunnat **söka textsträngar**, men inte **förstå innehåll**.
+Utan AI hade applikationen bara kunnat **söka textsträngar**, men inte **förstå innehåll**.
 Med AI blir det istället möjligt att **analysera, resonera och svara som en mänsklig studieassistent**.
 
----
-
-Vill du att jag lägger till en **kort inledande sammanfattning (2–3 meningar)** i toppen av denna reflektion — t.ex. en beskrivning av syftet med att använda AI i projektet — så README:n får en mer berättande ton?
 
