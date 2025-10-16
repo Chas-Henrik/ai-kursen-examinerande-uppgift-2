@@ -64,7 +64,7 @@ npm run dev
 | 🔍 **Semantisk sökning (RAG)** | Pinecone hanterar embeddings och kontext                   |
 | 🤖 **AI-svar (Ollama)**        | Gemma 3-4b svarar kort på samma språk som frågan ställs på |
 | 💬 **Chatgränssnitt**          | Svensk UI med ljust/mörkt läge och historik                |
-| 🧾 **Studiefrågor**            | Genererar 10 korta frågor utifrån innehållet               |
+| 🧾 **Studiefrågor**            | Genererar 10 korta frågor och svar utifrån innehållet      |
 | 💾 **Databas**                 | MongoDB Atlas lagrar användare, dokument och sessioner     |
 
 ---
@@ -99,7 +99,6 @@ npm run dev
 | Problem                    | Orsak / Lösning                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
 | `MongoDB connection error` | Kontrollera `MONGODB_URI` och att IP är vitlistad i Atlas         |
-| `Pinecone index not found` | Skapa ett index i Pinecone-dashboard med samma namn som i `.env`  |
 | `Ollama not responding`    | Kontrollera att Ollama-servern körs lokalt: `ollama serve`        |
 | `JWT_SECRET missing`       | Se till att `JWT_SECRET` finns i `.env.local`                     |
 | Chatten svarar inte        | Kontrollera API-nycklar och att Pinecone/Ollama-tjänster är igång |
@@ -134,32 +133,38 @@ Logga in → Ladda upp → Ställ en fråga → Få svar baserat på innehållet
 ```
 
 🧠 Reflektion kring AI-komponenten
-###Vilken ny AI-teknik/bibliotek identifierades och hur tillämpades det?
+
+### Vilken ny AI-teknik/bibliotek identifierades och hur tillämpades det?
 
 Under projektet testade vi flera AI-verktyg och bibliotek för att jämföra deras kapacitet att både generera kod och driva själva applikationen:
 
-Gemini CLI (Google) – användes för kodgenerering och visade sig ge mest robust och välstrukturerad kod utifrån samma implementationsplan.
+#### Gemini CLI (Google) 
+– användes för kodgenerering och visade sig ge mest robust och välstrukturerad kod utifrån samma implementationsplan.
 
-Codex (OpenAI) – presterade bättre vid skapandet av UI-komponenter, men saknade stabilitet och helhet jämfört med Gemini.
+#### Codex (OpenAI) 
+– presterade bättre vid skapandet av UI-komponenter, men saknade stabilitet och helhet jämfört med Gemini. Användes dock i slutversionen. 
 
-GitHub Copilot – användes som kodstöd vid mindre moment, men inte som huvudmotor.
+#### GitHub Copilot 
+– användes som kodstöd vid mindre moment, men inte som huvudmotor.
 
 I den färdiga applikationen implementerades tre centrala AI-komponenter:
 
-Ollama + Gemma 3:4B
+#### Ollama + Gemma 3:4B
 – Lokalt körd LLM (Large Language Model) för att analysera uppladdade dokument och besvara användarens frågor.
 – Valdes för sin höga prestanda, enkel lokalintegration och att den kan köras helt kostnadsfritt under utveckling.
 
-Pinecone
+#### Pinecone
 – Används som vektorbaserad databas i ett RAG-flöde (Retrieval-Augmented Generation).
 – Lagrar embeddings av dokumentens textstycken och hämtar de mest relevanta delarna när användaren ställer en fråga, vilket ger AI:n rätt kontext.
 
-Hugging Face Transformers Embeddings
+#### Hugging Face Transformers Embeddings
 – Denna modell användes för att skapa semantiska text-embeddingar av dokumenten innan de skickades till Pinecone.
 – all-MiniLM-L6-v2 valdes eftersom den är lättviktig, snabb, gratis och erbjuder bra balans mellan noggrannhet och prestanda vid semantisk sökning.
 – Kombinationen av denna embeddings-modell och Pinecone gjorde RAG-lösningen både effektiv och resurssnål.
 
-###Motivering till val av teknik och bibliotek
+
+
+### Motivering till val av teknik och bibliotek
 
 Vi valde Gemini för utvecklingsfasen eftersom den producerade den mest konsekventa och läsbara koden, särskilt vid integration mellan frontend och backend.
 
@@ -173,7 +178,7 @@ För textförståelse och sökbarhet användes Hugging Face MiniLM-modellen efte
 
 Vid fortsatt utveckling eller kommersiell lansering kan dessa komponenter enkelt bytas ut mot mer avancerade alternativ som OpenAI GPT-4o eller Claude, vilket skulle förbättra precision och svarskvalitet ytterligare.
 
----
+
 
 ### Varför behövdes AI-komponenten? Skulle ni kunna löst det på ett annat sätt?
 
