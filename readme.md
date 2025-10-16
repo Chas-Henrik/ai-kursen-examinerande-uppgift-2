@@ -94,7 +94,7 @@ npm run dev
 
 ---
 
-## 💡 Vanliga problem
+## 💡 Vanliga problem som du kan stöta på
 
 | Problem                    | Orsak / Lösning                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -128,9 +128,6 @@ npm run dev
 Öppna → [http://localhost:3000](http://localhost:3000)
 Logga in → Ladda upp → Ställ en fråga → Få svar baserat på innehållet i uppladdat dokument ✨
 
-```
-
-```
 
 🧠 Reflektion kring AI-komponenten
 
