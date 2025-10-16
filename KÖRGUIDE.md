@@ -62,7 +62,7 @@ npm run dev
 | 🗂️ **Dokumentuppladdning**     | Ladda upp PDF.                                             |
 | 🧹 **Textutdragning**          | pdf-ts extraherar ren text                                 |
 | 🔍 **Semantisk sökning (RAG)** | Pinecone hanterar embeddings och kontext                   |
-| 🤖 **AI-svar (Ollama)**        | Gemma 3-4b svarar kort på samma språk som frågan ställs på |
+| 🤖 **AI-svar (Ollama)**        | Gemma3:4b svarar kort på samma språk som frågan ställs på |
 | 💬 **Chatgränssnitt**          | Svensk UI med ljust/mörkt läge och historik                |
 | 🧾 **Studiefrågor**            | Genererar 10 korta frågor och svar utifrån innehållet      |
 | 💾 **Databas**                 | MongoDB Atlas lagrar användare, dokument och sessioner     |
@@ -94,7 +94,7 @@ npm run dev
 
 ---
 
-## 💡 Vanliga problem
+## 💡 Vanliga problem som du kan stöta på
 
 | Problem                    | Orsak / Lösning                                                   |
 | -------------------------- | ----------------------------------------------------------------- |
@@ -128,9 +128,7 @@ npm run dev
 Öppna → [http://localhost:3000](http://localhost:3000)
 Logga in → Ladda upp → Ställ en fråga → Få svar baserat på innehållet i uppladdat dokument ✨
 
-```
 
-```
 
 🧠 Reflektion kring AI-komponenten
 
